@@ -1,58 +1,60 @@
 <div class="register-container">
   <h2>Register</h2>
   <form (ngSubmit)="register()">
+    <!-- Email -->
     <div class="form-group">
       <label for="email">Email</label>
       <input type="email" id="email" [(ngModel)]="email" name="email" required />
       <div *ngIf="emailError" class="error-message">Please enter a valid email address.</div>
     </div>
 
-   <!-- <div class="form-group">
-      <label for="username">Username</label>
-      <input type="text" id="username" [(ngModel)]="username" name="username" required minlength="3" />
-      <div *ngIf="usernameError" class="error-message">Username must be at least 3 characters long.</div>
-    </div>-->
-
-    <div class="form-group">
-      <label for="password">Password</label>
-      <input type="password" id="password" [(ngModel)]="password" name="password" required minlength="6" />
-    </div>
-
-    <div class="form-group">
-      <label for="confirmPassword">Confirm Password</label>
-      <input type="password" id="confirmPassword" [(ngModel)]="confirmPassword" name="confirmPassword" required />
-      <div *ngIf="passwordMismatchError" class="error-message">Passwords do not match.</div>
-    </div>
-
+    <!-- First Name -->
     <div class="form-group">
       <label for="firstName">First Name</label>
       <input type="text" id="firstName" [(ngModel)]="firstName" name="firstName" required />
-    </div>
-    <div class="form-group">
-      <label for="lastName">Last Name</label>
-      <input type="text" id="lastName" [(ngModel)]="lastName" name="lastName" required />
-    </div>
-    <div class="form-group">
-      <label for="phone">Phone number</label>
-      <input 
-        type="text" 
-        id="phone" 
-        [(ngModel)]="phone" 
-        name="phone" 
-        required 
-        pattern="^[0-9]*$"
-        #phoneCtrl="ngModel"
-      />
-      <div *ngIf="phoneCtrl.invalid && phoneCtrl.touched" class="error-message">
-        Phone number can only contain digits.
+      <div *ngIf="firstNameError" class="error-message">
+        First name must be at least 3 characters.
       </div>
     </div>
 
-    <!-- NEW: CV upload -->
+    <!-- Last Name -->
     <div class="form-group">
-      <label for="cv">CV (PDF/DOC/DOCX)</label>
-      <input type="file" id="cv" name="cv" (change)="onFileSelected($event)"
-             accept=".pdf,.doc,.docx,.odt" />
+      <label for="lastName">Last Name</label>
+      <input type="text" id="lastName" [(ngModel)]="lastName" name="lastName" required />
+      <div *ngIf="lastNameError" class="error-message">
+        Last name must be at least 3 characters.
+      </div>
+    </div>
+
+    <!-- Phone -->
+    <div class="form-group">
+      <label for="phone">Phone</label>
+      <input type="text" id="phone" [(ngModel)]="phone" name="phone" required />
+      <div *ngIf="phoneError" class="error-message">
+        Phone is required and must contain only digits.
+      </div>
+    </div>
+
+    <!-- Password -->
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" [(ngModel)]="password" name="password" required />
+    </div>
+
+    <!-- Confirm Password -->
+    <div class="form-group">
+      <label for="confirmPassword">Confirm Password</label>
+      <input type="password" id="confirmPassword" [(ngModel)]="confirmPassword" name="confirmPassword" required />
+      <div *ngIf="passwordMismatchError" class="error-message">
+        Passwords do not match.
+      </div>
+    </div>
+
+    <!-- CV Upload -->
+    <div class="form-group">
+      <label for="cv">Upload CV</label>
+      <input type="file" id="cv" (change)="onFileSelected($event)" accept=".pdf,.doc,.docx,.odt" />
+      <div *ngIf="fileRequiredError" class="error-message">CV file is required.</div>
       <div *ngIf="cvError" class="error-message">{{ cvError }}</div>
     </div>
 

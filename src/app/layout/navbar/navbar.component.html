@@ -1,0 +1,20 @@
+<nav class="sidebar">
+  <div class="sidebar-content">
+
+    <!-- Logo (opciono) -->
+   <!-- <div class="logo">
+      <img src="assets/OnlyBunsLogoIcon.png" class="nav-image" alt="Logo">
+    </div> -->
+
+    <!-- Dugme za login/logout -->
+    <ul class="nav-links">
+      <li *ngIf="!isAuthenticated">
+        <a routerLink="/login"><i class="fa fa-sign-in"></i> Sign In</a>
+      </li>
+      <li *ngIf="isAuthenticated">
+        <a (click)="logout()"><i class="fa fa-sign-out"></i> Sign Out</a>
+      </li>
+    </ul>
+
+  </div>
+</nav>

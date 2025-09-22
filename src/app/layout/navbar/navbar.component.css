@@ -1,0 +1,56 @@
+/* Sidebar container */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 220px;
+  background-color: #ffffff;
+  border-right: 1px solid #e9e9e9;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: Arial, sans-serif;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Logo */
+.logo {
+  margin-bottom: 2rem;
+}
+.nav-image {
+  height: 50px;
+}
+
+/* Links */
+.nav-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+.nav-links li {
+  margin: 1rem 0;
+}
+.nav-links li a {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: #262626;
+  font-size: 1.1rem;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  padding: 0.5rem;
+  border-radius: 8px;
+}
+.nav-links li a:hover {
+  background-color: #f2f2f2;
+  color: #26ace3;
+}
+
+/* Glavni sadržaj neka se pomeri udesno */
+.main-content {
+  margin-left: 220px;
+  padding: 1rem;
+}

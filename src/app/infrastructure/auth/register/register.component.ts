@@ -21,18 +21,28 @@ export class RegisterComponent {
   selectedFile: File | null = null;
   cvError = '';
 
+  private isBlank = (v: string | null | undefined) => !v || v.trim().length === 0;
   constructor(private auth: AuthService) {}
 
   get emailError() {
     return !this.email || !this.email.includes('@');
   }
 
-
   get passwordMismatchError() {
     return this.password !== this.confirmPassword;
   }
   get phoneError() {
   return !/^[0-9]*$/.test(this.phone);
+  }
+  get fileRequiredError(): boolean {
+    return !this.selectedFile;
+  }
+  get firstNameError(): boolean {
+    return this.isBlank(this.firstName) || this.firstName.trim().length < 3;
+  }
+
+  get lastNameError(): boolean {
+    return this.isBlank(this.lastName) || this.lastName.trim().length < 3;
   }
 
   onFileSelected(event: Event) {
@@ -60,13 +70,18 @@ export class RegisterComponent {
   }
 
   register(): void {
-    if (this.emailError || this.passwordMismatchError) {
-      this.errorMessage = 'Please fix the errors before submitting.';
-      this.successMessage = '';
-      return;
-    }
-    if (this.cvError) {
-      this.errorMessage = this.cvError;
+    const errors: string[] = [];
+
+    if (this.emailError) errors.push('Invalid email.');
+    if (this.passwordMismatchError) errors.push('Passwords do not match.');
+    if (this.firstNameError) errors.push('First name must be at least 3 characters.');
+    if (this.lastNameError) errors.push('Last name must be at least 3 characters.');
+    if (this.phoneError) errors.push('Phone is required and must contain digits only.');
+    if (this.fileRequiredError) errors.push('CV file is required.');
+    if (this.cvError) errors.push(this.cvError);
+
+    if (errors.length > 0) {
+      this.errorMessage = errors.join(' ');
       this.successMessage = '';
       return;
     }
@@ -90,6 +105,7 @@ export class RegisterComponent {
         if (response && response.message) {
           this.successMessage = response.message;
           this.errorMessage = '';
+          this.resetForm();
         }
       },
       (error) => {
@@ -101,5 +117,15 @@ export class RegisterComponent {
         this.successMessage = '';
       }
     );
+  }
+  private resetForm() {
+    this.email = '';
+    this.password = '';
+    this.confirmPassword = '';
+    this.firstName = '';
+    this.lastName = '';
+    this.phone = '';
+    this.selectedFile = null;
+    this.cvError = '';
   }
 }

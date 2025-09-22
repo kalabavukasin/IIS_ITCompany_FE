@@ -8,13 +8,17 @@ import { RegisterComponent } from './infrastructure/auth/register/register.compo
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { ActivationComponent } from './infrastructure/auth/activation/activation.component';
+import { HomeComponent } from './layout/home/home.component';
+import { NavbarComponent } from './layout/navbar/navbar.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     RegisterComponent,
-    ActivationComponent
+    ActivationComponent,
+    HomeComponent,
+    NavbarComponent
   ],
   imports: [
     BrowserModule,
