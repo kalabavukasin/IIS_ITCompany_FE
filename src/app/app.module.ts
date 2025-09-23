@@ -10,6 +10,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { ActivationComponent } from './infrastructure/auth/activation/activation.component';
 import { HomeComponent } from './layout/home/home.component';
 import { NavbarComponent } from './layout/navbar/navbar.component';
+import { CreateJobRequestComponent } from './job/create-job-request/create-job-request.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -18,13 +20,15 @@ import { NavbarComponent } from './layout/navbar/navbar.component';
     RegisterComponent,
     ActivationComponent,
     HomeComponent,
-    NavbarComponent
+    NavbarComponent,
+    CreateJobRequestComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
