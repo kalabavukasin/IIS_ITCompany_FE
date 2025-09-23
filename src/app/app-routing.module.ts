@@ -5,6 +5,8 @@ import { RegisterComponent } from './infrastructure/auth/register/register.compo
 import { ActivationComponent } from './infrastructure/auth/activation/activation.component';
 import { HomeComponent } from './layout/home/home.component';
 import { CreateJobRequestComponent } from './job/create-job-request/create-job-request.component';
+import { RequestsListComponent } from './job/requests-list/requests-list.component';
+import { RequestViewComponent } from './job/request-view/request-view.component';
 
 
 const routes: Routes = [
@@ -12,6 +14,8 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'activate', component: ActivationComponent },
   { path: 'jobs/create', component: CreateJobRequestComponent},
+  { path: 'requests', component: RequestsListComponent},
+  { path: 'request/:id', component: RequestViewComponent},
   { path: '', component: HomeComponent}
 ];
 

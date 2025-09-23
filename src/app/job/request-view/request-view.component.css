@@ -1,0 +1,117 @@
+.page { 
+    max-width: 980px; 
+    margin: 24px auto; 
+    padding: 0 16px; 
+}
+h2 { 
+    margin-bottom: 12px; 
+}
+.header { 
+    display: grid; 
+    grid-template-columns: 120px 1fr; 
+    gap: 16px; margin-bottom: 12px; 
+}
+.thumb { 
+    width: 120px; 
+    height: 120px; 
+    border: 1px dashed #9ca3af; 
+    border-radius: 8px; 
+}
+.title .name { 
+    font-size: 20px;
+    font-weight: 700; 
+    text-align: center; 
+}
+.title .desc { 
+    color:#555; 
+    line-height:1.35; max-height:6.8em; 
+    overflow:hidden; display:-webkit-box; 
+    -webkit-line-clamp:5; 
+    -webkit-box-orient:vertical; 
+    line-clamp: 3;
+}
+
+.grid { 
+  display: grid; 
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px; 
+  margin: 16px 0 24px;
+}
+.label { 
+    color:#6b7280; 
+    font-size: 12px; 
+}
+.value { 
+    font-weight: 600; 
+}
+
+.actions { 
+    display:flex; 
+    margin-top: 20%;
+    justify-content:center; 
+    gap: 16px; 
+}
+button { 
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb; 
+    cursor:pointer; 
+}
+.primary { 
+    background:#3b82f6; 
+    color:#fff; border:none; 
+}
+.danger { 
+    background:#fff; 
+    color:#111; 
+}
+.err { 
+    color:#ef4444; 
+}
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(17,24,39,.5);
+  z-index: 30;
+}
+.modal {
+  position: fixed; left: 50%; top: 20%;
+  transform: translateX(-50%);
+  width: min(560px, 92vw);
+  background: #fff; border-radius: 12px;
+  padding: 16px; z-index: 31;
+  box-shadow: 0 10px 30px rgba(0,0,0,.2);
+}
+.modal h3 { 
+    margin: 0 0 8px; 
+    text-align: center; 
+}
+.modal textarea {
+  width: 95%; 
+  resize: vertical;
+  border: 1px solid #e5e7eb; 
+  border-radius: 8px; 
+  padding: 10px;
+}
+.modal-actions {
+  margin-top: 12px; 
+  display: flex; 
+  justify-content: flex-end; 
+  gap: 8px;
+}
+.modal .primary { 
+    background:#3b82f6; 
+    color:#fff; 
+    border:none; 
+    padding: 10px 14px; 
+    border-radius: 8px; 
+}
+.modal .secondary { 
+    background:#e5e7eb; 
+    border:none; 
+    padding: 10px 14px; 
+    border-radius: 8px; 
+}
+.err { 
+    color:#ef4444; 
+    margin-top: 6px; 
+}

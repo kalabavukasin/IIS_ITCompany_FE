@@ -1,4 +1,5 @@
 export type Seniority = 'INTERN' | 'JUNIOR' | 'MID' | 'SENIOR' | 'LEAD' | 'PRINCIPAL';
+export type RequestionStatus = 'DRAFT'|'PENDING_APPROVAL'|'APPROVED'|'REJECTED'|'CLOSED';
 
 export interface CreateRequestion {
   positionInFirm: string;
@@ -9,8 +10,17 @@ export interface CreateRequestion {
   budget: number;
 }
 
-export interface RequestionResponse extends CreateRequestion {
+export interface RequestionResponse {
   id: number;
-  status: 'DRAFT' | 'PENDING_APPROVAL' | 'APPROVED' | 'REJECTED' | 'CLOSED';
+  name: string;
+  description: string;
+  location: string;
+  status: RequestionStatus;
   createdAt: string;
+  createdById: number;
+  createdByFullName: string;
+  positionInFirm?: string;
+  programmingLanguages?: string;
+  seniority?: string;
+  budget?: number;
 }

@@ -2,6 +2,10 @@
   <h2>Create job request</h2>
 
   <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="card">
+    <label>Name</label>
+    <input type="text" formControlName="name" />
+    <p class="err" *ngIf="hasError('name','required')">Name is required.</p>
+    <p class="err" *ngIf="hasError('name','minlength')">Name must be at least 2 characters.</p>
     <label>Position in firm</label>
     <input type="text" formControlName="positionInFirm" />
     <p class="err" *ngIf="hasError('positionInFirm','required')">Position is required.</p>

@@ -16,6 +16,7 @@ export class CreateJobRequestComponent implements OnInit {
   userId: number | null = null;
 
   form = this.fb.group({
+    name: ['', [Validators.required, Validators.minLength(2)]],
     positionInFirm: ['', [Validators.required, Validators.minLength(2)]],
     description: ['', [Validators.required, Validators.minLength(10)]],
     programmingLanguages: ['', [Validators.required]], // unosi: "Java, Spring"
@@ -32,9 +33,11 @@ export class CreateJobRequestComponent implements OnInit {
   ngOnInit(): void {
     const user = this.authService.getLoggedInUser();
     if (!user || user.role !== 'HR_MANAGER') {
-      console.log(user);
       this.router.navigate(['/']);
       return;
+    }
+    else{
+      this.userId = user.id;
     } 
   }
   submit() {
@@ -44,21 +47,24 @@ export class CreateJobRequestComponent implements OnInit {
       return;
     }
     this.submitting = true;
-    console.log(this.form.value);
-   // this.svc.create(this.form.value as any).subscribe({
-    //  next: _ => {
-    //    this.submitting = false;
-        //this.router.navigate(['/jobs']); // ili gde želiš nakon kreiranja
-   //   },
-    //  error: err => {
-    //    this.submitting = false;
-    //    this.serverError = err?.error?.message ?? 'Došlo je do greške pri čuvanju.';
-    //  }
-   // });
+    ///console.log(this.form.value);
+    if(this.userId !== null){
+      this.svc.create(this.form.value as any,this.userId).subscribe({
+        next: (response) => {
+          this.submitting = false;
+          console.log('Job request created:', response);
+          this.router.navigate(['/requests']);
+        },
+        error: err => {
+          this.submitting = false;
+          this.serverError = err?.error?.message ?? 'Došlo je do greške pri čuvanju.';
+        }
+      });
+    }
   }
 
   cancel() {
-    //this.router.navigate(['/jobs']); // ili na dashboard
+    this.router.navigate(['/requests']);
   }
 
   // helperi za prikaz grešaka ispod polja
