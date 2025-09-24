@@ -7,6 +7,8 @@ import { HomeComponent } from './layout/home/home.component';
 import { CreateJobRequestComponent } from './job/create-job-request/create-job-request.component';
 import { RequestsListComponent } from './job/requests-list/requests-list.component';
 import { RequestViewComponent } from './job/request-view/request-view.component';
+import { JobListComponent } from './job/job-list/job-list.component';
+import { JobViewComponent } from './job/job-view/job-view.component';
 
 
 const routes: Routes = [
@@ -16,6 +18,8 @@ const routes: Routes = [
   { path: 'jobs/create', component: CreateJobRequestComponent},
   { path: 'requests', component: RequestsListComponent},
   { path: 'request/:id', component: RequestViewComponent},
+  { path: 'jobs', component: JobListComponent},
+  { path: 'jobs/:id', component: JobViewComponent},
   { path: '', component: HomeComponent}
 ];
 

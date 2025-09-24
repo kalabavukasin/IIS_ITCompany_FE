@@ -46,7 +46,8 @@ h2 {
     font-weight: 500; 
 }
 .more { 
-    margin-top: 8px; 
+    margin-top:15px;
+    margin-left: 82%;
     display: inline-block; color: #2563eb; 
     cursor: pointer; 
 }

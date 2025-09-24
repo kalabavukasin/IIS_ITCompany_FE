@@ -14,6 +14,8 @@ import { CreateJobRequestComponent } from './job/create-job-request/create-job-r
 import { ReactiveFormsModule } from '@angular/forms';
 import { RequestsListComponent } from './job/requests-list/requests-list.component';
 import { RequestViewComponent } from './job/request-view/request-view.component';
+import { JobListComponent } from './job/job-list/job-list.component';
+import { JobViewComponent } from './job/job-view/job-view.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +27,9 @@ import { RequestViewComponent } from './job/request-view/request-view.component'
     NavbarComponent,
     CreateJobRequestComponent,
     RequestsListComponent,
-    RequestViewComponent
+    RequestViewComponent,
+    JobListComponent,
+    JobViewComponent
   ],
   imports: [
     BrowserModule,
