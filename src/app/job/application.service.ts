@@ -17,6 +17,30 @@ export interface ApplicationWithUserDTO {
   candidateName: string;
   openUntil?: string;
 }
+export interface ApplicationDetailsDto {
+  applicationId: number;
+  applicationStatus: string;
+  appliedAt?: string;
+
+  jobPostingId: number;
+  requestName: string;
+  requestDescription: string;
+  requestLocation?: string;
+  seniority?: string;
+  salary?: number;
+  technologies?: string;
+  createdBy?: string;
+  openUntil?: string;
+
+  candidateId: number;
+  candidateFullName: string;
+  candidateEmail?: string;
+  candidatePhone?: string;
+  cvDownloadUrl?: string;
+
+  currentPhase?: string;
+  phases: string[];
+}
 
 @Injectable({ providedIn: 'root' })
 export class ApplicationService {
@@ -38,4 +62,13 @@ export class ApplicationService {
       `${this.api}/cards`
     );
   }
+  getDetails(id: number) {
+  return this.http.get<ApplicationDetailsDto>(`${this.api}/${id}/details`);
+  }
+  //advance(id: number) {
+ //   return this.http.post<void>(`${this.api}/${id}/advance`, {});
+ // }
+ // refuse(id: number) {
+  //  return this.http.post<void>(`${this.api}/${id}/refuse`, {});
+  //}
 }

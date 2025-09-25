@@ -26,8 +26,6 @@ export class ApplicationsOverviewComponent implements OnInit {
   }
 
   more(a: ApplicationWithUserDTO) {
-    // npr. navigate na detalj aplikacije ili na oglas
-    // this.router.navigate(['/applications', a.applicationId]);
-    console.log(a);
+    this.router.navigate(['/applications', a.applicationId]);
   }
 }
