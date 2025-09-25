@@ -1,0 +1,71 @@
+<div class="page" *ngIf="!loading && !error && profile; else state">
+  <h2>Profile</h2>
+
+  <div class="info">
+    <div class="row">
+      <span class="label">Full name</span>
+      <span class="value">{{ profile.firstName }} {{ profile.lastName }}</span>
+    </div>
+    <div class="row">
+      <span class="label">Email address</span>
+      <span class="value">{{ profile.email }}</span>
+    </div>
+
+    <div class="row middle">
+      <span class="label">Phone number</span>
+      <span class="value" *ngIf="!showPhoneEdit">{{ profile.phone || '—' }}</span>
+      <form *ngIf="showPhoneEdit" [formGroup]="phoneForm" (ngSubmit)="savePhone()" class="inline">
+        <input formControlName="phone" placeholder="Phone number">
+        <button class="primary" type="submit" [disabled]="phoneForm.invalid">Save</button>
+        <button type="button" (click)="showPhoneEdit=false">Cancel</button>
+      </form>
+      <a class="link" *ngIf="!showPhoneEdit" (click)="showPhoneEdit=true">Update</a>
+    </div>
+
+    <div class="row middle">
+      <span class="label">Password</span>
+      <span class="value">********</span>
+      <form *ngIf="showPwdEdit" [formGroup]="pwdForm" (ngSubmit)="savePassword()" class="inline">
+        <input type="password" formControlName="oldPassword" placeholder="Old password">
+        <input type="password" formControlName="newPassword" placeholder="New password">
+        <button class="primary" type="submit" [disabled]="pwdForm.invalid">Save</button>
+        <button type="button" (click)="showPwdEdit=false">Cancel</button>
+      </form>
+      <a class="link" *ngIf="!showPwdEdit" (click)="showPwdEdit=true">Update</a>
+    </div>
+  </div>
+
+  <h3>My Applications</h3>
+  <div class="list">
+    <div class="card" *ngFor="let a of apps">
+      <div class="thumb"></div>
+
+      <div class="main">
+        <div class="name-row">
+          <div class="name">{{ a.requestName }}</div>
+        </div>
+
+        <div class="label small">Description</div>
+        <div class="desc">{{ a.requestDescription }}</div>
+
+        <a class="more" (click)="appMore(a)">More…</a>
+      </div>
+
+      <div class="side">
+        <div class="label right">Status</div>
+        <div class="value status">{{ a.status }}</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Job Offers</h3>
+  <div class="list empty-box">
+    <!-- za sada prazno -->
+    <p class="empty">No job offers yet.</p>
+  </div>
+</div>
+
+<ng-template #state>
+  <p *ngIf="loading">Loading…</p>
+  <p *ngIf="!loading && error" class="err">{{ error }}</p>
+</ng-template>

@@ -9,6 +9,8 @@ import { RequestsListComponent } from './job/requests-list/requests-list.compone
 import { RequestViewComponent } from './job/request-view/request-view.component';
 import { JobListComponent } from './job/job-list/job-list.component';
 import { JobViewComponent } from './job/job-view/job-view.component';
+import { UserProfileComponent } from './infrastructure/auth/user-profile/user-profile.component';
+import { ApplicationsOverviewComponent } from './job/applications-overview/applications-overview.component';
 
 
 const routes: Routes = [
@@ -20,6 +22,8 @@ const routes: Routes = [
   { path: 'request/:id', component: RequestViewComponent},
   { path: 'jobs', component: JobListComponent},
   { path: 'jobs/:id', component: JobViewComponent},
+  { path: 'profile', component: UserProfileComponent},
+  { path: 'applications/overview', component: ApplicationsOverviewComponent},
   { path: '', component: HomeComponent}
 ];
 
