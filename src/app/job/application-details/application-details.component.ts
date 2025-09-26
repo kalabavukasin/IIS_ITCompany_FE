@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { ApplicationDetailsDto, ApplicationService } from '../application.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from 'src/app/infrastructure/auth/auth.service';
 
 @Component({
   selector: 'app-application-details',
@@ -39,10 +40,14 @@ export class ApplicationDetailsComponent {
   minDateTime: string = '';
 
   flowCompleted = false;
+  userId: number | null = null;
 
-  constructor(private route: ActivatedRoute, private svc: ApplicationService) {}
+  constructor(private route: ActivatedRoute, private svc: ApplicationService, private auth: AuthService, private router: Router) {}
 
   ngOnInit(): void {
+    const u = this.auth.getLoggedInUser();
+    if (!u || (u.role !== 'HR_MANAGER' && u.role !== 'HIRING_MANAGER')) { this.router.navigate(['']); return; }
+    this.userId = u.id;
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.svc.getDetails(id).subscribe({
       next: d => { this.data = d; this.loading = false; /*console.log(d);*/ },
@@ -154,15 +159,18 @@ export class ApplicationDetailsComponent {
       activeUntil: this.testActiveUntil,
       type: this.testType
     });
-    this.svc.sendTestInvite(
+    if(this.userId != null){
+      this.svc.sendTestInvite(
       this.data.applicationId,
       this.testType,
       new Date(this.testActiveUntil).toISOString(),
+      this.userId,
       this.testFile
     ).subscribe({
-      next: _ => { this.testUploadOpen = false;},
+      next: _ => { this.testUploadOpen = false; this.reloadDetails()},
       error: err => { this.testFileError = 'Greška pri slanju testa.'; console.error(err); }
     });
+    }
     this.testUploadOpen = false;
   }
   // ====== 2) Refuse iz TEST faze ======
@@ -219,5 +227,20 @@ export class ApplicationDetailsComponent {
     this.flowCompleted = true; // sakrij dugmad i označi final
     // this.data.currentPhase = 'Ponuda';
   }
+  private reloadDetails() {
+  if (!this.data) return;
+  
+  this.loading = true;
+  this.svc.getDetails(this.data.applicationId).subscribe({
+    next: d => { 
+      this.data = d; 
+      this.loading = false;  
+    },
+    error: _ => { 
+      this.error = 'Failed to reload details.'; 
+      this.loading = false; 
+    }
+  });
+}
 
 }
