@@ -76,15 +76,124 @@
     <div class="section-title">Current phase</div>
     <div class="flow">
       <ng-container *ngFor="let p of data.phases; let i = index">
-        <div class="dot" [class.active]="p === data.currentPhase">{{ i }}</div>
+        <div class="phase">
+          <div class="phase-name">{{ p }}</div>
+          <div class="dot" 
+            [class.active]="p === data.currentPhase"
+            [class.stopped]="p === data.currentPhase && data.applicationStatus !== 'ACTIVE'"
+            [class.success]="p === 'Ponuda' && flowCompleted">{{ i }}</div>
+        </div>
         <div class="arrow" *ngIf="i < data.phases.length - 1">→</div>
       </ng-container>
     </div>
 
-    <div class="actions">
-      <button class="danger" (click)="refuse()">Refuse application</button>
-      <button class="primary" (click)="advance()">Proceed to next phase</button>
+    <div class="actions" *ngIf="data.applicationStatus === 'ACTIVE'">
+      <button class="danger" (click)="openRefuseModal()">Refuse application</button>
+      <button class="primary" (click)="onProceedClicked()">Proceed to next phase</button>
     </div>
+  </div>
+</div>
+<!-- ===== Modal 0: general REFUSE (preselekcija/intervju) ===== -->
+<div class="modal-backdrop" *ngIf="refuseOpen"></div>
+<div class="modal" *ngIf="refuseOpen" role="dialog" aria-modal="true" aria-labelledby="refuseTitle">
+  <h3 id="refuseTitle" class="modal-title">Type a reason</h3>
+  <textarea rows="6" [(ngModel)]="refuseReason" (blur)="refuseTouched = true" placeholder="Write the reason..."></textarea>
+  <div class="err" *ngIf="refuseTouched && !refuseReason.trim()">Reason is required.</div>
+  <div class="modal-actions">
+    <button class="danger" (click)="confirmRefuse()" [disabled]="!refuseReason.trim()">Refuse application</button>
+    <button class="secondary" (click)="cancelRefuse()">Cancel</button>
+  </div>
+</div>
+
+<!-- ===== Modal 1: PRESELEKCIJA -> TEST (upload testa) ===== -->
+<div class="modal-backdrop" *ngIf="testUploadOpen"></div>
+<div class="modal" *ngIf="testUploadOpen" role="dialog" aria-modal="true" aria-labelledby="testUploadTitle">
+  <h3 id="testUploadTitle" class="modal-title">Upload test</h3>
+
+  <label class="label">Upload test file</label>
+  <input type="file" (change)="onTestFileSelected($event)" />
+
+  <div class="err" *ngIf="testFileError">{{ testFileError }}</div>
+
+  <label class="label" style="margin-top:8px;">Active until</label>
+  <input type="datetime-local" [(ngModel)]="testActiveUntil" [min]="minDateTime" />
+
+  <label class="label" style="margin-top:8px;">Test type</label>
+  <select [(ngModel)]="testType">
+    <option value="CODING">Coding</option>
+    <option value="QUIZ">Quiz</option>
+    <option value="TAKE_HOME">Take Home</option>
+    <option value="LANGUAGE">Language</option>
+    <option value="OTHER">Other</option>
+  </select>
+
+
+  <div class="modal-actions">
+    <button class="primary" (click)="confirmProceedToTest()" 
+            [disabled]="!testFile || !testActiveUntil">Send test</button>
+    <button class="secondary" (click)="cancelTestUpload()">Cancel</button>
+  </div>
+</div>
+
+<!-- ===== Modal 2: REFUSE u fazi TEST (unos poena + refuse) ===== -->
+<div class="modal-backdrop" *ngIf="testRefuseOpen"></div>
+<div class="modal" *ngIf="testRefuseOpen" role="dialog" aria-modal="true" aria-labelledby="testRefuseTitle">
+  <h3 id="testRefuseTitle" class="modal-title">How many points did user score</h3>
+
+  <input type="number" min="0" class="input" [(ngModel)]="testScoreRefuse" placeholder="Points" />
+  <div class="err" *ngIf="testScoreRefuseTouched && (testScoreRefuse === null || testScoreRefuse === undefined)">Points are required.</div>
+
+  <div class="modal-actions">
+    <button class="danger" (click)="confirmRefuseFromTest()" 
+            (blur)="testScoreRefuseTouched = true"
+            [disabled]="testScoreRefuse === null || testScoreRefuse === undefined">
+      Refuse application
+    </button>
+    <button class="secondary" (click)="cancelTestRefuse()">Cancel</button>
+  </div>
+</div>
+
+<!-- ===== Modal 3: TEST -> INTERVJU ===== -->
+<div class="modal-backdrop" *ngIf="interviewOpen"></div>
+<div class="modal" *ngIf="interviewOpen" role="dialog" aria-modal="true" aria-labelledby="interviewTitle">
+  <h3 id="interviewTitle" class="modal-title">Proceed to interview phase</h3>
+
+  <label class="label">How many points did user score</label>
+  <input type="number" min="0" class="input" [(ngModel)]="testScoreProceed" />
+
+  <label class="label" style="margin-top:8px;">Select interview date and time</label>
+  <input type="datetime-local" [(ngModel)]="interviewDateTime" />
+
+  <label class="label" style="margin-top:8px;">Type interview location</label>
+  <input type="text" class="input" [(ngModel)]="interviewLocation" />
+
+  <label class="label" style="margin-top:8px;">Type of interview</label>
+  <select [(ngModel)]="interviewType">
+    <option value="ONSITE">On-site</option>
+    <option value="ONLINE">Online</option>
+    <option value="PHONE">Phone</option>
+  </select>
+
+  <label class="label" style="margin-top:8px;">Duration of interview (minutes)</label>
+  <input type="number" min="10" class="input" [(ngModel)]="interviewDuration" />
+
+  <div class="modal-actions">
+    <button class="primary" (click)="confirmProceedToInterview()"
+            [disabled]="!isInterviewFormValid()">Proceed to interview phase</button>
+    <button class="secondary" (click)="cancelInterview()">Cancel</button>
+  </div>
+</div>
+
+<!-- ===== Modal 4: INTERVJU -> PONUDA ===== -->
+<div class="modal-backdrop" *ngIf="offerOpen"></div>
+<div class="modal" *ngIf="offerOpen" role="dialog" aria-modal="true" aria-labelledby="offerTitle">
+  <h3 id="offerTitle" class="modal-title">Starting date</h3>
+
+  <input type="date" [(ngModel)]="offerStartDate" />
+
+  <div class="modal-actions">
+    <button class="primary" (click)="confirmMakeOffer()" [disabled]="!offerStartDate">Make an offer</button>
+    <button class="secondary" (click)="cancelOffer()">Cancel</button>
   </div>
 </div>
 

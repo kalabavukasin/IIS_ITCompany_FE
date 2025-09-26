@@ -8,6 +8,7 @@ export interface CreateRequestion {
   seniority: Seniority;
   location: string;
   budget: number;
+  pipelineWorkflowId: number;
 }
 
 export interface RequestionResponse {
@@ -23,4 +24,11 @@ export interface RequestionResponse {
   programmingLanguages?: string;
   seniority?: string;
   budget?: number;
+}
+export interface WorkflowSummary {
+  id: number;
+  name: string;
+  version: number;
+  active: boolean;
+  stageNames: string[];
 }

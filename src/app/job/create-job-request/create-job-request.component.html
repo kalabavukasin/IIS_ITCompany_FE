@@ -32,6 +32,18 @@
     <p class="err" *ngIf="hasError('budget','required')">Budget is required.</p>
     <p class="err" *ngIf="hasError('budget','min')">Budget can’t be negative.</p>
 
+    <label>Workflow (pipeline)</label>
+    <select formControlName="pipelineWorkflowId">
+      <option [ngValue]="null" disabled>-- choose workflow --</option>
+      <option *ngFor="let w of workflows" [value]="w.id">
+        {{ w.name }} (v{{ w.version }}) — {{ w.stageNames.length ? w.stageNames.join(', ') : '—' }}
+      </option>
+    </select>
+    <p class="err" *ngIf="hasError('pipelineWorkflowId','required')">
+      Workflow is required.
+    </p>
+    
+
     <div class="actions">
       <button type="button" class="secondary" (click)="cancel()">Cancel</button>
       <button type="submit" [disabled]="submitting || form.invalid">Create job request</button>

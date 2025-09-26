@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { Seniority } from '../model/requestion.model';
+import { Seniority, WorkflowSummary } from '../model/requestion.model';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { JobRequestService } from '../job-request.service';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/infrastructure/auth/auth.service';
+import { WorkflowService } from '../workflow.service';
 
 @Component({
   selector: 'app-create-job-request',
@@ -14,6 +15,7 @@ export class CreateJobRequestComponent implements OnInit {
 
   seniorities: Seniority[] = ['INTERN','JUNIOR','MID','SENIOR','LEAD','PRINCIPAL'];
   userId: number | null = null;
+  workflows: WorkflowSummary[] = [];
 
   form = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
@@ -23,12 +25,15 @@ export class CreateJobRequestComponent implements OnInit {
     seniority: ['JUNIOR' as Seniority, Validators.required],
     location: ['', [Validators.required]],
     budget: [null as number | null, [Validators.required, Validators.min(0)]],
+    pipelineWorkflowId: [null as number | null, [Validators.required]]
   });
 
   submitting = false;
   serverError = '';
 
-  constructor(private fb: FormBuilder, private svc: JobRequestService, private router: Router, private authService: AuthService) {}
+  constructor(private fb: FormBuilder, private svc: JobRequestService, private router: Router, private authService: AuthService,
+    private wfSvc: WorkflowService
+  ) {}
 
   ngOnInit(): void {
     const user = this.authService.getLoggedInUser();
@@ -38,7 +43,11 @@ export class CreateJobRequestComponent implements OnInit {
     }
     else{
       this.userId = user.id;
-    } 
+    }
+    this.wfSvc.list().subscribe({
+      next: (data) => (this.workflows = data),
+      error: () => (this.workflows = [])
+    }); 
   }
   submit() {
     this.serverError = '';

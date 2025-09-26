@@ -68,7 +68,14 @@ export class ApplicationService {
   //advance(id: number) {
  //   return this.http.post<void>(`${this.api}/${id}/advance`, {});
  // }
- // refuse(id: number) {
-  //  return this.http.post<void>(`${this.api}/${id}/refuse`, {});
-  //}
+  refuse(id: number, reason: string) {
+    return this.http.post<any>(`${this.api}/${id}/refuse`, {reason});
+  }
+  sendTestInvite(appId: number, type: string, activeUntilIso: string, file: File) {
+  const form = new FormData();
+  const data = { applicationId: appId, type, activeUntil: activeUntilIso }; // ISO string (OffsetDateTime)
+  form.append('data', new Blob([JSON.stringify(data)], { type: 'application/json' }));
+  form.append('file', file, file.name);
+  return this.http.post<any>('http://localhost:8080/api/tests/invite', form);
+}
 }
