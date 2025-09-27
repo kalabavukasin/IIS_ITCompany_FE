@@ -1,15 +1,16 @@
-import { Component } from '@angular/core';
-import { ApplicationDetailsDto, ApplicationService, InterviewScheduleDTO } from '../application.service';
+import { Component, OnInit } from '@angular/core';
+import { ApplicationDetailsDto, ApplicationService, EvaluationDetailsDto, InterviewScheduleDTO } from '../application.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'src/app/infrastructure/auth/auth.service';
 import { StaffMemberDTO, UserService } from 'src/app/infrastructure/user.service';
+import { TestDetailsDto } from '../model/requestion.model';
 
 @Component({
   selector: 'app-application-details',
   templateUrl: './application-details.component.html',
   styleUrls: ['./application-details.component.css']
 })
-export class ApplicationDetailsComponent {
+export class ApplicationDetailsComponent implements OnInit {
 
   data?: ApplicationDetailsDto;
   loading = true;
@@ -53,6 +54,15 @@ export class ApplicationDetailsComponent {
   observerIds: number[] = [];
   observerIdsSet = new Set<number>();
 
+  testLoading = false;
+  testError = '';
+  test: TestDetailsDto | null = null;
+
+  evalLoading = false;
+  evalError = '';
+  evaluation: EvaluationDetailsDto | null = null;
+  applicationId!: number;
+
   constructor(private route: ActivatedRoute, private svc: ApplicationService, private auth: AuthService, private router: Router,
     private users: UserService
   ) {}
@@ -62,12 +72,36 @@ export class ApplicationDetailsComponent {
     if (!u || (u.role !== 'HR_MANAGER' && u.role !== 'HIRING_MANAGER')) { this.router.navigate(['']); return; }
     this.userId = u.id;
     const id = Number(this.route.snapshot.paramMap.get('id'));
+    this.applicationId = id;
     this.svc.getDetails(id).subscribe({
       next: d => { this.data = d; this.loading = false; /*console.log(d);*/ },
       error: _ => { this.error = 'Failed to load details.'; this.loading = false; }
     });
+    this.loadTest(id);
+    this.loadEvaluation(id);
     this.minDateTime = this.getNowDateTimeLocal();
     this.minDate = this.getTodayDateLocal();
+  }
+  private loadTest(appId: number) {
+    this.testLoading = true; this.testError = '';
+    this.svc.getTestDetailsByApplication(appId).subscribe({
+      next: (t) => { this.test = t; this.testLoading = false; },
+      error: (e) => { this.testError = e?.error?.message || 'Failed to load test.'; this.testLoading = false; }
+    });
+  }
+
+  private loadEvaluation(appId: number) {
+    this.evalLoading = true; this.evalError = '';
+    this.svc.getEvaluationDetailsByApplication(appId).subscribe({
+      next: (ev) => { this.evaluation = ev; this.evalLoading = false; },
+      error: (e) => { this.evalError = e?.error?.message || 'Failed to load evaluation.'; this.evalLoading = false; }
+    });
+  }
+  canOpenTestLink(): boolean {
+    if (!this.test) return false;
+    // Ako imaš polje inviteStatus/deadline kao u ApplicationView HTML-u:
+    const active = this.test.inviteStatus === 'COMPLETED';
+    return active
   }
   isObserverSelected(id: number): boolean {
     return this.observerIdsSet.has(id);
@@ -215,6 +249,7 @@ export class ApplicationDetailsComponent {
       error: err => { this.testFileError = 'Greška pri slanju testa.'; console.error(err); }
     });
     }
+    this.loadTest(this.applicationId);
     this.testUploadOpen = false;
   }
   // ====== 2) Refuse iz TEST faze ======
@@ -241,6 +276,7 @@ export class ApplicationDetailsComponent {
           this.testRefuseOpen = false;
 
           this.reloadDetails();
+          this.loadTest(this.applicationId);
         },
         error: (err) => {
           this.loading = false;
@@ -315,6 +351,7 @@ export class ApplicationDetailsComponent {
       next: _ => {
         this.interviewOpen = false;
         this.reloadDetails();
+        this.loadTest(this.applicationId);
       },
       error: err => { console.error(err); }
     });

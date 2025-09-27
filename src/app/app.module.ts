@@ -20,6 +20,7 @@ import { UserProfileComponent } from './infrastructure/auth/user-profile/user-pr
 import { ApplicationsOverviewComponent } from './job/applications-overview/applications-overview.component';
 import { ApplicationDetailsComponent } from './job/application-details/application-details.component';
 import { ApplicationViewComponent } from './job/application-view/application-view.component';
+import { InterviewShowComponent } from './job/interview-show/interview-show.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,8 @@ import { ApplicationViewComponent } from './job/application-view/application-vie
     UserProfileComponent,
     ApplicationsOverviewComponent,
     ApplicationDetailsComponent,
-    ApplicationViewComponent
+    ApplicationViewComponent,
+    InterviewShowComponent
   ],
   imports: [
     BrowserModule,

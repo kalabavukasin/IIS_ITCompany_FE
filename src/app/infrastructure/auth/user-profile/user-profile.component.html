@@ -59,9 +59,45 @@
   </div>
 
   <h3>Job Offers</h3>
-  <div class="list empty-box">
-    <!-- za sada prazno -->
-    <p class="empty">No job offers yet.</p>
+  <div class="list">
+  <div class="card" *ngFor="let o of offers">
+    <div class="thumb"></div>
+
+    <div class="main">
+      <div class="name">{{ o.requestName }}</div>
+
+      <div class="label small">Description</div>
+      <div class="desc">{{ o.requestDescription }}</div>
+    </div>
+
+    <div class="side">
+      <div class="row">
+        <div class="label">Status</div>
+        <div class="value">{{ o.status }}</div>
+      </div>
+      <div class="row">
+        <div class="label">Start date</div>
+        <div class="value">{{ o.startDate | date:'dd.MM.yyyy.' }}</div>
+      </div>
+
+      <a class="more" *ngIf="isAcceptEnabled(o)" (click)="openAccept(o)">Accept</a>
+    </div>
+  </div>
+
+  <p class="empty" *ngIf="offers.length === 0">No job offers in the last 30 days.</p>
+</div>
+</div>
+<!-- MODAL -->
+<div class="modal-backdrop" *ngIf="showAcceptModal">
+  <div class="modal">
+    <h3>Job offer</h3>
+    <p>Da li želite da prihvatite ili odbijete ponudu za: <b>{{ offerToAccept?.requestName }}</b>?</p>
+
+    <div class="modal-actions">
+      <button (click)="confirmAccept()">Accept</button>
+      <button class="danger" (click)="confirmDecline()">Decline</button>
+      <button class="secondary" (click)="cancelAccept()">Cancel</button>
+    </div>
   </div>
 </div>
 

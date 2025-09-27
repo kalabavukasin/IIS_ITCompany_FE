@@ -61,6 +61,12 @@ export interface TestRefuseDTO {
   score: number;
   reason: string;
 }
+export interface EvaluationDetailsDto {
+  id: number;
+  grade: string;
+  comment?: string;
+  createdAt: string;
+}
 
 @Injectable({ providedIn: 'root' })
 export class ApplicationService {
@@ -122,4 +128,9 @@ export class ApplicationService {
     form.append('file', file, file.name);
     return this.http.patch<any>(`http://localhost:8080/api/tests/${testInviteId}/file`, form);
   }
+  getEvaluationDetailsByApplication(applicationId: number) {
+    return this.http.get<EvaluationDetailsDto | null>(
+      `http://localhost:8080/api/evaluations/by-application/${applicationId}/details`
+    );
   }
+}

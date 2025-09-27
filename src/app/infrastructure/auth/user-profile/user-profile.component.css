@@ -119,3 +119,34 @@ button{
     padding:6px 12px;
     cursor:pointer
 }
+/* disabled dugme/link */
+.more.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* modal */
+.modal-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.35);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 50;
+}
+.modal {
+  width: 520px; max-width: 92vw;
+  background: #fff; border-radius: 12px;
+  padding: 16px; box-shadow: 0 10px 30px rgba(0,0,0,.2);
+}
+.modal h3 { margin: 0 0 8px; }
+.modal-actions {
+  display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px;
+}
+.modal-actions button {
+  padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 8px; background: #111827; color: #fff;
+}
+.modal-actions button.secondary { background: #fff; color: #111827; }
+.modal-actions button.danger {
+  background: #b91c1c;
+  color: #fff;
+  border-color: #ef4444;
+}

@@ -22,6 +22,14 @@ export interface StaffMemberDTO {
   fullName: string;
   role: string; // HR_MANAGER | HIRING_MANAGER | INTERVIEWER
 }
+export interface OfferCardDTO {
+  offerId: number;
+  status: string;
+  startDate: string;           // ISO datetime (OffsetDateTime)
+  applicationId: number;
+  requestName: string;
+  requestDescription: string;
+}
 
 export interface PhoneUpdate { phone: string; }
 export interface ChangePassword { oldPassword: string; newPassword: string; }
@@ -53,4 +61,19 @@ export class UserService {
     return this.http.get<StaffMemberDTO[]>(`${this.api}/staff`);
   }
 
+  myRecentOffers(candidateId: number, days = 30) {
+    return this.http.get<OfferCardDTO[]>(
+      `http://localhost:8080/api/offers/${candidateId}/recent`,
+      { params: { days } as any }
+    );
+  }
+  acceptOffer(offerId: number, userId: number) {
+    return this.http.post<OfferCardDTO>(
+      `http://localhost:8080/api/offers/${offerId}/accept`,
+      { userId }
+    );
+  }
+  declineOffer(offerId: number, userId: number) {
+    return this.http.post<OfferCardDTO>(`http://localhost:8080/api/offers/${offerId}/decline`, { userId });
+  }
 }

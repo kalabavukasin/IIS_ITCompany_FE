@@ -80,3 +80,19 @@ button.danger{ background:#fee2e2; color:#991b1b; border-color:#fecaca; }
   gap: 8px;
   font-size: 14px;
 }
+/* sekcije ispod dugmića */
+.test-section {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 12px;
+  background: #fff;
+  margin-top: 16px;
+}
+.section-title { font-weight: 600; margin-bottom: 8px; }
+.test-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.test-grid .fullrow { grid-column: 1 / -1; }
+.muted { color: #6b7280; }

@@ -92,6 +92,84 @@
       <button class="primary" (click)="onProceedClicked()">Proceed to next phase</button>
     </div>
   </div>
+  <!-- === TEST (read-only) === -->
+<div class="test-section">
+  <div class="section-title">Test</div>
+
+  <div *ngIf="testLoading">Učitavam test…</div>
+  <div *ngIf="!testLoading && testError" class="err">{{ testError }}</div>
+
+  <ng-container *ngIf="!testLoading && !testError">
+    <!-- Nema testa -->
+    <div *ngIf="!test" class="muted">Test ne postoji za ovu aplikaciju.</div>
+
+    <!-- Postoji test -->
+    <div *ngIf="test" class="test-grid">
+      <div>
+        <span class="label">Type</span>
+        <div class="value">{{ test.type || '—' }}</div>
+      </div>
+      <div>
+        <span class="label">Invite status</span>
+        <div class="value">{{ test.inviteStatus || '—' }}</div>
+      </div>
+      <div>
+        <span class="label">Deadline</span>
+        <div class="value">{{ test.deadline ? (test.deadline | date:'dd.MM.yyyy. HH:mm') : '—' }}</div>
+      </div>
+      <div>
+        <span class="label">Score</span>
+        <div class="value">{{ (test.score ?? '—') }}</div>
+      </div>
+      <div>
+        <span class="label">Passed</span>
+        <div class="value">
+          <ng-container *ngIf="test.passed === true">Yes</ng-container>
+          <ng-container *ngIf="test.passed === false">No</ng-container>
+          <ng-container *ngIf="test.passed === null || test.passed === undefined">—</ng-container>
+        </div>
+      </div>
+      <div class="fullrow" *ngIf="test.link">
+        <span class="label">Link</span>
+        <div class="value" *ngIf="canOpenTestLink(); else disabledLink">
+          <a [href]="test.link" target="_blank" rel="noopener">Open test</a>
+        </div>
+        <ng-template #disabledLink>
+          <div class="value muted">Link disabled — invite not active</div>
+        </ng-template>
+      </div>
+    </div>
+  </ng-container>
+</div>
+
+<!-- === EVALUATION === -->
+<div class="test-section" style="margin-top:16px;">
+  <div class="section-title">Evaluation</div>
+
+  <div *ngIf="evalLoading">Učitavam evaluaciju…</div>
+  <div *ngIf="!evalLoading && evalError" class="err">{{ evalError }}</div>
+
+  <ng-container *ngIf="!evalLoading && !evalError">
+    <!-- Nema evaluacije -->
+    <div *ngIf="!evaluation" class="muted">Evaluacija ne postoji za ovu aplikaciju.</div>
+
+    <!-- Postoji evaluacija -->
+    <div *ngIf="evaluation as ev" class="test-grid">
+      <div>
+        <span class="label">Final grade</span>
+        <div class="value">{{ ev.grade || '—' }}</div>
+      </div>
+      <div>
+        <span class="label">Created at</span>
+        <div class="value">{{ ev.createdAt ? (ev.createdAt | date:'dd.MM.yyyy. HH:mm') : '—' }}</div>
+      </div>
+      <div class="fullrow" *ngIf="ev.comment">
+        <span class="label">Comment</span>
+        <div class="value">{{ ev.comment }}</div>
+      </div>
+    </div>
+  </ng-container>
+</div>
 </div>
 <!-- ===== Modal 0: general REFUSE (preselekcija/intervju) ===== -->
 <div class="modal-backdrop" *ngIf="refuseOpen"></div>
