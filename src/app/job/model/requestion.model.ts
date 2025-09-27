@@ -32,3 +32,21 @@ export interface WorkflowSummary {
   active: boolean;
   stageNames: string[];
 }
+export interface TestDetailsDto {
+  id: number;
+  type?: string;
+  inviteStatus?: string;
+  deadline?: string;
+  link?: string;
+
+  passed?: boolean | null;
+  score?: number | null;
+}
+export interface InterviewDetailsDto {
+  id?: number;
+  type?: string;
+  scheduledAt?: string;
+  durationMinutes?: number;
+  location?: string;
+  status?: string;
+}

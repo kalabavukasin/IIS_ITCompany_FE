@@ -1,0 +1,161 @@
+<div class="page" *ngIf="!loading && !error && data; else state">
+  <h2>Application Details</h2>
+
+  <div class="header">
+    <div class="thumb"></div>
+    <div class="title">
+      <div class="name">{{ data.requestName }}</div>
+      <div class="desc">{{ data.requestDescription }}</div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div>
+      <span class="label">Seniority level</span>
+      <div class="value">{{ data.seniority || '—' }}</div>
+    </div>
+    <div>
+      <span class="label">Location</span>
+      <div class="value">{{ data.requestLocation || '—' }}</div>
+    </div>
+    <div>
+      <span class="label">Technologies</span>
+      <div class="value">{{ data.technologies || '—' }}</div>
+    </div>
+    <div>
+      <span class="label">Open until</span>
+      <div class="value">{{ data.openUntil | date:'dd.MM.yyyy.' }}</div>
+    </div>
+    <div>
+      <span class="label">Salary</span>
+      <div class="value">{{ salaryFormatted() }}</div>
+    </div>
+    <div>
+      <span class="label">Created by</span>
+      <div class="value">{{ data.createdBy || '—' }}</div>
+    </div>
+  </div>
+
+  <div class="info-cards">
+    <div class="info-card">
+      <div class="ic-label">Application status</div>
+      <div class="ic-value">{{ data.applicationStatus }}</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-label">Applied at</div>
+      <div class="ic-value">{{ data.appliedAt | date:'dd.MM.yyyy. HH:mm' }}</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-label">Current phase</div>
+      <div class="ic-value">{{ data.currentPhase || '—' }}</div>
+    </div>
+  </div>
+  <div *ngIf="data?.comment" style="margin:16px 0 4px; text-align:center;">
+    <div class="label" style="display:block; margin-bottom:6px;">Comment</div>
+    <div class="comment" style="font-style: italic;">
+        {{ data.comment }}
+    </div>
+   </div>
+   <!-- TEST sekcija -->
+        <div class="test-section">
+            <div class="section-title">Test</div>
+
+            <div *ngIf="testLoading">Učitavam test…</div>
+            <div *ngIf="!testLoading && testError" class="err">{{ testError }}</div>
+
+            <ng-container *ngIf="!testLoading && !testError">
+                <!-- Nema testa -->
+                <div *ngIf="!test" class="muted">Test ne postoji za ovu aplikaciju.</div>
+
+                <!-- Postoji test -->
+                <div *ngIf="test" class="test-grid">
+                <div>
+                    <span class="label">Type</span>
+                    <div class="value">{{ test.type || '—' }}</div>
+                </div>
+                <div>
+                    <span class="label">Invite status</span>
+                    <div class="value">{{ test.inviteStatus || '—' }}</div>
+                </div>
+                <div>
+                    <span class="label">Deadline</span>
+                    <div class="value">
+                    {{ test.deadline ? (test.deadline | date:'dd.MM.yyyy. HH:mm') : '—' }}
+                    </div>
+                </div>
+                <div>
+                    <span class="label">Score</span>
+                    <div class="value">{{ (test.score ?? '—') }}</div>
+                </div>
+                <div>
+                    <span class="label">Passed</span>
+                    <div class="value">
+                    <ng-container *ngIf="test.passed === true">Yes</ng-container>
+                    <ng-container *ngIf="test.passed === false">No</ng-container>
+                    <ng-container *ngIf="test.passed === null || test.passed === undefined">—</ng-container>
+                    </div>
+                </div>
+                <div class="fullrow" *ngIf="test.link">
+                    <span class="label">Link</span>
+                    <div class="value" *ngIf="canOpenTestLink(); else disabledLink">
+                        <a [href]="test.link" target="_blank" rel="noopener">Open test</a></div>
+                    </div>
+                    <ng-template #disabledLink>
+                        <div class="value muted">
+                        Link disabled — invite not active
+                        </div>
+                    </ng-template>
+                </div>
+                <div class="fullrow" *ngIf="canUploadTest()">
+                    <span class="label">Upload test</span>
+                    <div class="value">
+                        <input type="file" (change)="onSolutionSelected($event)" />
+                        <button class="primary" (click)="replaceTestFile()" [disabled]="!newTestFile || !!newTestFileError">Upload</button>
+                        <div *ngIf="newTestFileError" class="err" style="margin-top:6px;">
+                            {{ newTestFileError }}
+                        </div>
+                    </div>
+                </div>
+        </ng-container>
+    </div>
+    <div class="test-section" style="margin-top:16px;">
+        <div class="section-title">Interview</div>
+
+        <div *ngIf="interviewLoading">Učitavam intervju…</div>
+        <div *ngIf="!interviewLoading && interviewError" class="err">{{ interviewError }}</div>
+
+        <ng-container *ngIf="!interviewLoading && !interviewError">
+            <div *ngIf="!interview" class="muted">Nema intervjua za ovu aplikaciju.</div>
+
+            <div *ngIf="interview as iv" class="test-grid">
+            <div>
+                <span class="label">Type</span>
+                <div class="value">{{ iv.type || '—' }}</div>
+            </div>
+            <div>
+                <span class="label">Status</span>
+                <div class="value">{{ iv.status || '—' }}</div>
+            </div>
+            <div>
+                <span class="label">Scheduled at</span>
+                <div class="value">
+                {{ iv.scheduledAt ? (iv.scheduledAt | date:'dd.MM.yyyy. HH:mm') : '—' }}
+                </div>
+            </div>
+            <div>
+                <span class="label">Location</span>
+                <div class="value">{{ iv.location || '—' }}</div>
+            </div>
+            <div>
+                <span class="label">Duration</span>
+                <div class="value">{{ iv.durationMinutes ? (iv.durationMinutes + ' min') : '—' }}</div>
+            </div>
+            </div>
+        </ng-container>
+    </div>
+</div>
+
+<ng-template #state>
+  <p *ngIf="loading">Loading…</p>
+  <p *ngIf="!loading && error" class="err">{{ error }}</p>
+</ng-template>

@@ -77,9 +77,7 @@ export class UserProfileComponent implements OnInit {
   }
 
   appMore(a: ApplicationCardDTO) {
-    // vodi na detalj aplikacije (kada ga napraviš)
-    // this.router.navigate(['/applications', a.id]);
-    console.log('More...', a);
+    this.router.navigate(['/viewApplication/', a.applicationId]);
   }
 
 }

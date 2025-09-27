@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient,HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { JobPostingCard, JobPostingDetail } from './model/job-posting.model';
+import { InterviewDetailsDto, TestDetailsDto } from './model/requestion.model';
 
 export interface ApplicationWithUserDTO {
   applicationId: number;
@@ -40,6 +41,7 @@ export interface ApplicationDetailsDto {
 
   currentPhase?: string;
   phases: string[];
+  comment?: string;
 }
 export interface InterviewScheduleDTO {
   applicationId: number;
@@ -105,4 +107,19 @@ export class ApplicationService {
   refuseAfterTest(dto: TestRefuseDTO, applicationId: number) {
     return this.http.post<void>(`http://localhost:8080/api/tests/${applicationId}/refuse-with-score`, dto);
   }
-}
+  getTestDetailsByApplication(applicationId: number) {
+    return this.http.get<TestDetailsDto | null>(
+      `http://localhost:8080/api/tests/by-application/${applicationId}/details`
+    );
+  }
+  getInterviewDetailsByApplication(applicationId: number) {
+    return this.http.get<InterviewDetailsDto | null>(
+      `http://localhost:8080/api/interviews/by-application/${applicationId}/details`
+    );
+  }
+  updateTestFile(testInviteId: number, file: File) {
+    const form = new FormData();
+    form.append('file', file, file.name);
+    return this.http.patch<any>(`http://localhost:8080/api/tests/${testInviteId}/file`, form);
+  }
+  }

@@ -12,6 +12,7 @@ import { JobViewComponent } from './job/job-view/job-view.component';
 import { UserProfileComponent } from './infrastructure/auth/user-profile/user-profile.component';
 import { ApplicationsOverviewComponent } from './job/applications-overview/applications-overview.component';
 import { ApplicationDetailsComponent } from './job/application-details/application-details.component';
+import { ApplicationViewComponent } from './job/application-view/application-view.component';
 
 
 const routes: Routes = [
@@ -26,6 +27,7 @@ const routes: Routes = [
   { path: 'profile', component: UserProfileComponent},
   { path: 'applications/overview', component: ApplicationsOverviewComponent},
   { path: 'applications/:id', component: ApplicationDetailsComponent },
+  { path: 'viewApplication/:id', component: ApplicationViewComponent },
   { path: '', component: HomeComponent}
 ];
 
