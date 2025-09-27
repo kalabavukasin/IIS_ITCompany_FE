@@ -17,6 +17,11 @@ export interface ApplicationCardDTO {
   requestName: string;
   requestDescription: string;
 }
+export interface StaffMemberDTO {
+  id: number;
+  fullName: string;
+  role: string; // HR_MANAGER | HIRING_MANAGER | INTERVIEWER
+}
 
 export interface PhoneUpdate { phone: string; }
 export interface ChangePassword { oldPassword: string; newPassword: string; }
@@ -40,9 +45,12 @@ export class UserService {
   }
   
   myApplicationCards(candidateId: number) {
-  return this.http.get<ApplicationCardDTO[]>(
-    `http://localhost:8080/api/applications/${candidateId}/cards`
-  );
-}
+    return this.http.get<ApplicationCardDTO[]>(
+      `http://localhost:8080/api/applications/${candidateId}/cards`
+    );
+  }
+  getStaffMembers(): Observable<StaffMemberDTO[]> {
+    return this.http.get<StaffMemberDTO[]>(`${this.api}/staff`);
+  }
 
 }

@@ -81,13 +81,13 @@
           <div class="dot" 
             [class.active]="p === data.currentPhase"
             [class.stopped]="p === data.currentPhase && data.applicationStatus !== 'ACTIVE'"
-            [class.success]="p === 'Ponuda' && flowCompleted">{{ i }}</div>
+            [class.success]="p === 'Ponuda' && data.currentPhase === 'Ponuda'">{{ i }}</div>
         </div>
         <div class="arrow" *ngIf="i < data.phases.length - 1">→</div>
       </ng-container>
     </div>
 
-    <div class="actions" *ngIf="data.applicationStatus === 'ACTIVE'">
+    <div class="actions" *ngIf="data.applicationStatus === 'ACTIVE' && data.currentPhase !== 'Ponuda'">
       <button class="danger" (click)="openRefuseModal()">Refuse application</button>
       <button class="primary" (click)="onProceedClicked()">Proceed to next phase</button>
     </div>
@@ -138,15 +138,30 @@
 <!-- ===== Modal 2: REFUSE u fazi TEST (unos poena + refuse) ===== -->
 <div class="modal-backdrop" *ngIf="testRefuseOpen"></div>
 <div class="modal" *ngIf="testRefuseOpen" role="dialog" aria-modal="true" aria-labelledby="testRefuseTitle">
-  <h3 id="testRefuseTitle" class="modal-title">How many points did user score</h3>
+  <h3 id="testRefuseTitle" class="modal-title">Refuse nakon testa</h3>
 
-  <input type="number" min="0" class="input" [(ngModel)]="testScoreRefuse" placeholder="Points" />
-  <div class="err" *ngIf="testScoreRefuseTouched && (testScoreRefuse === null || testScoreRefuse === undefined)">Points are required.</div>
+  <label class="label">Bodovi na testu</label>
+  <input type="number" min="0" class="input"
+         [(ngModel)]="testScoreRefuse"
+         (blur)="testScoreRefuseTouched = true"
+         placeholder="Unesi broj bodova" />
+  <div class="err" *ngIf="testScoreRefuseTouched && (testScoreRefuse === null || testScoreRefuse === undefined)">
+    Bodovi su obavezni.
+  </div>
+
+  <label class="label" style="margin-top:8px;">Komentar</label>
+  <textarea rows="5"
+            [(ngModel)]="testRefuseReason"
+            (blur)="testRefuseReasonTouched = true"
+            placeholder="Navedite razlog odbijanja…"></textarea>
+  <div class="err" *ngIf="testRefuseReasonTouched && !testRefuseReason?.trim()">
+    Komentar je obavezan.
+  </div>
 
   <div class="modal-actions">
-    <button class="danger" (click)="confirmRefuseFromTest()" 
-            (blur)="testScoreRefuseTouched = true"
-            [disabled]="testScoreRefuse === null || testScoreRefuse === undefined">
+    <button class="danger"
+            (click)="confirmRefuseFromTest()"
+            [disabled]="(testScoreRefuse === null || testScoreRefuse === undefined) || !testRefuseReason?.trim()">
       Refuse application
     </button>
     <button class="secondary" (click)="cancelTestRefuse()">Cancel</button>
@@ -158,24 +173,47 @@
 <div class="modal" *ngIf="interviewOpen" role="dialog" aria-modal="true" aria-labelledby="interviewTitle">
   <h3 id="interviewTitle" class="modal-title">Proceed to interview phase</h3>
 
-  <label class="label">How many points did user score</label>
-  <input type="number" min="0" class="input" [(ngModel)]="testScoreProceed" />
+  <ng-container *ngIf="isFromTest()">
+    <label class="label">How many points did user score</label>
+    <input type="number" min="0" class="input" [(ngModel)]="testScoreProceed" />
+  </ng-container>
 
   <label class="label" style="margin-top:8px;">Select interview date and time</label>
-  <input type="datetime-local" [(ngModel)]="interviewDateTime" />
+  <input type="datetime-local" [(ngModel)]="interviewDateTime" [min]="minDateTime"/>
 
   <label class="label" style="margin-top:8px;">Type interview location</label>
   <input type="text" class="input" [(ngModel)]="interviewLocation" />
 
   <label class="label" style="margin-top:8px;">Type of interview</label>
   <select [(ngModel)]="interviewType">
-    <option value="ONSITE">On-site</option>
-    <option value="ONLINE">Online</option>
-    <option value="PHONE">Phone</option>
+    <option value="HR_SCREEN">HR screen</option>
+    <option value="TECHNICAL">Technical</option>
+    <option value="SYSTEM_DESIGN">System design</option>
+    <option value="MANAGERIAL">Managerial</option>
+    <option value="FINAL">Final</option>
   </select>
 
   <label class="label" style="margin-top:8px;">Duration of interview (minutes)</label>
   <input type="number" min="10" class="input" [(ngModel)]="interviewDuration" />
+
+  <label class="label" style="margin-top:8px;">Select interviewer</label>
+  <select [(ngModel)]="interviewerId">
+    <option [ngValue]="null" disabled>Select interviewer…</option>
+    <option *ngFor="let m of staffInterviewers" [ngValue]="m.id">
+      {{ m.fullName }} — {{ m.role }}
+    </option>
+  </select>
+
+  <!-- Observers (čekboks; samo HR_MANAGER i HIRING_MANAGER) -->
+  <label class="label" style="margin-top:8px;">Select observers (optional)</label>
+  <div class="observer-list">
+    <label class="chk" *ngFor="let m of staffObservers">
+      <input type="checkbox"
+            [checked]="isObserverSelected(m.id)"
+            (change)="onObserverChange(m.id, $event)">
+      <span>{{ m.fullName }} — {{ m.role }}</span>
+    </label>
+  </div>
 
   <div class="modal-actions">
     <button class="primary" (click)="confirmProceedToInterview()"
@@ -189,7 +227,7 @@
 <div class="modal" *ngIf="offerOpen" role="dialog" aria-modal="true" aria-labelledby="offerTitle">
   <h3 id="offerTitle" class="modal-title">Starting date</h3>
 
-  <input type="date" [(ngModel)]="offerStartDate" />
+  <input type="date" [(ngModel)]="offerStartDate" [min]="minDate"/>
 
   <div class="modal-actions">
     <button class="primary" (click)="confirmMakeOffer()" [disabled]="!offerStartDate">Make an offer</button>

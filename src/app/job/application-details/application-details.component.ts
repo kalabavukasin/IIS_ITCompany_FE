@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { ApplicationDetailsDto, ApplicationService } from '../application.service';
+import { ApplicationDetailsDto, ApplicationService, InterviewScheduleDTO } from '../application.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'src/app/infrastructure/auth/auth.service';
+import { StaffMemberDTO, UserService } from 'src/app/infrastructure/user.service';
 
 @Component({
   selector: 'app-application-details',
@@ -26,23 +27,35 @@ export class ApplicationDetailsComponent {
   testRefuseOpen = false;
   testScoreRefuse: number | null = null;
   testScoreRefuseTouched = false;
+  testRefuseReason: string | null = null;
+  testRefuseReasonTouched = false;
 
   interviewOpen = false;
   testScoreProceed: number | null = null;
   interviewDateTime = '';
   interviewLocation = '';
-  interviewType: 'ONSITE' | 'ONLINE' | 'PHONE' = 'ONSITE';
+  interviewType: 'HR_SCREEN' | 'TECHNICAL' | 'SYSTEM_DESIGN' | 'MANAGERIAL' | 'FINAL' = 'HR_SCREEN';
   interviewDuration: number | null = null;
   testType: string = '';
 
   offerOpen = false;
   offerStartDate = '';
   minDateTime: string = '';
+  minDate: string = '';
 
   flowCompleted = false;
   userId: number | null = null;
 
-  constructor(private route: ActivatedRoute, private svc: ApplicationService, private auth: AuthService, private router: Router) {}
+  staff: StaffMemberDTO[] = [];
+  staffInterviewers: StaffMemberDTO[] = [];
+  staffObservers: StaffMemberDTO[] = [];
+  interviewerId: number | null = null;
+  observerIds: number[] = [];
+  observerIdsSet = new Set<number>();
+
+  constructor(private route: ActivatedRoute, private svc: ApplicationService, private auth: AuthService, private router: Router,
+    private users: UserService
+  ) {}
 
   ngOnInit(): void {
     const u = this.auth.getLoggedInUser();
@@ -54,6 +67,18 @@ export class ApplicationDetailsComponent {
       error: _ => { this.error = 'Failed to load details.'; this.loading = false; }
     });
     this.minDateTime = this.getNowDateTimeLocal();
+    this.minDate = this.getTodayDateLocal();
+  }
+  isObserverSelected(id: number): boolean {
+    return this.observerIdsSet.has(id);
+  }
+  toggleObserver(id: number, checked: boolean) {
+    if (checked) this.observerIdsSet.add(id);
+    else this.observerIdsSet.delete(id);
+  }
+  onObserverChange(id: number, ev: Event) {
+    const checked = (ev.target as HTMLInputElement)?.checked ?? false;
+    this.toggleObserver(id, checked);
   }
   private getNowDateTimeLocal(): string {
     const now = new Date();
@@ -61,6 +86,13 @@ export class ApplicationDetailsComponent {
     const offset = now.getTimezoneOffset();
     const local = new Date(now.getTime() - offset * 60000);
     return local.toISOString().slice(0, 16); // yyyy-MM-ddTHH:mm
+  }
+  private getTodayDateLocal(): string {
+    const now = new Date();
+    // normalizuj na lokalni dan
+    const offset = now.getTimezoneOffset();
+    const local = new Date(now.getTime() - offset * 60000);
+    return local.toISOString().slice(0, 10); // yyyy-MM-dd
   }
 
   downloadCv() {
@@ -118,7 +150,19 @@ export class ApplicationDetailsComponent {
       this.openRefuseModal();
     }
   }
-  openRefuseModal() { this.refuseOpen = true; this.refuseTouched = false; }
+  openRefuseModal() {
+    if (this.isFromTest()) {            // već koristiš isFromTest() u HTML-u intervjua
+    this.testRefuseOpen = true;
+    this.testScoreRefuse = null;
+    this.testScoreRefuseTouched = false;
+    this.testRefuseReason = '';
+    this.testRefuseReasonTouched = false;
+    } else {
+      this.refuseOpen = true;           // postojeći generalni modal za preselekciju/intervju
+      this.refuseReason = '';
+      this.refuseTouched = false;
+    }
+  }
   cancelRefuse() { this.refuseOpen = false; this.refuseReason = ''; this.refuseTouched = false; }
   confirmRefuse() {
     this.refuseTouched = true;
@@ -177,55 +221,126 @@ export class ApplicationDetailsComponent {
   openTestRefuse() { this.testRefuseOpen = true; this.testScoreRefuseTouched = false; }
   cancelTestRefuse() { this.testRefuseOpen = false; this.testScoreRefuse = null; this.testScoreRefuseTouched = false; }
   confirmRefuseFromTest() {
-    if (!this.data || this.testScoreRefuse === null || this.testScoreRefuse === undefined) return;
-    //console.log('REFUSE from TEST:', { appId: this.data.applicationId, score: this.testScoreRefuse });
-    this.svc.refuse(this.data.applicationId, this.refuseReason).subscribe({
-      next: (result) => {
-        this.refuseOpen = false;
-        //console.log(result);
-         if (this.data) {
-          this.data.applicationStatus = 'REFUSED';
+    this.testScoreRefuseTouched = true;
+    this.testRefuseReasonTouched = true;
+
+    if (this.testScoreRefuse === null || this.testScoreRefuse === undefined || !this.testRefuseReason?.trim()) {
+      return;
+    }
+
+    const dto = {
+      score: this.testScoreRefuse,
+      reason: this.testRefuseReason.trim()
+    };
+
+    if(this.data){
+      this.loading = true;
+      this.svc.refuseAfterTest(dto,this.data.applicationId).subscribe({
+        next: () => {
+          this.loading = false;
+          this.testRefuseOpen = false;
+
+          this.reloadDetails();
+        },
+        error: (err) => {
+          this.loading = false;
+          this.error = err?.error?.message || 'Error while refusing after test.';
         }
-      },
-      error: err => { console.error(err); /* prikaži poruku po želji */ }
-    });
-    this.testRefuseOpen = false;
+      });
+    }
   }
 
   // ====== 3) Test -> Intervju ======
-  openInterview() { this.interviewOpen = true; }
+  openInterview() { 
+    this.interviewOpen = true;
+    this.users.getStaffMembers().subscribe({
+      next: (list) => {
+        this.staff = list ?? [];
+        this.staffInterviewers = this.staff.filter(m => m.role === 'INTERVIEWER');
+        this.staffObservers = this.staff.filter(m => m.role === 'HR_MANAGER' || m.role === 'HIRING_MANAGER');
+      },
+      error: (err) => { console.error('Failed to load staff', err); this.staffInterviewers = []; this.staffObservers = []; }
+    });
+  }
   cancelInterview() {
     this.interviewOpen = false;
     this.testScoreProceed = null;
     this.interviewDateTime = '';
     this.interviewLocation = '';
-    this.interviewType = 'ONSITE';
+    this.interviewType = 'HR_SCREEN';
     this.interviewDuration = null;
+    this.interviewerId = null;
+    this.observerIdsSet.clear();
   }
+  isFromTest(): boolean {
+    return this.data?.currentPhase === 'Test';
+  }
+
   isInterviewFormValid(): boolean {
-    return this.testScoreProceed !== null && !!this.interviewDateTime && !!this.interviewLocation && !!this.interviewDuration;
+    const baseValid =
+    !!this.interviewDateTime &&
+    !!this.interviewLocation &&
+    !!this.interviewType &&
+    !!this.interviewDuration &&
+    this.interviewerId !== null;
+
+  // testScoreProceed je potreban samo ako prelazimo iz Test faze
+    if (this.isFromTest()) {
+      return baseValid && this.testScoreProceed !== null && this.testScoreProceed !== undefined;
+    }
+    return baseValid;
+  }
+  private toIsoWithOffset(localDatetime: string): string {
+    // 'datetime-local' => konstruiši Date kao lokalni pa pretvori u ISO
+    const d = new Date(localDatetime);
+    return d.toISOString();
   }
   confirmProceedToInterview() {
-    if (!this.data || !this.isInterviewFormValid()) return;
-    console.log('PROCEED -> INTERVIEW:', {
-      appId: this.data.applicationId,
-      score: this.testScoreProceed,
-      dateTime: this.interviewDateTime,
+    if (!this.data || !this.isInterviewFormValid() || this.interviewerId === null) return;
+    const dto: InterviewScheduleDTO = {
+      applicationId: this.data.applicationId,
+      scheduledAt: this.toIsoWithOffset(this.interviewDateTime),
       location: this.interviewLocation,
-      type: this.interviewType,
-      durationMin: this.interviewDuration
+      interviewType: this.interviewType,
+      durationMinutes: this.interviewDuration!,         // već validirano
+      interviewerId: this.interviewerId,
+      observerIds: this.observerIdsSet.size ? Array.from(this.observerIdsSet) : undefined
+    };
+
+    if (this.isFromTest() && this.testScoreProceed !== null && this.testScoreProceed !== undefined) {
+      dto.testScore = this.testScoreProceed;
+    }
+    if(this.userId)
+    this.svc.scheduleInterview(dto,this.userId).subscribe({
+      next: _ => {
+        this.interviewOpen = false;
+        this.reloadDetails();
+      },
+      error: err => { console.error(err); }
     });
-    this.interviewOpen = false;
     // this.data.currentPhase = 'Intervju';
   }
   openOffer() { this.offerOpen = true; }
   cancelOffer() { this.offerOpen = false; this.offerStartDate = ''; }
   confirmMakeOffer() {
     if (!this.data || !this.offerStartDate) return;
-    console.log('MAKE OFFER:', { appId: this.data.applicationId, startDate: this.offerStartDate });
-    this.offerOpen = false;
-    this.flowCompleted = true; // sakrij dugmad i označi final
-    // this.data.currentPhase = 'Ponuda';
+    //console.log('MAKE OFFER:', { appId: this.data.applicationId, startDate: this.offerStartDate });
+    const dto = {
+    applicationId: this.data.applicationId,
+    startDate: this.offerStartDate
+    };
+    if(this.userId)
+    this.svc.makeOffer(dto, this.userId).subscribe({
+      next: _ => {
+        this.offerOpen = false;
+        this.flowCompleted = true;
+        this.reloadDetails();
+      },
+      error: err => {
+        console.error(err);
+        // po želji: pokaži poruku greške u UI
+      }
+    });
   }
   private reloadDetails() {
   if (!this.data) return;

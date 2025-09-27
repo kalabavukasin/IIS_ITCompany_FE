@@ -41,6 +41,24 @@ export interface ApplicationDetailsDto {
   currentPhase?: string;
   phases: string[];
 }
+export interface InterviewScheduleDTO {
+  applicationId: number;
+  testScore?: number;
+  scheduledAt: string;
+  location: string;
+  interviewType: 'HR_SCREEN' | 'TECHNICAL' | 'SYSTEM_DESIGN' | 'MANAGERIAL' | 'FINAL';
+  durationMinutes: number;
+  interviewerId: number;
+  observerIds?: number[];
+}
+export interface OfferCreateDTO {
+  applicationId: number;
+  startDate: string;
+}
+export interface TestRefuseDTO {
+  score: number;
+  reason: string;
+}
 
 @Injectable({ providedIn: 'root' })
 export class ApplicationService {
@@ -72,10 +90,19 @@ export class ApplicationService {
     return this.http.post<any>(`${this.api}/${id}/refuse`, {reason});
   }
   sendTestInvite(appId: number, type: string, activeUntilIso: string, triggeredBy: number, file: File) {
-  const form = new FormData();
-  const data = { applicationId: appId, type, activeUntil: activeUntilIso, triggeredById : triggeredBy }; // ISO string (OffsetDateTime)
-  form.append('data', new Blob([JSON.stringify(data)], { type: 'application/json' }));
-  form.append('file', file, file.name);
-  return this.http.post<any>('http://localhost:8080/api/tests/invite', form);
+    const form = new FormData();
+    const data = { applicationId: appId, type, activeUntil: activeUntilIso, triggeredById : triggeredBy }; // ISO string (OffsetDateTime)
+    form.append('data', new Blob([JSON.stringify(data)], { type: 'application/json' }));
+    form.append('file', file, file.name);
+    return this.http.post<any>('http://localhost:8080/api/tests/invite', form);
+  }
+  scheduleInterview(dto: InterviewScheduleDTO, scheduledById: number) {
+    return this.http.post<any>(`http://localhost:8080/api/interviews/${scheduledById}/schedule`, dto);
+  }
+  makeOffer(dto: OfferCreateDTO, triggeredById: number) {
+    return this.http.post<void>(`http://localhost:8080/api/applications/${triggeredById}/offer`, dto);
+  }
+  refuseAfterTest(dto: TestRefuseDTO, applicationId: number) {
+    return this.http.post<void>(`http://localhost:8080/api/tests/${applicationId}/refuse-with-score`, dto);
   }
 }

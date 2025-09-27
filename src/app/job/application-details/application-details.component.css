@@ -66,3 +66,17 @@ button.danger{ background:#fee2e2; color:#991b1b; border-color:#fecaca; }
   border-radius: 8px;
   font: inherit;
 }
+.observer-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+  max-height: 180px;
+  overflow: auto;
+  padding: 6px 0;
+}
+.chk {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
