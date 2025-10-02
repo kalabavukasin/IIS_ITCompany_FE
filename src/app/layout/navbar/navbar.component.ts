@@ -12,14 +12,20 @@ export class NavbarComponent {
   isAuthenticated = false; 
   isAdmin = false;
   userId = 0 
+  role: string | null = null; 
 
   constructor(private router: Router, private authService: AuthService) {}
 
   ngOnInit(): void {
     this.authService.loggedInUser$.subscribe(user => {
       this.isAuthenticated = !!user;
-      if(user)
+      if(user){
         this.userId = user.id;
+        this.role = user.role;
+      }
+      else{
+        this.role = null;
+      }
     });
   }
   logout() {

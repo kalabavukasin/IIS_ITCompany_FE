@@ -245,7 +245,7 @@ export class ApplicationDetailsComponent implements OnInit {
       this.userId,
       this.testFile
     ).subscribe({
-      next: _ => { this.testUploadOpen = false; this.reloadDetails()},
+      next: _ => { this.testUploadOpen = false; this.reloadDetails(); this.loadTest(this.applicationId);},
       error: err => { this.testFileError = 'Greška pri slanju testa.'; console.error(err); }
     });
     }
