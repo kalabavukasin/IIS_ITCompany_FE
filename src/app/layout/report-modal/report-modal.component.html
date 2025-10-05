@@ -1,0 +1,65 @@
+<div class="modal-overlay" (click)="onCloseModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Generiši PDF Izveštaj</h3>
+      <button class="close-btn" (click)="onCloseModal()">&times;</button>
+    </div>
+    
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="reportType">Tip izveštaja:</label>
+        <select id="reportType" [(ngModel)]="selectedReportType" (change)="onReportTypeChange()" class="form-control">
+          <option value="custom">Prilagođeni period</option>
+          <option value="current-month">Tekući mesec</option>
+          <option value="current-year">Tekuća godina</option>
+          <option value="last-30-days">Poslednjih 30 dana</option>
+        </select>
+      </div>
+
+      <div *ngIf="selectedReportType === 'custom'" class="form-group">
+        <div class="date-inputs">
+          <div class="date-input">
+            <label for="startDate">Početni datum:</label>
+            <input 
+              type="date" 
+              id="startDate" 
+              [(ngModel)]="startDate" 
+              class="form-control"
+              required>
+          </div>
+          <div class="date-input">
+            <label for="endDate">Krajnji datum:</label>
+            <input 
+              type="date" 
+              id="endDate" 
+              [(ngModel)]="endDate" 
+              class="form-control"
+              required>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="selectedReportType !== 'custom'" class="info-text">
+        <p>Izveštaj će biti generisan za {{ getReportTypeDescription() }}</p>
+      </div>
+    </div>
+    
+    <div class="modal-footer">
+      <button 
+        type="button" 
+        class="btn btn-secondary" 
+        (click)="onCloseModal()"
+        [disabled]="isLoading">
+        Otkaži
+      </button>
+      <button 
+        type="button" 
+        class="btn btn-primary" 
+        (click)="onGenerateReport()"
+        [disabled]="isLoading">
+        <span *ngIf="isLoading" class="spinner"></span>
+        {{ isLoading ? 'Generiše se...' : 'Generiši PDF' }}
+      </button>
+    </div>
+  </div>
+</div>

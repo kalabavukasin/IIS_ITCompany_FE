@@ -42,7 +42,18 @@
       <li *ngIf="role === 'INTERVIEWER' || role === 'HIRING_MANAGER' || role === 'HR_MANAGER'">
         <a routerLink="/interviews"><i class="fa fa-comments"></i> Interviews</a>
       </li>
+
+      <!-- reports: HR_MANAGER i HIRING_MANAGER -->
+      <li *ngIf="role === 'HR_MANAGER' || role === 'HIRING_MANAGER'">
+        <a (click)="openReportModal()" class="report-link"><i class="fa fa-file-pdf-o"></i> Izveštaji</a>
+      </li>
     </ul>
 
   </div>
 </nav>
+
+<!-- Report Modal -->
+<app-report-modal 
+  *ngIf="showReportModal" 
+  (closeModal)="closeReportModal()">
+</app-report-modal>

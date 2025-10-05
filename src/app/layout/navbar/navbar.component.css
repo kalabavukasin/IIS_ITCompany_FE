@@ -49,6 +49,16 @@
   color: #26ace3;
 }
 
+/* Report link specific styling */
+.report-link {
+  cursor: pointer;
+}
+
+.report-link:hover {
+  background-color: #e8f4fd;
+  color: #dc3545;
+}
+
 /* Glavni sadržaj neka se pomeri udesno */
 .main-content {
   margin-left: 220px;

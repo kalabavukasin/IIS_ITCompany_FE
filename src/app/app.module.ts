@@ -21,6 +21,7 @@ import { ApplicationsOverviewComponent } from './job/applications-overview/appli
 import { ApplicationDetailsComponent } from './job/application-details/application-details.component';
 import { ApplicationViewComponent } from './job/application-view/application-view.component';
 import { InterviewShowComponent } from './job/interview-show/interview-show.component';
+import { ReportModalComponent } from './layout/report-modal/report-modal.component';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,8 @@ import { InterviewShowComponent } from './job/interview-show/interview-show.comp
     ApplicationsOverviewComponent,
     ApplicationDetailsComponent,
     ApplicationViewComponent,
-    InterviewShowComponent
+    InterviewShowComponent,
+    ReportModalComponent
   ],
   imports: [
     BrowserModule,
