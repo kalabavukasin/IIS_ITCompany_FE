@@ -10,14 +10,19 @@ export class ReportModalComponent {
   @Output() closeModal = new EventEmitter<void>();
 
   selectedReportType: string = 'custom';
+  selectedReportFormat: string = 'pdf'; // 'pdf' ili 'plsql'
   startDate: string = '';
   endDate: string = '';
   isLoading: boolean = false;
+  plsqlReportData: any = null;
+  showPlsqlResults: boolean = false;
 
   constructor(private reportService: ReportService) {}
 
   onCloseModal(): void {
     this.closeModal.emit();
+    this.plsqlReportData = null;
+    this.showPlsqlResults = false;
   }
 
   onGenerateReport(): void {
@@ -33,6 +38,13 @@ export class ReportModalComponent {
 
     this.isLoading = true;
 
+    // PL/SQL Izveštaji
+    if (this.selectedReportFormat === 'plsql') {
+      this.generatePlSqlReport();
+      return;
+    }
+
+    // PDF Izveštaji
     switch (this.selectedReportType) {
       case 'custom':
         this.reportService.generatePdfReport(this.startDate, this.endDate).subscribe({
@@ -100,6 +112,129 @@ export class ReportModalComponent {
         });
         break;
     }
+  }
+
+  generatePlSqlReport(): void {
+    switch (this.selectedReportType) {
+      case 'custom':
+        this.reportService.generatePlSqlComprehensiveReport(this.startDate, this.endDate).subscribe({
+          next: (data) => {
+            this.plsqlReportData = this.formatPlSqlData(data);
+            this.showPlsqlResults = true;
+            this.isLoading = false;
+            console.log('PL/SQL Report Data:', data);
+          },
+          error: (error) => {
+            console.error('Greška pri generisanju PL/SQL izveštaja:', error);
+            alert('Greška pri generisanju PL/SQL izveštaja. Proverite da li su PL/SQL funkcije pokrenute u bazi.');
+            this.isLoading = false;
+          }
+        });
+        break;
+
+      case 'current-month':
+        this.reportService.generatePlSqlCurrentMonthReport().subscribe({
+          next: (data) => {
+            this.plsqlReportData = this.formatPlSqlData(data);
+            this.showPlsqlResults = true;
+            this.isLoading = false;
+            console.log('PL/SQL Current Month Report:', data);
+          },
+          error: (error) => {
+            console.error('Greška pri generisanju PL/SQL mesečnog izveštaja:', error);
+            alert('Greška pri generisanju PL/SQL mesečnog izveštaja.');
+            this.isLoading = false;
+          }
+        });
+        break;
+
+      case 'last-30-days':
+        this.reportService.generatePlSqlLast30DaysReport().subscribe({
+          next: (data) => {
+            this.plsqlReportData = this.formatPlSqlData(data);
+            this.showPlsqlResults = true;
+            this.isLoading = false;
+            console.log('PL/SQL Last 30 Days Report:', data);
+          },
+          error: (error) => {
+            console.error('Greška pri generisanju PL/SQL izveštaja za 30 dana:', error);
+            alert('Greška pri generisanju PL/SQL izveštaja za 30 dana.');
+            this.isLoading = false;
+          }
+        });
+        break;
+
+      case 'current-year':
+        // Za godišnji izveštaj koristimo prilagođeni sa datumima
+        const startOfYear = new Date(new Date().getFullYear(), 0, 1).toISOString().split('T')[0];
+        const today = new Date().toISOString().split('T')[0];
+        this.reportService.generatePlSqlComprehensiveReport(startOfYear, today).subscribe({
+          next: (data) => {
+            this.plsqlReportData = this.formatPlSqlData(data);
+            this.showPlsqlResults = true;
+            this.isLoading = false;
+            console.log('PL/SQL Yearly Report:', data);
+          },
+          error: (error) => {
+            console.error('Greška pri generisanju PL/SQL godišnjeg izveštaja:', error);
+            alert('Greška pri generisanju PL/SQL godišnjeg izveštaja.');
+            this.isLoading = false;
+          }
+        });
+        break;
+    }
+  }
+
+  formatPlSqlData(data: any[]): any {
+    // Grupisanje podataka po sekcijama
+    const sections: any = {
+      basicMetrics: [],
+      stageAnalysis: [],
+      jobPostingAnalysis: [],
+      problemDetection: [],
+      stagePerformance: [],
+      summary: []
+    };
+
+    data.forEach(item => {
+      switch (item.reportSection) {
+        case 'BASIC_METRICS':
+          sections.basicMetrics.push(item);
+          break;
+        case 'STAGE_ANALYSIS':
+          sections.stageAnalysis.push(item);
+          break;
+        case 'JOB_POSTING_ANALYSIS':
+          sections.jobPostingAnalysis.push(item);
+          break;
+        case 'PROBLEM_DETECTION':
+          sections.problemDetection.push(item);
+          break;
+        case 'STAGE_PERFORMANCE':
+          sections.stagePerformance.push(item);
+          break;
+        case 'QUICK_INSIGHTS':
+          sections.summary.push(item);
+          break;
+        case 'SUMMARY':
+          sections.summary.push(item);
+          break;
+      }
+    });
+
+    return sections;
+  }
+
+  downloadPlSqlAsJson(): void {
+    if (this.plsqlReportData) {
+      const filename = `plsql_izvestaj_${new Date().toISOString().split('T')[0]}.json`;
+      this.reportService.downloadJsonAsFile(this.plsqlReportData, filename);
+    }
+  }
+
+  closePlSqlResults(): void {
+    this.showPlsqlResults = false;
+    this.plsqlReportData = null;
   }
 
   onReportTypeChange(): void {

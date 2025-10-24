@@ -163,6 +163,209 @@
   100% { transform: rotate(360deg); }
 }
 
+/* PL/SQL Report Styles */
+.info-box {
+  background-color: #e7f3ff;
+  border-left: 4px solid #2196F3;
+  padding: 15px;
+  margin-top: 15px;
+  border-radius: 4px;
+}
+
+.info-box strong {
+  color: #1976D2;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.info-box p {
+  margin: 5px 0;
+  color: #555;
+  font-size: 13px;
+}
+
+.plsql-results {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.plsql-results h4 {
+  margin-top: 0;
+  color: #333;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 10px;
+}
+
+.results-section {
+  margin-bottom: 25px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+}
+
+.results-section h5 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #495057;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.metric-card {
+  background: white;
+  padding: 15px;
+  border-radius: 6px;
+  border-left: 4px solid #28a745;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.metric-name {
+  font-size: 12px;
+  color: #6c757d;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.metric-value {
+  font-size: 28px;
+  font-weight: bold;
+  color: #28a745;
+  margin-bottom: 5px;
+}
+
+.metric-info {
+  font-size: 12px;
+  color: #868e96;
+}
+
+/* Summary section styles */
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.summary-card {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  border-left: 4px solid #17a2b8;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
+}
+
+.summary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.summary-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 8px;
+}
+
+.summary-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #17a2b8;
+  margin-bottom: 8px;
+}
+
+.summary-info {
+  font-size: 14px;
+  color: #6c757d;
+  line-height: 1.4;
+}
+
+
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.results-table thead {
+  background-color: #007bff;
+  color: white;
+}
+
+.results-table th,
+.results-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.results-table th {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.results-table td {
+  font-size: 14px;
+  color: #495057;
+}
+
+.results-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.problem-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.problem-card {
+  background: white;
+  padding: 12px;
+  border-radius: 6px;
+  border-left: 4px solid #ffc107;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.problem-card strong {
+  color: #856404;
+}
+
+.problem-card small {
+  color: #6c757d;
+}
+
+.results-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 2px solid #dee2e6;
+}
+
+.btn-info {
+  background-color: #17a2b8;
+  color: white;
+}
+
+.btn-info:hover:not(:disabled) {
+  background-color: #138496;
+}
+
+/* Responsive Design for larger modals */
+.modal-content.plsql-modal {
+  max-width: 900px;
+}
+
 @media (max-width: 600px) {
   .date-inputs {
     flex-direction: column;
@@ -172,5 +375,18 @@
   .modal-content {
     width: 95%;
     margin: 10px;
+  }
+
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .results-table {
+    font-size: 12px;
+  }
+
+  .results-table th,
+  .results-table td {
+    padding: 8px;
   }
 }
