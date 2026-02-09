@@ -1,0 +1,70 @@
+<div class="register-container">
+  <h2>Register</h2>
+  <form (ngSubmit)="register()">
+    <!-- Email -->
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" [(ngModel)]="email" name="email" required />
+      <div *ngIf="emailError" class="error-message">Please enter a valid email address.</div>
+    </div>
+
+    <!-- First Name -->
+    <div class="form-group">
+      <label for="firstName">First Name</label>
+      <input type="text" id="firstName" [(ngModel)]="firstName" name="firstName" required />
+      <div *ngIf="firstNameError" class="error-message">
+        First name must be at least 3 characters.
+      </div>
+    </div>
+
+    <!-- Last Name -->
+    <div class="form-group">
+      <label for="lastName">Last Name</label>
+      <input type="text" id="lastName" [(ngModel)]="lastName" name="lastName" required />
+      <div *ngIf="lastNameError" class="error-message">
+        Last name must be at least 3 characters.
+      </div>
+    </div>
+
+    <!-- Phone -->
+    <div class="form-group">
+      <label for="phone">Phone</label>
+      <input type="text" id="phone" [(ngModel)]="phone" name="phone" required />
+      <div *ngIf="phoneError" class="error-message">
+        Phone is required and must contain only digits.
+      </div>
+    </div>
+
+    <!-- Password -->
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" [(ngModel)]="password" name="password" required />
+    </div>
+
+    <!-- Confirm Password -->
+    <div class="form-group">
+      <label for="confirmPassword">Confirm Password</label>
+      <input type="password" id="confirmPassword" [(ngModel)]="confirmPassword" name="confirmPassword" required />
+      <div *ngIf="passwordMismatchError" class="error-message">
+        Passwords do not match.
+      </div>
+    </div>
+
+    <!-- CV Upload -->
+    <div class="form-group">
+      <label for="cv">Upload CV</label>
+      <input type="file" id="cv" (change)="onFileSelected($event)" accept=".pdf,.doc,.docx,.odt" />
+      <div *ngIf="fileRequiredError" class="error-message">CV file is required.</div>
+      <div *ngIf="cvError" class="error-message">{{ cvError }}</div>
+    </div>
+
+    <button type="submit" class="register-button">Register</button>
+  </form>
+
+  <p *ngIf="successMessage" class="success-message">{{ successMessage }}</p>
+  <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
+
+  <p class="login-link">
+    Already have an account? <a routerLink="/login">Log in</a>
+  </p>
+</div>

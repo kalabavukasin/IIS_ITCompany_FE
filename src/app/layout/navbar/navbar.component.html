@@ -1,0 +1,59 @@
+<nav class="sidebar">
+  <div class="sidebar-content">
+
+    <!-- Logo (opciono) -->
+   <!-- <div class="logo">
+      <img src="assets/OnlyBunsLogoIcon.png" class="nav-image" alt="Logo">
+    </div> -->
+
+    <!-- Dugme za login/logout -->
+    <ul class="nav-links">
+      <li *ngIf="!isAuthenticated">
+        <a routerLink="/login"><i class="fa fa-sign-in"></i> Sign In</a>
+      </li>
+      <li *ngIf="isAuthenticated">
+        <a (click)="logout()"><i class="fa fa-sign-out"></i> Sign Out</a>
+      </li>
+      <li *ngIf="role === 'HR_MANAGER'">
+        <a routerLink="/jobs/create"><i class="fa fa-plus"></i> Create Job</a>
+      </li>
+
+      <!-- requests: HR_MANAGER i HIRING_MANAGER -->
+      <li *ngIf="role === 'HR_MANAGER' || role === 'HIRING_MANAGER'">
+        <a routerLink="/requests"><i class="fa fa-list"></i> Requests</a>
+      </li>
+
+      <!-- jobs: samo CANDIDATE -->
+      <li *ngIf="role === 'CANDIDATE'">
+        <a routerLink="/jobs"><i class="fa fa-briefcase"></i> Jobs</a>
+      </li>
+
+      <!-- profile: samo CANDIDATE -->
+      <li *ngIf="role === 'CANDIDATE'">
+        <a routerLink="/profile"><i class="fa fa-user"></i> Profile</a>
+      </li>
+
+      <!-- applications/overview: HR_MANAGER i HIRING_MANAGER -->
+      <li *ngIf="role === 'HR_MANAGER' || role === 'HIRING_MANAGER'">
+        <a routerLink="/applications/overview"><i class="fa fa-file-text"></i> Applications</a>
+      </li>
+
+      <!-- interviews: INTERVIEWER, HIRING_MANAGER i HR_MANAGER -->
+      <li *ngIf="role === 'INTERVIEWER' || role === 'HIRING_MANAGER' || role === 'HR_MANAGER'">
+        <a routerLink="/interviews"><i class="fa fa-comments"></i> Interviews</a>
+      </li>
+
+      <!-- reports: HR_MANAGER i HIRING_MANAGER -->
+      <li *ngIf="role === 'HR_MANAGER' || role === 'HIRING_MANAGER'">
+        <a (click)="openReportModal()" class="report-link"><i class="fa fa-file-pdf-o"></i> Izveštaji</a>
+      </li>
+    </ul>
+
+  </div>
+</nav>
+
+<!-- Report Modal -->
+<app-report-modal 
+  *ngIf="showReportModal" 
+  (closeModal)="closeReportModal()">
+</app-report-modal>

@@ -1,0 +1,60 @@
+<div class="page" *ngIf="!loading && !error; else state">
+  <h2>Advertisement applications</h2>
+
+  <div class="list">
+    <div class="card" *ngFor="let a of items">
+      <!-- Advertisement header -->
+      <div class="ad-left"><div class="thumb"></div></div>
+      <div class="ad-main">
+        <div class="ad-title">Advertisement</div>
+        <div class="grid">
+          <div>
+            <div class="label">Name</div>
+            <div class="value name">{{ a.requestName }}</div>
+
+            <div class="label mt">Description</div>
+            <div class="desc">{{ a.requestDescription }}</div>
+          </div>
+          <div>
+            <div class="label">Location</div>
+            <div class="value">{{ a.requestLocation || '—' }}</div>
+
+            <div class="label mt">Open until</div>
+                <div class="value">
+                    {{ a.openUntil ? (a.openUntil | date: 'dd.MM.yyyy.') : '—' }}
+                </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- User info -->
+      <div class="user-main">
+        <div class="section-title"><h3>User info</h3></div>
+            <div class="grid">
+                <div>
+                <div class="label2">Name</div>
+                <div class="value2">{{ a.candidateName }}</div>
+                </div>
+                <div class="status-phase">
+                <div class="label2">Current status</div>
+                <div class="badge2">{{ a.status }}</div>
+
+                <div class="label2">Current phase</div>
+                <div class="value2">{{ a.currentPhase || '—' }}</div>
+                </div>
+                <!-- More… link kao poseban grid item -->
+                <div class="more-wrapper">
+                <a class="more" (click)="more(a)">More…</a>
+                </div>
+        </div>
+    </div>
+    </div>
+
+    <p *ngIf="items.length === 0" class="empty">No applications.</p>
+  </div>
+</div>
+
+<ng-template #state>
+  <p *ngIf="loading">Loading…</p>
+  <p *ngIf="!loading && error" class="err">{{ error }}</p>
+</ng-template>

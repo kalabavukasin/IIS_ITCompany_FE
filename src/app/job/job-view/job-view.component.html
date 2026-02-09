@@ -1,0 +1,48 @@
+<div class="page" *ngIf="!loading && !error && data; else state">
+  <h2>Job Posting</h2>
+
+  <div class="header">
+    <div class="thumb"></div>
+    <div class="title">
+      <div class="name">{{ data.name }}</div>
+      <div class="desc">{{ data.description }}</div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div>
+      <span class="label">Seniority level</span>
+      <div class="value">{{ data.seniority || '—' }}</div>
+    </div>
+    <div>
+      <span class="label">Location</span>
+      <div class="value">{{ data.location }}</div>
+    </div>
+    <div>
+      <span class="label">Technologies</span>
+      <div class="value">{{ data.programmingLanguages || '—' }}</div>
+    </div>
+    <div>
+      <span class="label">Open until</span>
+      <div class="value">{{ data.openUntil | date:'dd.MM.yyyy.' }}</div>
+    </div>
+    <div>
+      <span class="label">Salary</span>
+      <div class="value">{{ data.budget | number:'1.0-0' }}</div>
+    </div>
+    <div>
+      <span class="label">Working hours</span>
+      <div class="value">7-15h</div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="primary" *ngIf="canApply()" (click)="apply()">Apply</button>
+    <div class="value" *ngIf="!canApply() && applied">Already applied</div>
+  </div>
+</div>
+
+<ng-template #state>
+  <p *ngIf="loading">Loading…</p>
+  <p *ngIf="!loading && error" class="err">{{ error }}</p>
+</ng-template>

@@ -1,0 +1,187 @@
+<div class="modal-overlay" (click)="onCloseModal()">
+  <div class="modal-content" [class.plsql-modal]="showPlsqlResults" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Generiši Izveštaj</h3>
+      <button class="close-btn" (click)="onCloseModal()">&times;</button>
+    </div>
+    
+    <div class="modal-body" *ngIf="!showPlsqlResults">
+      <div class="form-group">
+        <label for="reportFormat">Format izveštaja:</label>
+        <select id="reportFormat" [(ngModel)]="selectedReportFormat" class="form-control">
+          <option value="pdf">PDF (Postojeći)</option>
+          <option value="plsql">PL/SQL Analitički Izveštaj (JSON)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="reportType">Tip izveštaja:</label>
+        <select id="reportType" [(ngModel)]="selectedReportType" (change)="onReportTypeChange()" class="form-control">
+          <option value="custom">Prilagođeni period</option>
+          <option value="current-month">Tekući mesec</option>
+          <option value="current-year">Tekuća godina</option>
+          <option value="last-30-days">Poslednjih 30 dana</option>
+        </select>
+      </div>
+
+      <div *ngIf="selectedReportType === 'custom'" class="form-group">
+        <div class="date-inputs">
+          <div class="date-input">
+            <label for="startDate">Početni datum:</label>
+            <input 
+              type="date" 
+              id="startDate" 
+              [(ngModel)]="startDate" 
+              class="form-control"
+              required>
+          </div>
+          <div class="date-input">
+            <label for="endDate">Krajnji datum:</label>
+            <input 
+              type="date" 
+              id="endDate" 
+              [(ngModel)]="endDate" 
+              class="form-control"
+              required>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="selectedReportType !== 'custom'" class="info-text">
+        <p>Izveštaj će biti generisan za {{ getReportTypeDescription() }}</p>
+      </div>
+
+      <div *ngIf="selectedReportFormat === 'plsql'" class="info-box">
+        <strong>ℹ️ PL/SQL Izveštaj:</strong>
+        <p>Kompleksan analitički izveštaj sa metrikama zapošljavanja, performansama po fazama, i analizom po oglasima.</p>
+        <p>Koristi PL/SQL funkcije, kursore, i složene SQL upite.</p>
+      </div>
+    </div>
+
+    <!-- PL/SQL Results View -->
+    <div class="modal-body plsql-results" *ngIf="showPlsqlResults">
+      <h4>📊 PL/SQL Analitički Izveštaj</h4>
+      
+      <div class="results-section" *ngIf="plsqlReportData?.basicMetrics?.length > 0">
+        <h5>📈 Osnovne Metrike</h5>
+        <div class="metrics-grid">
+          <div class="metric-card" *ngFor="let metric of plsqlReportData.basicMetrics">
+            <div class="metric-name">{{ metric.metricName }}</div>
+            <div class="metric-value">{{ metric.metricValue }}</div>
+            <div class="metric-info">{{ metric.additionalInfo }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="results-section" *ngIf="plsqlReportData?.stageAnalysis?.length > 0">
+        <h5>🔄 Analiza po Fazama</h5>
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th>Faza</th>
+              <th>Prosečno vreme (dani)</th>
+              <th>Dodatne informacije</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let stage of plsqlReportData.stageAnalysis">
+              <td>{{ stage.metricName }}</td>
+              <td>{{ stage.metricValue }}</td>
+              <td>{{ stage.additionalInfo }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="results-section" *ngIf="plsqlReportData?.jobPostingAnalysis?.length > 0">
+        <h5>💼 Analiza po Oglasima</h5>
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th>Oglas</th>
+              <th>Broj Prijava</th>
+              <th>Statistike</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let job of plsqlReportData.jobPostingAnalysis">
+              <td>{{ job.metricName }}</td>
+              <td>{{ job.metricValue }}</td>
+              <td>{{ job.additionalInfo }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="results-section" *ngIf="plsqlReportData?.problemDetection?.length > 0">
+        <h5>⚠️ Detekcija Problema</h5>
+        <div class="problem-cards">
+          <div class="problem-card" *ngFor="let problem of plsqlReportData.problemDetection">
+            <strong>{{ problem.metricName }}:</strong> {{ problem.metricValue }}
+            <br>
+            <small>{{ problem.additionalInfo }}</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="results-section" *ngIf="plsqlReportData?.stagePerformance?.length > 0">
+        <h5>📊 Performanse po Fazama</h5>
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th>Faza</th>
+              <th>Prosečno vreme (dani)</th>
+              <th>Detalji</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let perf of plsqlReportData.stagePerformance">
+              <td>{{ perf.metricName }}</td>
+              <td>{{ perf.metricValue }}</td>
+              <td>{{ perf.additionalInfo }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+
+      <div class="results-section" *ngIf="plsqlReportData?.summary?.length > 0">
+        <h5>📋 Sažetak i Brzi Uvid</h5>
+        <div class="summary-cards">
+          <div class="summary-card" *ngFor="let item of plsqlReportData.summary">
+            <div class="summary-name">{{ item.metricName }}</div>
+            <div class="summary-value">{{ item.metricValue }}</div>
+            <div class="summary-info">{{ item.additionalInfo }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="results-actions">
+        <button class="btn btn-info" (click)="downloadPlSqlAsJson()">
+          💾 Preuzmi kao JSON
+        </button>
+        <button class="btn btn-secondary" (click)="closePlSqlResults()">
+          🔙 Nazad
+        </button>
+      </div>
+    </div>
+    
+    <div class="modal-footer" *ngIf="!showPlsqlResults">
+      <button 
+        type="button" 
+        class="btn btn-secondary" 
+        (click)="onCloseModal()"
+        [disabled]="isLoading">
+        Otkaži
+      </button>
+      <button 
+        type="button" 
+        class="btn btn-primary" 
+        (click)="onGenerateReport()"
+        [disabled]="isLoading">
+        <span *ngIf="isLoading" class="spinner"></span>
+        {{ isLoading ? 'Generiše se...' : (selectedReportFormat === 'plsql' ? 'Generiši PL/SQL Izveštaj' : 'Generiši PDF') }}
+      </button>
+    </div>
+  </div>
+</div>

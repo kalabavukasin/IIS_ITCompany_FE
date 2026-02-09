@@ -1,0 +1,28 @@
+<div class="page">
+  <h2>{{ title }}</h2>
+
+  <ng-container *ngIf="!loading && !error; else state">
+    <div *ngFor="let j of items" class="card">
+      <div class="thumb"></div>
+
+      <div class="main">
+        <div class="name">{{ j.name }}</div>
+        <div class="desc">{{ j.description }}</div>
+      </div>
+
+      <div class="side">
+        <div class="row"><span class="label">Location</span><span class="value">{{ j.location }}</span></div>
+        <div class="row"><span class="label">Expires</span><span class="value">{{ j.expires | date:'dd.MM.yyyy.' }}</span></div>
+        <div class="row"><span class="label">Salary</span><span class="value">{{ j.salary | number:'1.0-0' }}</span></div>
+        <a class="more" (click)="more(j.id)">More</a>
+      </div>
+    </div>
+
+    <p *ngIf="items.length === 0" class="empty">No jobs to show.</p>
+  </ng-container>
+
+  <ng-template #state>
+    <p *ngIf="loading">Loading…</p>
+    <p *ngIf="!loading && error" class="err">{{ error }}</p>
+  </ng-template>
+</div>

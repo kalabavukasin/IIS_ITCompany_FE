@@ -1,0 +1,57 @@
+.page { max-width: 980px; margin: 24px auto; padding: 0 16px; }
+h2 { margin-bottom: 16px; }
+
+.list { display: flex; flex-direction: column; gap: 12px; max-height: 70vh; overflow: auto; padding-right: 4px; }
+
+.card {
+  display: grid; grid-template-columns: 120px 1fr; gap: 16px;
+  border: 1px solid #e5e7eb; border-radius: 12px; background: #fff; padding: 16px;
+}
+
+.ad-left .thumb { width: 120px; height: 120px; border: 1px dashed #9ca3af; border-radius: 8px; }
+
+.ad-main .ad-title { font-weight: 600; margin-bottom: 8px; }
+.grid { display: grid; grid-template-columns: 1fr 240px; gap: 16px; }
+
+.label { font-size: 12px; color: #6b7280; }
+.value { font-weight: 600; }
+.value.name { font-size: 16px; }
+.mt { margin-top: 8px; }
+
+.badge { display: inline-block; padding: 4px 10px; border-radius: 999px; font-weight: 600; background: #f1f5f9; }
+
+/* status varijante */
+.badge-scheduled { background: #eef2ff; color: #3730a3; }   /* indigo */
+.badge-completed { background: #ecfdf5; color: #065f46; }   /* green */
+.badge-canceled  { background: #fef2f2; color: #991b1b; }   /* red */
+.badge-no-show   { background: #fff7ed; color: #9a3412; }   /* orange */
+
+.more { color: #2563eb; cursor: pointer; font-weight: 500; text-decoration: none; }
+.more-wrapper { margin-top: 12px; text-align: right; }
+
+.empty { color: #6b7280; padding: 8px; }
+.err { color: #ef4444; }
+/* modal */
+.modal-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,.35);
+  display: flex; align-items: center; justify-content: center; z-index: 50;
+}
+.modal {
+  width: 520px; max-width: 92vw; background: #fff; border-radius: 12px;
+  padding: 16px; box-shadow: 0 10px 30px rgba(0,0,0,.2);
+}
+.modal h3 { margin: 0 0 8px; }
+.modal textarea {
+  width: 100%; resize: vertical; min-height: 140px;
+  border: 1px solid #e5e7eb; border-radius: 8px; padding: 8px;
+}
+.grade-row { margin-top: 12px; }
+.grade-row select {
+  width: 160px; padding: 6px; border: 1px solid #e5e7eb; border-radius: 8px;
+}
+
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+.modal-actions button {
+  padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 8px; background: #111827; color: #fff;
+}
+.modal-actions button.secondary { background: #fff; color: #111827; }

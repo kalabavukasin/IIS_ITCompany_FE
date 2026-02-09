@@ -1,0 +1,54 @@
+<div class="page">
+  <h2>Create job request</h2>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="card">
+    <label>Name</label>
+    <input type="text" formControlName="name" />
+    <p class="err" *ngIf="hasError('name','required')">Name is required.</p>
+    <p class="err" *ngIf="hasError('name','minlength')">Name must be at least 2 characters.</p>
+    <label>Position in firm</label>
+    <input type="text" formControlName="positionInFirm" />
+    <p class="err" *ngIf="hasError('positionInFirm','required')">Position is required.</p>
+
+    <label>Description</label>
+    <textarea rows="5" formControlName="description"></textarea>
+    <p class="err" *ngIf="hasError('description','required')">Description is required.</p>
+
+    <label>Programming languages</label>
+    <input type="text" placeholder="e.g. Java, Spring, Angular" formControlName="programmingLanguages" />
+    <p class="err" *ngIf="hasError('programmingLanguages','required')">Enter at least one technology.</p>
+
+    <label>Seniority</label>
+    <select formControlName="seniority">
+      <option *ngFor="let s of seniorities" [value]="s">{{ s }}</option>
+    </select>
+
+    <label>Location</label>
+    <input type="text" formControlName="location" />
+    <p class="err" *ngIf="hasError('location','required')">Location is required.</p>
+
+    <label>Budget</label>
+    <input type="number" formControlName="budget" />
+    <p class="err" *ngIf="hasError('budget','required')">Budget is required.</p>
+    <p class="err" *ngIf="hasError('budget','min')">Budget can’t be negative.</p>
+
+    <label>Workflow (pipeline)</label>
+    <select formControlName="pipelineWorkflowId">
+      <option [ngValue]="null" disabled>-- choose workflow --</option>
+      <option *ngFor="let w of workflows" [value]="w.id">
+        {{ w.name }} (v{{ w.version }}) — {{ w.stageNames.length ? w.stageNames.join(', ') : '—' }}
+      </option>
+    </select>
+    <p class="err" *ngIf="hasError('pipelineWorkflowId','required')">
+      Workflow is required.
+    </p>
+    
+
+    <div class="actions">
+      <button type="button" class="secondary" (click)="cancel()">Cancel</button>
+      <button type="submit" [disabled]="submitting || form.invalid">Create job request</button>
+    </div>
+
+    <p class="server-error" *ngIf="serverError">{{ serverError }}</p>
+  </form>
+</div>

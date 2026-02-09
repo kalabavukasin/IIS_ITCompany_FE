@@ -1,0 +1,319 @@
+<div *ngIf="!loading && data; else state" class="page">
+  <h2>Applications details</h2>
+
+  <div class="header">
+    <div class="thumb"></div>
+    <div class="title">
+      <div class="name">{{ data.requestName }}</div>
+      <div class="desc">{{ data.requestDescription }}</div>
+    </div>
+  </div>
+
+  <div class="grid spec">
+    <div>
+      <div class="label">Current status</div>
+      <div class="value badge">{{ data.applicationStatus }}</div>
+    </div>
+    <div>
+      <div class="label">Applied at</div>
+      <div class="value">{{ data.appliedAt | date:'dd.MM.yyyy. HH:mm' }}</div>
+    </div>
+    <div>
+      <div class="label">Location</div>
+      <div class="value">{{ data.requestLocation || '—' }}</div>
+    </div>
+
+    <div>
+      <div class="label">Seniority level</div>
+      <div class="value">{{ data.seniority || '—' }}</div>
+    </div>
+    <div>
+      <div class="label">Open until</div>
+      <div class="value">{{ data.openUntil ? (data.openUntil | date:'dd.MM.yyyy.') : '—' }}</div>
+    </div>
+    <div>
+      <div class="label">Working hours</div>
+      <div class="value">7-15h</div>
+    </div>
+
+    <div>
+      <div class="label">Salary</div>
+      <div class="value">{{ data.salary | currency:'EUR':'symbol-narrow':'1.0-0' }}</div>
+    </div>
+    <div>
+      <div class="label">Created by</div>
+      <div class="value">{{ data.createdBy || '—' }}</div>
+    </div>
+    <div>
+      <div class="label">Technologies</div>
+      <div class="value">{{ data.technologies || '—' }}</div>
+    </div>
+  </div>
+
+  <div class="user">
+    <div class="avatar"></div>
+    <div class="user-grid">
+      <div>
+        <div class="label">Full name</div>
+        <div class="value">{{ data.candidateFullName }}</div>
+      </div>
+      <div>
+        <div class="label">e-mail</div>
+        <div class="value">{{ data.candidateEmail || '—' }}</div>
+      </div>
+      <div>
+        <div class="label">Phone number</div>
+        <div class="value">{{ data.candidatePhone || '—' }}</div>
+      </div>
+
+      <div class="cv">
+        <a *ngIf="data.cvDownloadUrl" (click)="downloadCv()">Download user CV</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="phases">
+    <div class="section-title">Current phase</div>
+    <div class="flow">
+      <ng-container *ngFor="let p of data.phases; let i = index">
+        <div class="phase">
+          <div class="phase-name">{{ p }}</div>
+          <div class="dot" 
+            [class.active]="p === data.currentPhase"
+            [class.stopped]="p === data.currentPhase && data.applicationStatus !== 'ACTIVE'"
+            [class.success]="p === 'Ponuda' && data.currentPhase === 'Ponuda'">{{ i }}</div>
+        </div>
+        <div class="arrow" *ngIf="i < data.phases.length - 1">→</div>
+      </ng-container>
+    </div>
+
+    <div class="actions" *ngIf="data.applicationStatus === 'ACTIVE' && data.currentPhase !== 'Ponuda'">
+      <button class="danger" (click)="openRefuseModal()">Refuse application</button>
+      <button class="primary" (click)="onProceedClicked()">Proceed to next phase</button>
+    </div>
+  </div>
+  <!-- === TEST (read-only) === -->
+<div class="test-section">
+  <div class="section-title">Test</div>
+
+  <div *ngIf="testLoading">Učitavam test…</div>
+  <div *ngIf="!testLoading && testError" class="err">{{ testError }}</div>
+
+  <ng-container *ngIf="!testLoading && !testError">
+    <!-- Nema testa -->
+    <div *ngIf="!test" class="muted">Test ne postoji za ovu aplikaciju.</div>
+
+    <!-- Postoji test -->
+    <div *ngIf="test" class="test-grid">
+      <div>
+        <span class="label">Type</span>
+        <div class="value">{{ test.type || '—' }}</div>
+      </div>
+      <div>
+        <span class="label">Invite status</span>
+        <div class="value">{{ test.inviteStatus || '—' }}</div>
+      </div>
+      <div>
+        <span class="label">Deadline</span>
+        <div class="value">{{ test.deadline ? (test.deadline | date:'dd.MM.yyyy. HH:mm') : '—' }}</div>
+      </div>
+      <div>
+        <span class="label">Score</span>
+        <div class="value">{{ (test.score ?? '—') }}</div>
+      </div>
+      <div>
+        <span class="label">Passed</span>
+        <div class="value">
+          <ng-container *ngIf="test.passed === true">Yes</ng-container>
+          <ng-container *ngIf="test.passed === false">No</ng-container>
+          <ng-container *ngIf="test.passed === null || test.passed === undefined">—</ng-container>
+        </div>
+      </div>
+      <div class="fullrow" *ngIf="test.link">
+        <span class="label">Link</span>
+        <div class="value" *ngIf="canOpenTestLink(); else disabledLink">
+          <a [href]="test.link" target="_blank" rel="noopener">Open test</a>
+        </div>
+        <ng-template #disabledLink>
+          <div class="value muted">Link disabled — invite not active</div>
+        </ng-template>
+      </div>
+    </div>
+  </ng-container>
+</div>
+
+<!-- === EVALUATION === -->
+<div class="test-section" style="margin-top:16px;">
+  <div class="section-title">Evaluation</div>
+
+  <div *ngIf="evalLoading">Učitavam evaluaciju…</div>
+  <div *ngIf="!evalLoading && evalError" class="err">{{ evalError }}</div>
+
+  <ng-container *ngIf="!evalLoading && !evalError">
+    <!-- Nema evaluacije -->
+    <div *ngIf="!evaluation" class="muted">Evaluacija ne postoji za ovu aplikaciju.</div>
+
+    <!-- Postoji evaluacija -->
+    <div *ngIf="evaluation as ev" class="test-grid">
+      <div>
+        <span class="label">Final grade</span>
+        <div class="value">{{ ev.grade || '—' }}</div>
+      </div>
+      <div>
+        <span class="label">Created at</span>
+        <div class="value">{{ ev.createdAt ? (ev.createdAt | date:'dd.MM.yyyy. HH:mm') : '—' }}</div>
+      </div>
+      <div class="fullrow" *ngIf="ev.comment">
+        <span class="label">Comment</span>
+        <div class="value">{{ ev.comment }}</div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+</div>
+<!-- ===== Modal 0: general REFUSE (preselekcija/intervju) ===== -->
+<div class="modal-backdrop" *ngIf="refuseOpen"></div>
+<div class="modal" *ngIf="refuseOpen" role="dialog" aria-modal="true" aria-labelledby="refuseTitle">
+  <h3 id="refuseTitle" class="modal-title">Type a reason</h3>
+  <textarea rows="6" [(ngModel)]="refuseReason" (blur)="refuseTouched = true" placeholder="Write the reason..."></textarea>
+  <div class="err" *ngIf="refuseTouched && !refuseReason.trim()">Reason is required.</div>
+  <div class="modal-actions">
+    <button class="danger" (click)="confirmRefuse()" [disabled]="!refuseReason.trim()">Refuse application</button>
+    <button class="secondary" (click)="cancelRefuse()">Cancel</button>
+  </div>
+</div>
+
+<!-- ===== Modal 1: PRESELEKCIJA -> TEST (upload testa) ===== -->
+<div class="modal-backdrop" *ngIf="testUploadOpen"></div>
+<div class="modal" *ngIf="testUploadOpen" role="dialog" aria-modal="true" aria-labelledby="testUploadTitle">
+  <h3 id="testUploadTitle" class="modal-title">Upload test</h3>
+
+  <label class="label">Upload test file</label>
+  <input type="file" (change)="onTestFileSelected($event)" />
+
+  <div class="err" *ngIf="testFileError">{{ testFileError }}</div>
+
+  <label class="label" style="margin-top:8px;">Active until</label>
+  <input type="datetime-local" [(ngModel)]="testActiveUntil" [min]="minDateTime" />
+
+  <label class="label" style="margin-top:8px;">Test type</label>
+  <select [(ngModel)]="testType">
+    <option value="CODING">Coding</option>
+    <option value="QUIZ">Quiz</option>
+    <option value="TAKE_HOME">Take Home</option>
+    <option value="LANGUAGE">Language</option>
+    <option value="OTHER">Other</option>
+  </select>
+
+
+  <div class="modal-actions">
+    <button class="primary" (click)="confirmProceedToTest()" 
+            [disabled]="!testFile || !testActiveUntil">Send test</button>
+    <button class="secondary" (click)="cancelTestUpload()">Cancel</button>
+  </div>
+</div>
+
+<!-- ===== Modal 2: REFUSE u fazi TEST (unos poena + refuse) ===== -->
+<div class="modal-backdrop" *ngIf="testRefuseOpen"></div>
+<div class="modal" *ngIf="testRefuseOpen" role="dialog" aria-modal="true" aria-labelledby="testRefuseTitle">
+  <h3 id="testRefuseTitle" class="modal-title">Refuse nakon testa</h3>
+
+  <label class="label">Bodovi na testu</label>
+  <input type="number" min="0" class="input"
+         [(ngModel)]="testScoreRefuse"
+         (blur)="testScoreRefuseTouched = true"
+         placeholder="Unesi broj bodova" />
+  <div class="err" *ngIf="testScoreRefuseTouched && (testScoreRefuse === null || testScoreRefuse === undefined)">
+    Bodovi su obavezni.
+  </div>
+
+  <label class="label" style="margin-top:8px;">Komentar</label>
+  <textarea rows="5"
+            [(ngModel)]="testRefuseReason"
+            (blur)="testRefuseReasonTouched = true"
+            placeholder="Navedite razlog odbijanja…"></textarea>
+  <div class="err" *ngIf="testRefuseReasonTouched && !testRefuseReason?.trim()">
+    Komentar je obavezan.
+  </div>
+
+  <div class="modal-actions">
+    <button class="danger"
+            (click)="confirmRefuseFromTest()"
+            [disabled]="(testScoreRefuse === null || testScoreRefuse === undefined) || !testRefuseReason?.trim()">
+      Refuse application
+    </button>
+    <button class="secondary" (click)="cancelTestRefuse()">Cancel</button>
+  </div>
+</div>
+
+<!-- ===== Modal 3: TEST -> INTERVJU ===== -->
+<div class="modal-backdrop" *ngIf="interviewOpen"></div>
+<div class="modal" *ngIf="interviewOpen" role="dialog" aria-modal="true" aria-labelledby="interviewTitle">
+  <h3 id="interviewTitle" class="modal-title">Proceed to interview phase</h3>
+
+  <ng-container *ngIf="isFromTest()">
+    <label class="label">How many points did user score</label>
+    <input type="number" min="0" class="input" [(ngModel)]="testScoreProceed" />
+  </ng-container>
+
+  <label class="label" style="margin-top:8px;">Select interview date and time</label>
+  <input type="datetime-local" [(ngModel)]="interviewDateTime" [min]="minDateTime"/>
+
+  <label class="label" style="margin-top:8px;">Type interview location</label>
+  <input type="text" class="input" [(ngModel)]="interviewLocation" />
+
+  <label class="label" style="margin-top:8px;">Type of interview</label>
+  <select [(ngModel)]="interviewType">
+    <option value="HR_SCREEN">HR screen</option>
+    <option value="TECHNICAL">Technical</option>
+    <option value="SYSTEM_DESIGN">System design</option>
+    <option value="MANAGERIAL">Managerial</option>
+    <option value="FINAL">Final</option>
+  </select>
+
+  <label class="label" style="margin-top:8px;">Duration of interview (minutes)</label>
+  <input type="number" min="10" class="input" [(ngModel)]="interviewDuration" />
+
+  <label class="label" style="margin-top:8px;">Select interviewer</label>
+  <select [(ngModel)]="interviewerId">
+    <option [ngValue]="null" disabled>Select interviewer…</option>
+    <option *ngFor="let m of staffInterviewers" [ngValue]="m.id">
+      {{ m.fullName }} — {{ m.role }}
+    </option>
+  </select>
+
+  <!-- Observers (čekboks; samo HR_MANAGER i HIRING_MANAGER) -->
+  <label class="label" style="margin-top:8px;">Select observers (optional)</label>
+  <div class="observer-list">
+    <label class="chk" *ngFor="let m of staffObservers">
+      <input type="checkbox"
+            [checked]="isObserverSelected(m.id)"
+            (change)="onObserverChange(m.id, $event)">
+      <span>{{ m.fullName }} — {{ m.role }}</span>
+    </label>
+  </div>
+
+  <div class="modal-actions">
+    <button class="primary" (click)="confirmProceedToInterview()"
+            [disabled]="!isInterviewFormValid()">Proceed to interview phase</button>
+    <button class="secondary" (click)="cancelInterview()">Cancel</button>
+  </div>
+</div>
+
+<!-- ===== Modal 4: INTERVJU -> PONUDA ===== -->
+<div class="modal-backdrop" *ngIf="offerOpen"></div>
+<div class="modal" *ngIf="offerOpen" role="dialog" aria-modal="true" aria-labelledby="offerTitle">
+  <h3 id="offerTitle" class="modal-title">Starting date</h3>
+
+  <input type="date" [(ngModel)]="offerStartDate" [min]="minDate"/>
+
+  <div class="modal-actions">
+    <button class="primary" (click)="confirmMakeOffer()" [disabled]="!offerStartDate">Make an offer</button>
+    <button class="secondary" (click)="cancelOffer()">Cancel</button>
+  </div>
+</div>
+
+<ng-template #state>
+  <p *ngIf="loading">Loading…</p>
+  <p *ngIf="!loading && error" class="err">{{ error }}</p>
+</ng-template>
