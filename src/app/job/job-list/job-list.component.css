@@ -3,8 +3,12 @@
     margin:24px auto;
     padding:0 16px
 }
-h2{
-    margin-bottom:16px
+h2 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    color: #1f2937;
+    text-align: center;
 }
 .card{display:grid;
     grid-template-columns:96px 1fr 240px;
@@ -19,7 +23,18 @@ h2{
     width:96px;
     height:96px;
     border:1px dashed #9ca3af;
-    border-radius:8px
+    border-radius:8px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:42px;
+    color:#9ca3af;
+    background:#f9fafb;
+    transition:all 0.3s ease
+}
+.card:hover .thumb{
+    border-color:#3b82f6;
+    color:#3b82f6
 }
 .main .name{
     font-weight:600;
@@ -44,15 +59,31 @@ h2{
 .side .label{
     color:#6b7280
 }
+.side .label i{
+    margin-right:6px;
+    color:#3b82f6
+}
 .side .value{
     font-weight:500
 }
 .more{
     margin-top:15px;
-    margin-left: 82%;
-    display:inline-block;
+    margin-left:82%;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
     color:#2563eb;
-    cursor:pointer
+    cursor:pointer;
+    transition:all 0.3s ease
+}
+.more:hover{
+    color:#1d4ed8
+}
+.more i{
+    transition:transform 0.3s ease
+}
+.more:hover i{
+    transform:translateX(3px)
 }
 .err{
     color:#ef4444

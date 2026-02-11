@@ -61,4 +61,26 @@ export class RequestsListComponent implements OnInit {
     this.router.navigate(['/request', id]);
     //console.log("YOU JUST WANT MORE AND MORE");
   }
+
+  getStatusIcon(status: string): string {
+    const icons: { [key: string]: string } = {
+      'DRAFT': 'fa-solid fa-file-pen',
+      'PENDING_APPROVAL': 'fa-solid fa-clock',
+      'APPROVED': 'fa-solid fa-circle-check',
+      'REJECTED': 'fa-solid fa-circle-xmark',
+      'CLOSED': 'fa-solid fa-folder'
+    };
+    return icons[status] || 'fa-solid fa-circle-question';
+  }
+
+  getStatusColor(status: string): string {
+    const colors: { [key: string]: string } = {
+      'DRAFT': '#6b7280',
+      'PENDING_APPROVAL': '#f59e0b',
+      'APPROVED': '#10b981',
+      'REJECTED': '#ef4444',
+      'CLOSED': '#8b5cf6'
+    };
+    return colors[status] || '#6b7280';
+  }
 }

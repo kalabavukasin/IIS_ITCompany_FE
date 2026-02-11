@@ -3,7 +3,9 @@
 
   <ng-container *ngIf="!loading && !error; else state">
     <div *ngFor="let r of items" class="card">
-      <div class="thumb"></div>
+      <div class="thumb">
+        <i class="fa-solid fa-briefcase"></i>
+      </div>
 
       <div class="main">
         <div class="name">{{ r.name }}</div>
@@ -11,13 +13,23 @@
       </div>
 
       <div class="side">
-        <div class="row"><span class="label">Status</span><span class="value">{{ r.status }}</span></div>
-        <div class="row"><span class="label">Location</span><span class="value">{{ r.location }}</span></div>
         <div class="row">
-          <span class="label">Open until</span>
+          <span class="label"><i class="fa-solid fa-circle-info"></i> Status</span>
+          <span class="value status-badge" [style.color]="getStatusColor(r.status)">
+            <i [class]="getStatusIcon(r.status)"></i> {{ r.status }}
+          </span>
+        </div>
+        <div class="row">
+          <span class="label"><i class="fa-solid fa-location-dot"></i> Location</span>
+          <span class="value">{{ r.location }}</span>
+        </div>
+        <div class="row">
+          <span class="label"><i class="fa-solid fa-calendar-days"></i> Open until</span>
           <span class="value">{{ openUntil(r.createdAt) | date:'dd.MM.yyyy.' }}</span>
         </div>
-        <a class="more" (click)="more(r.id)">More</a>
+        <a class="more" (click)="more(r.id)">
+          <i class="fa-solid fa-arrow-right"></i> More
+        </a>
       </div>
     </div>
 

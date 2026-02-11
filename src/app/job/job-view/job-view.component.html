@@ -2,7 +2,9 @@
   <h2>Job Posting</h2>
 
   <div class="header">
-    <div class="thumb"></div>
+    <div class="thumb">
+      <i class="fa-solid fa-briefcase"></i>
+    </div>
     <div class="title">
       <div class="name">{{ data.name }}</div>
       <div class="desc">{{ data.description }}</div>
@@ -11,34 +13,38 @@
 
   <div class="grid">
     <div>
-      <span class="label">Seniority level</span>
+      <span class="label"><i class="fa-solid fa-user-tie"></i> Seniority level</span>
       <div class="value">{{ data.seniority || '—' }}</div>
     </div>
     <div>
-      <span class="label">Location</span>
+      <span class="label"><i class="fa-solid fa-location-dot"></i> Location</span>
       <div class="value">{{ data.location }}</div>
     </div>
     <div>
-      <span class="label">Technologies</span>
+      <span class="label"><i class="fa-solid fa-code"></i> Technologies</span>
       <div class="value">{{ data.programmingLanguages || '—' }}</div>
     </div>
     <div>
-      <span class="label">Open until</span>
+      <span class="label"><i class="fa-solid fa-calendar-days"></i> Open until</span>
       <div class="value">{{ data.openUntil | date:'dd.MM.yyyy.' }}</div>
     </div>
     <div>
-      <span class="label">Salary</span>
+      <span class="label"><i class="fa-solid fa-money-bill-wave"></i> Salary</span>
       <div class="value">{{ data.budget | number:'1.0-0' }}</div>
     </div>
     <div>
-      <span class="label">Working hours</span>
+      <span class="label"><i class="fa-solid fa-clock"></i> Working hours</span>
       <div class="value">7-15h</div>
     </div>
   </div>
 
   <div class="actions">
-    <button class="primary" *ngIf="canApply()" (click)="apply()">Apply</button>
-    <div class="value" *ngIf="!canApply() && applied">Already applied</div>
+    <button class="primary" *ngIf="canApply()" (click)="apply()">
+      <i class="fa-solid fa-paper-plane"></i> Apply
+    </button>
+    <div class="value" *ngIf="!canApply() && applied">
+      <i class="fa-solid fa-check-circle"></i> Already applied
+    </div>
   </div>
 </div>
 

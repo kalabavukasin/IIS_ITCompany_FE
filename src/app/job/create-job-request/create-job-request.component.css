@@ -4,7 +4,14 @@
     padding: 0 16px;
 }
 
-h2 { 
+h2 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    color: #1f2937;
+    text-align: center;
+}
+h1 {
     text-align: center;
     margin-bottom: 16px;
 }
@@ -14,17 +21,17 @@ h2 {
     background: #fff;
     padding: 20px;
     border-radius: 12px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid black;
 }
 label {
-    font-size: 14px;
-    color: #666;
+    font-size: 16px;
+    color: #383737;
 }
 input, textarea, select {
     padding: 10px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid #8f9196;
     border-radius: 8px;
-    font-size: 14px;
+    font-size: 16px;
 }
 input:focus, textarea:focus, select:focus {
     outline: none;
@@ -32,13 +39,13 @@ input:focus, textarea:focus, select:focus {
 }
 .err { 
     margin: -6px 0 4px;
-    font-size: 12px;
+    font-size: 14px;
     color: #ef4444;
 }
 .actions { 
     display: flex;
     justify-content: space-between;
-    margin-top: 12px;
+    margin-top: 14px;
 }
 button { 
     padding: 10px 14px;
@@ -58,5 +65,5 @@ button[disabled] {
 }
 .server-error { 
     color:#ef4444;
-     margin-top:8px;
+    margin-top:8px;
 }
