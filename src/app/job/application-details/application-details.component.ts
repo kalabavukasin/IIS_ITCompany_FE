@@ -45,7 +45,6 @@ export class ApplicationDetailsComponent implements OnInit {
   minDate: string = '';
 
   flowCompleted = false;
-  userId: number | null = null;
 
   staff: StaffMemberDTO[] = [];
   staffInterviewers: StaffMemberDTO[] = [];
@@ -70,7 +69,6 @@ export class ApplicationDetailsComponent implements OnInit {
   ngOnInit(): void {
     const u = this.auth.getLoggedInUser();
     if (!u || (u.role !== 'HR_MANAGER' && u.role !== 'HIRING_MANAGER')) { this.router.navigate(['']); return; }
-    this.userId = u.id;
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.applicationId = id;
     this.svc.getDetails(id).subscribe({
@@ -237,18 +235,15 @@ export class ApplicationDetailsComponent implements OnInit {
       activeUntil: this.testActiveUntil,
       type: this.testType
     });
-    if(this.userId != null){
-      this.svc.sendTestInvite(
+    this.svc.sendTestInvite(
       this.data.applicationId,
       this.testType,
       new Date(this.testActiveUntil).toISOString(),
-      this.userId,
       this.testFile
     ).subscribe({
       next: _ => { this.testUploadOpen = false; this.reloadDetails(); this.loadTest(this.applicationId);},
       error: err => { this.testFileError = 'Greška pri slanju testa.'; console.error(err); }
     });
-    }
     this.loadTest(this.applicationId);
     this.testUploadOpen = false;
   }
@@ -346,8 +341,7 @@ export class ApplicationDetailsComponent implements OnInit {
     if (this.isFromTest() && this.testScoreProceed !== null && this.testScoreProceed !== undefined) {
       dto.testScore = this.testScoreProceed;
     }
-    if(this.userId)
-    this.svc.scheduleInterview(dto,this.userId).subscribe({
+    this.svc.scheduleInterview(dto).subscribe({
       next: _ => {
         this.interviewOpen = false;
         this.reloadDetails();
@@ -366,8 +360,7 @@ export class ApplicationDetailsComponent implements OnInit {
     applicationId: this.data.applicationId,
     startDate: this.offerStartDate
     };
-    if(this.userId)
-    this.svc.makeOffer(dto, this.userId).subscribe({
+    this.svc.makeOffer(dto).subscribe({
       next: _ => {
         this.offerOpen = false;
         this.flowCompleted = true;

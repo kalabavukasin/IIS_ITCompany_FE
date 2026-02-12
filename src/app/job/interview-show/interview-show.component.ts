@@ -21,9 +21,7 @@ export class InterviewShowComponent implements OnInit {
   evalForInterviewId: number | null = null;
   evalComment = '';
   evalGrade: number | null = null;
-  loggedInterviewerId!: number;
 
-  loggedUserId!: number;
   loggedRole!: AppRole;
   
 
@@ -33,7 +31,6 @@ export class InterviewShowComponent implements OnInit {
     const u = this.auth.getLoggedInUser();
     if (!u) { this.router.navigate(['']); return; }
 
-    this.loggedUserId = u.id;
     this.loggedRole = u.role as AppRole; // ← bez type cast-a
 
     // Dozvoljene role za ovu stranicu
@@ -41,16 +38,16 @@ export class InterviewShowComponent implements OnInit {
     if (!allowed.includes(this.loggedRole)) { this.router.navigate(['']); return; }
 
     // Grananje po roli:
-    this.fetch(this.loggedUserId, this.loggedRole);
+    this.fetch(this.loggedRole);
   }
 
-  private fetch(userId: number, role: AppRole) {
+  private fetch(role: AppRole) {
     this.loading = true;
     this.error = '';
 
     const src$ = role === 'INTERVIEWER'
-      ? this.interviews.getByInterviewerId(userId)
-      : this.interviews.getObservedByUserId(userId); // HR/HIRING_MANAGER
+      ? this.interviews.getMine()
+      : this.interviews.getObserved(); // HR/HIRING_MANAGER
 
     src$.subscribe({
       next: (res) => { this.items = res ?? []; this.loading = false; },
@@ -113,11 +110,10 @@ export class InterviewShowComponent implements OnInit {
     }
     this.evals.create({
       interviewId: this.evalForInterviewId,
-      interviewerId: this.loggedUserId,
       grade: String(this.evalGrade),
       comment: this.evalComment ?? ''
     }).subscribe({
-      next: _ => { this.showEvalModal = false; this.fetch(this.loggedUserId, this.loggedRole); },
+      next: _ => { this.showEvalModal = false; this.fetch(this.loggedRole); },
       error: err => alert(err?.error?.message || 'Failed to submit evaluation.')
     });
   }

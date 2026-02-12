@@ -17,7 +17,6 @@ export class RequestsListComponent implements OnInit {
 
   isHR = false;
   isHiring = false;
-  userId!: number;
 
   constructor(
     private svc: JobRequestService,
@@ -29,7 +28,6 @@ export class RequestsListComponent implements OnInit {
     const user = this.auth.getLoggedInUser();
     if (!user) { this.router.navigate(['']); return; }
 
-    this.userId = user.id;
     this.isHR = user.role === 'HR_MANAGER';
     this.isHiring = user.role === 'HIRING_MANAGER';
 
@@ -42,8 +40,8 @@ export class RequestsListComponent implements OnInit {
   load() {
     this.loading = true;
     const obs = this.isHR
-      ? this.svc.listMine(this.userId)
-      : this.svc.listToApprove(this.userId);
+      ? this.svc.listMine()
+      : this.svc.listToApprove();
 
     obs.subscribe({
       next: (res) => { this.items = res; this.loading = false; },

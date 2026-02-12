@@ -1,19 +1,7 @@
 <nav class="sidebar">
   <div class="sidebar-content">
 
-    <!-- Logo (opciono) -->
-   <!-- <div class="logo">
-      <img src="assets/OnlyBunsLogoIcon.png" class="nav-image" alt="Logo">
-    </div> -->
-
-    <!-- Dugme za login/logout -->
     <ul class="nav-links">
-      <li *ngIf="!isAuthenticated">
-        <a routerLink="/login"><i class="fa fa-sign-in"></i> Sign In</a>
-      </li>
-      <li *ngIf="isAuthenticated">
-        <a (click)="logout()"><i class="fa fa-sign-out"></i> Sign Out</a>
-      </li>
       <li *ngIf="role === 'HR_MANAGER'">
         <a routerLink="/jobs/create"><i class="fa fa-plus"></i> Create Job</a>
       </li>
@@ -45,7 +33,16 @@
 
       <!-- reports: HR_MANAGER i HIRING_MANAGER -->
       <li *ngIf="role === 'HR_MANAGER' || role === 'HIRING_MANAGER'">
-        <a (click)="openReportModal()" class="report-link"><i class="fa fa-file-pdf-o"></i> Izveštaji</a>
+        <a (click)="openReportModal()" class="report-link"><i class="fa fa-chart-bar"></i> Reports</a>
+      </li>
+    </ul>
+
+    <ul class="nav-links nav-bottom">
+      <li *ngIf="!isAuthenticated">
+        <a routerLink="/login"><i class="fa fa-sign-in"></i> Sign In</a>
+      </li>
+      <li *ngIf="isAuthenticated">
+        <a (click)="logout()"><i class="fa fa-sign-out"></i> Sign Out</a>
       </li>
     </ul>
 

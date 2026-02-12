@@ -6,7 +6,8 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './infrastructure/auth/login/login.component';
 import { RegisterComponent } from './infrastructure/auth/register/register.component';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { JwtInterceptor } from './infrastructure/auth/jwt.interceptor';
 import { ActivationComponent } from './infrastructure/auth/activation/activation.component';
 import { HomeComponent } from './layout/home/home.component';
 import { NavbarComponent } from './layout/navbar/navbar.component';
@@ -50,7 +51,9 @@ import { ReportModalComponent } from './layout/report-modal/report-modal.compone
     HttpClientModule,
     ReactiveFormsModule
   ],
-  providers: [],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,7 +1,7 @@
 .page {
-    max-width: 980px;
-    margin: 24px auto;
-    padding: 0 16px;
+    max-width: 1100px;
+    margin: 32px auto;
+    padding: 0 24px;
 }
 h2 {
     font-size: 32px;
@@ -14,27 +14,35 @@ h2 {
 .list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
     max-height: 70vh;
     overflow: auto;
-    padding-right: 4px;
+    padding: 4px;
 }
 
 .card {
     display: grid;
     grid-template-columns: 120px 1fr;
-    gap: 16px;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    background: #fff;
-    padding: 16px;
+    gap: 20px;
+    border: 1px solid #b0b2b6;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+    border-color: #3b82f6;
 }
 
 .ad-left .thumb {
     width: 120px;
     height:120px;
     border:2px dashed #9ca3af;
-    border-radius:8px;
+    border-radius:12px;
     display:flex;
     align-items:center;
     justify-content:center;
@@ -42,6 +50,11 @@ h2 {
     color:#9ca3af;
     background:#f9fafb;
     transition:all 0.3s ease;
+}
+
+.card:hover .ad-left .thumb {
+    border-color: #3b82f6;
+    color: #3b82f6;
 }
 .ad-main .ad-title{
   font-weight: 600;
@@ -116,11 +129,11 @@ h2 {
     background: #e5e7eb; 
     display: inline-block;
 }
-.user-main  { 
+.user-main  {
     grid-column: 1 / -1;
-    margin-top: 12px; 
-    padding-top: 12px; 
-    border-top: 1px solid #bdbfc4; 
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #b0b2b6;
 }
 .section-title  { 
     font-weight: 600;
@@ -206,8 +219,13 @@ h2 {
 }
 .empty  {
     color: #6b7280;
-    padding: 8px; 
+    font-size: 16px;
+    text-align: center;
+    padding: 20px;
 }
-.err  { 
-    color:  #ef4444;
+.err  {
+    color: #ef4444;
+    font-size: 16px;
+    text-align: center;
+    padding: 20px;
 }

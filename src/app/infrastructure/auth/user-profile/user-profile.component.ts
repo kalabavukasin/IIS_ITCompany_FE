@@ -23,7 +23,6 @@ export class UserProfileComponent implements OnInit {
   offers: OfferCardDTO[] = [];
   showAcceptModal = false;
   offerToAccept: OfferCardDTO | null = null;
-  loggedUserId!: number;
 
   phoneForm = this.fb.group({ phone: ['', [Validators.required, Validators.minLength(6)]] });
   pwdForm   = this.fb.group({
@@ -41,8 +40,7 @@ export class UserProfileComponent implements OnInit {
   ngOnInit(): void {
     const u = this.auth.getLoggedInUser();
     if (!u || u.role !== 'CANDIDATE') { this.router.navigate(['']); return; }
-    if (u?.id) this.load(u.id);
-    this.loggedUserId = u.id;
+    this.load();
 
     this.loading = true;
     this.svc.getProfile(u.id).subscribe({
@@ -55,15 +53,15 @@ export class UserProfileComponent implements OnInit {
     //  error: _ => {}
    // });
   }
-  private load(candidateId: number) {
-    this.svc.myApplicationCards(candidateId).subscribe({
+  private load() {
+    this.svc.myApplicationCards().subscribe({
       next: list => this.apps = list,
       error: err => console.error(err)
     });
-    this.loadOffers(candidateId);
+    this.loadOffers();
   }
-  private loadOffers(candidateId: number){
-    this.svc.myRecentOffers(candidateId, 30).subscribe({
+  private loadOffers(){
+    this.svc.myRecentOffers(30).subscribe({
       next: (offers) => { this.offers = offers ?? []; this.loading = false; },
       error: (err) => { this.error = err?.error?.message || 'Failed to load offers.'; this.loading = false; }
     });
@@ -110,13 +108,13 @@ export class UserProfileComponent implements OnInit {
 
   confirmAccept() {
     if (!this.offerToAccept) return;
-    this.svc.acceptOffer(this.offerToAccept.offerId, this.loggedUserId).subscribe({
+    this.svc.acceptOffer(this.offerToAccept.offerId).subscribe({
       next: (updated) => {
         // lokalno osveži status kartice (ili refetch cele liste)
         const idx = this.offers.findIndex(x => x.offerId === updated.offerId);
         if (idx >= 0) this.offers[idx] = updated;
         this.cancelAccept();
-        this.loadOffers(this.loggedUserId);
+        this.loadOffers();
       },
       error: (err) => {
         alert(err?.error?.message || 'Failed to accept offer.');
@@ -125,12 +123,12 @@ export class UserProfileComponent implements OnInit {
   }
   confirmDecline() {
     if (!this.offerToAccept) return;
-    this.svc.declineOffer(this.offerToAccept.offerId, this.loggedUserId).subscribe({
+    this.svc.declineOffer(this.offerToAccept.offerId).subscribe({
       next: (updated) => {
         const idx = this.offers.findIndex(x => x.offerId === updated.offerId);
         if (idx >= 0) this.offers[idx] = updated;
         this.cancelAccept();
-        this.loadOffers(this.loggedUserId);
+        this.loadOffers();
       },
       error: (err) => alert(err?.error?.message || 'Failed to decline offer.')
     });
