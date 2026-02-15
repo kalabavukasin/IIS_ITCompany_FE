@@ -28,13 +28,12 @@ export class JobViewComponent implements OnInit {
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     const user = this.auth.getLoggedInUser();
-    const candidateId = user?.role === 'CANDIDATE' ? user.id : undefined;
     if (!user) { this.router.navigate(['']); return; }
     this.isCandidate = user.role === 'CANDIDATE';
      if (!this.isCandidate) { this.router.navigate(['']); return; }
 
     this.loading = true;
-    this.svc.getDetail(id, candidateId).subscribe({
+    this.svc.getDetail(id).subscribe({
       next: res => { this.data = res; this.applied = res.alreadyApplied; this.loading = false; },
       error: err => { this.error = err?.error?.message ?? 'Failed to load job.'; this.loading = false; }
     });
@@ -49,7 +48,7 @@ export class JobViewComponent implements OnInit {
     const user = this.auth.getLoggedInUser();
     if (!user || user.role !== 'CANDIDATE') { this.router.navigate(['/login']); return; }
 
-    this.application.apply(this.data.id, user.id).subscribe({
+    this.application.apply(this.data.id).subscribe({
       next: response => { 
         this.applied = true;
         console.log(response) },

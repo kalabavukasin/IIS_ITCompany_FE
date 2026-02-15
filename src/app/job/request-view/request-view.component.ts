@@ -17,7 +17,6 @@ export class RequestViewComponent implements OnInit {
 
   isHR = false;
   isHiring = false;
-  userId!: number;
   modalOpen = false;
   modalAction: 'approve' | 'reject' | null = null;
   comment = '';
@@ -53,11 +52,10 @@ export class RequestViewComponent implements OnInit {
       return;
     }
     const id = this.data.id;
-    const userId = this.userId;
 
     const obs = this.modalAction === 'approve'
-      ? this.svc.approve(id, userId, this.comment.trim())
-      : this.svc.reject(id, userId, this.comment.trim());
+      ? this.svc.approve(id, this.comment.trim())
+      : this.svc.reject(id, this.comment.trim());
 
     obs.subscribe({
       next: (res) => { this.data = res; this.closeModal(); },
@@ -69,7 +67,6 @@ export class RequestViewComponent implements OnInit {
     const user = this.auth.getLoggedInUser?.() ?? JSON.parse(localStorage.getItem('user') || 'null');
     if (!user) { this.router.navigate(['/home']); return; }
 
-    this.userId = user.id;
     this.isHR = user.role === 'HR_MANAGER';
     this.isHiring = user.role === 'HIRING_MANAGER';
 
@@ -107,7 +104,7 @@ export class RequestViewComponent implements OnInit {
 
   canAct(): boolean {
     if (!this.isHiring || !this.data) return false;
-    return !['APPROVED', 'REJECTED', 'CLOSED'].includes(this.data.status);
+    return !['APPROVED', 'REJECTED', 'CLOSED', 'DRAFT'].includes(this.data.status);
   }
 
  /* approve() {

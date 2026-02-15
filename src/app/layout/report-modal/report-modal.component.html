@@ -1,33 +1,33 @@
 <div class="modal-overlay" (click)="onCloseModal()">
   <div class="modal-content" [class.plsql-modal]="showPlsqlResults" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h3>Generiši Izveštaj</h3>
+      <h3>Generate Report</h3>
       <button class="close-btn" (click)="onCloseModal()">&times;</button>
     </div>
     
     <div class="modal-body" *ngIf="!showPlsqlResults">
       <div class="form-group">
-        <label for="reportFormat">Format izveštaja:</label>
+        <label for="reportFormat">Report format:</label>
         <select id="reportFormat" [(ngModel)]="selectedReportFormat" class="form-control">
-          <option value="pdf">PDF (Postojeći)</option>
-          <option value="plsql">PL/SQL Analitički Izveštaj (JSON)</option>
+          <option value="pdf">PDF (Classic)</option>
+          <option value="plsql">PL/SQL report (JSON)</option>
         </select>
       </div>
 
       <div class="form-group">
-        <label for="reportType">Tip izveštaja:</label>
+        <label for="reportType">Report type:</label>
         <select id="reportType" [(ngModel)]="selectedReportType" (change)="onReportTypeChange()" class="form-control">
-          <option value="custom">Prilagođeni period</option>
-          <option value="current-month">Tekući mesec</option>
-          <option value="current-year">Tekuća godina</option>
-          <option value="last-30-days">Poslednjih 30 dana</option>
+          <option value="custom">Custom</option>
+          <option value="current-month">Current month</option>
+          <option value="current-year">Current year</option>
+          <option value="last-30-days">Last 30 days</option>
         </select>
       </div>
 
       <div *ngIf="selectedReportType === 'custom'" class="form-group">
         <div class="date-inputs">
           <div class="date-input">
-            <label for="startDate">Početni datum:</label>
+            <label for="startDate">Start date:</label>
             <input 
               type="date" 
               id="startDate" 
@@ -36,7 +36,7 @@
               required>
           </div>
           <div class="date-input">
-            <label for="endDate">Krajnji datum:</label>
+            <label for="endDate">End date:</label>
             <input 
               type="date" 
               id="endDate" 
@@ -48,11 +48,11 @@
       </div>
 
       <div *ngIf="selectedReportType !== 'custom'" class="info-text">
-        <p>Izveštaj će biti generisan za {{ getReportTypeDescription() }}</p>
+        <p>Report for {{ getReportTypeDescription() }}</p>
       </div>
 
       <div *ngIf="selectedReportFormat === 'plsql'" class="info-box">
-        <strong>ℹ️ PL/SQL Izveštaj:</strong>
+        <strong>ℹ️ PL/SQL Report:</strong>
         <p>Kompleksan analitički izveštaj sa metrikama zapošljavanja, performansama po fazama, i analizom po oglasima.</p>
         <p>Koristi PL/SQL funkcije, kursore, i složene SQL upite.</p>
       </div>

@@ -2,7 +2,9 @@
   <h2>Application Details</h2>
 
   <div class="header">
-    <div class="thumb"></div>
+    <div class="thumb">
+      <i class="fa-solid fa-briefcase"></i>
+    </div>
     <div class="title">
       <div class="name">{{ data.requestName }}</div>
       <div class="desc">{{ data.requestDescription }}</div>
@@ -11,42 +13,42 @@
 
   <div class="grid">
     <div>
-      <span class="label">Seniority level</span>
+      <span class="label"><i class="fa-solid fa-user-tie"></i> Seniority level</span>
       <div class="value">{{ data.seniority || '—' }}</div>
     </div>
     <div>
-      <span class="label">Location</span>
+      <span class="label"><i class="fa-solid fa-location-dot"></i> Location</span>
       <div class="value">{{ data.requestLocation || '—' }}</div>
     </div>
     <div>
-      <span class="label">Technologies</span>
+      <span class="label"><i class="fa-solid fa-code"></i> Technologies</span>
       <div class="value">{{ data.technologies || '—' }}</div>
     </div>
     <div>
-      <span class="label">Open until</span>
+      <span class="label"><i class="fa-solid fa-calendar-days"></i> Open until</span>
       <div class="value">{{ data.openUntil | date:'dd.MM.yyyy.' }}</div>
     </div>
     <div>
-      <span class="label">Salary</span>
+      <span class="label"><i class="fa-solid fa-money-bill-wave"></i> Salary</span>
       <div class="value">{{ salaryFormatted() }}</div>
     </div>
     <div>
-      <span class="label">Created by</span>
+      <span class="label"><i class="fa-solid fa-user"></i> Created by</span>
       <div class="value">{{ data.createdBy || '—' }}</div>
     </div>
   </div>
 
   <div class="info-cards">
     <div class="info-card">
-      <div class="ic-label">Application status</div>
+      <div class="ic-label"><i class="fa-solid fa-circle-info"></i> Application status</div>
       <div class="ic-value">{{ data.applicationStatus }}</div>
     </div>
     <div class="info-card">
-      <div class="ic-label">Applied at</div>
+      <div class="ic-label"><i class="fa-solid fa-calendar-check"></i> Applied at</div>
       <div class="ic-value">{{ data.appliedAt | date:'dd.MM.yyyy. HH:mm' }}</div>
     </div>
     <div class="info-card">
-      <div class="ic-label">Current phase</div>
+      <div class="ic-label"><i class="fa-solid fa-layer-group"></i> Current phase</div>
       <div class="ic-value">{{ data.currentPhase || '—' }}</div>
     </div>
   </div>
@@ -58,7 +60,7 @@
    </div>
    <!-- TEST sekcija -->
         <div class="test-section">
-            <div class="section-title">Test</div>
+            <div class="section-title"><i class="fa-solid fa-file-lines"></i> Test</div>
 
             <div *ngIf="testLoading">Učitavam test…</div>
             <div *ngIf="!testLoading && testError" class="err">{{ testError }}</div>
@@ -70,25 +72,25 @@
                 <!-- Postoji test -->
                 <div *ngIf="test" class="test-grid">
                 <div>
-                    <span class="label">Type</span>
+                    <span class="label"><i class="fa-solid fa-tag"></i> Type</span>
                     <div class="value">{{ test.type || '—' }}</div>
                 </div>
                 <div>
-                    <span class="label">Invite status</span>
+                    <span class="label"><i class="fa-solid fa-envelope"></i> Invite status</span>
                     <div class="value">{{ test.inviteStatus || '—' }}</div>
                 </div>
                 <div>
-                    <span class="label">Deadline</span>
+                    <span class="label"><i class="fa-solid fa-hourglass-end"></i> Deadline</span>
                     <div class="value">
                     {{ test.deadline ? (test.deadline | date:'dd.MM.yyyy. HH:mm') : '—' }}
                     </div>
                 </div>
                 <div>
-                    <span class="label">Score</span>
+                    <span class="label"><i class="fa-solid fa-star"></i> Score</span>
                     <div class="value">{{ (test.score ?? '—') }}</div>
                 </div>
                 <div>
-                    <span class="label">Passed</span>
+                    <span class="label"><i class="fa-solid fa-check-circle"></i> Passed</span>
                     <div class="value">
                     <ng-container *ngIf="test.passed === true">Yes</ng-container>
                     <ng-container *ngIf="test.passed === false">No</ng-container>
@@ -96,9 +98,9 @@
                     </div>
                 </div>
                 <div class="fullrow" *ngIf="test.link">
-                    <span class="label">Link</span>
+                    <span class="label"><i class="fa-solid fa-link"></i> Link</span>
                     <div class="value" *ngIf="canOpenTestLink(); else disabledLink">
-                        <a [href]="test.link" target="_blank" rel="noopener">Open test</a></div>
+                        <a [href]="test.link" target="_blank" rel="noopener"><i class="fa-solid fa-external-link-alt"></i> Open test</a></div>
                     </div>
                     <ng-template #disabledLink>
                         <div class="value muted">
@@ -107,10 +109,12 @@
                     </ng-template>
                 </div>
                 <div class="fullrow" *ngIf="canUploadTest()">
-                    <span class="label">Upload test</span>
+                    <span class="label"><i class="fa-solid fa-upload"></i> Upload test</span>
                     <div class="value">
                         <input type="file" (change)="onSolutionSelected($event)" />
-                        <button class="primary" (click)="replaceTestFile()" [disabled]="!newTestFile || !!newTestFileError">Upload</button>
+                        <button class="primary" (click)="replaceTestFile()" [disabled]="!newTestFile || !!newTestFileError">
+                          <i class="fa-solid fa-cloud-upload-alt"></i> Upload
+                        </button>
                         <div *ngIf="newTestFileError" class="err" style="margin-top:6px;">
                             {{ newTestFileError }}
                         </div>
@@ -119,7 +123,7 @@
         </ng-container>
     </div>
     <div class="test-section" style="margin-top:16px;">
-        <div class="section-title">Interview</div>
+        <div class="section-title"><i class="fa-solid fa-comments"></i> Interview</div>
 
         <div *ngIf="interviewLoading">Učitavam intervju…</div>
         <div *ngIf="!interviewLoading && interviewError" class="err">{{ interviewError }}</div>
@@ -129,25 +133,25 @@
 
             <div *ngIf="interview as iv" class="test-grid">
             <div>
-                <span class="label">Type</span>
+                <span class="label"><i class="fa-solid fa-tag"></i> Type</span>
                 <div class="value">{{ iv.type || '—' }}</div>
             </div>
             <div>
-                <span class="label">Status</span>
+                <span class="label"><i class="fa-solid fa-circle-info"></i> Status</span>
                 <div class="value">{{ iv.status || '—' }}</div>
             </div>
             <div>
-                <span class="label">Scheduled at</span>
+                <span class="label"><i class="fa-solid fa-calendar-days"></i> Scheduled at</span>
                 <div class="value">
                 {{ iv.scheduledAt ? (iv.scheduledAt | date:'dd.MM.yyyy. HH:mm') : '—' }}
                 </div>
             </div>
             <div>
-                <span class="label">Location</span>
+                <span class="label"><i class="fa-solid fa-location-dot"></i> Location</span>
                 <div class="value">{{ iv.location || '—' }}</div>
             </div>
             <div>
-                <span class="label">Duration</span>
+                <span class="label"><i class="fa-solid fa-clock"></i> Duration</span>
                 <div class="value">{{ iv.durationMinutes ? (iv.durationMinutes + ' min') : '—' }}</div>
             </div>
             </div>

@@ -38,9 +38,11 @@ export interface ChangePassword { oldPassword: string; newPassword: string; }
 export class UserService {
   private readonly api = 'http://localhost:8080/api/users';
   constructor(private http: HttpClient) {}
+
   getById(id: number): Observable<UserDTO> {
     return this.http.get<UserDTO>(`${this.api}/${id}`);
   }
+
   updatePhone(id: number, phone: string): Observable<UserProfile> {
     return this.http.patch<UserProfile>(`${this.api}/${id}/phone`, { phone } as PhoneUpdate);
   }
@@ -48,32 +50,37 @@ export class UserService {
   changePassword(id: number, oldPassword: string, newPassword: string): Observable<void> {
     return this.http.patch<void>(`${this.api}/${id}/password`, { oldPassword, newPassword } as ChangePassword);
   }
+
   getProfile(id: number): Observable<UserProfile> {
     return this.http.get<UserProfile>(`${this.api}/${id}`);
   }
-  
-  myApplicationCards(candidateId: number) {
+
+  myApplicationCards() {
     return this.http.get<ApplicationCardDTO[]>(
-      `http://localhost:8080/api/applications/${candidateId}/cards`
+      'http://localhost:8080/api/applications/my-cards'
     );
   }
+
   getStaffMembers(): Observable<StaffMemberDTO[]> {
     return this.http.get<StaffMemberDTO[]>(`${this.api}/staff`);
   }
 
-  myRecentOffers(candidateId: number, days = 30) {
+  myRecentOffers(days = 30) {
     return this.http.get<OfferCardDTO[]>(
-      `http://localhost:8080/api/offers/${candidateId}/recent`,
+      'http://localhost:8080/api/offers/my-recent',
       { params: { days } as any }
     );
   }
-  acceptOffer(offerId: number, userId: number) {
+
+  acceptOffer(offerId: number) {
     return this.http.post<OfferCardDTO>(
-      `http://localhost:8080/api/offers/${offerId}/accept`,
-      { userId }
+      `http://localhost:8080/api/offers/${offerId}/accept`, {}
     );
   }
-  declineOffer(offerId: number, userId: number) {
-    return this.http.post<OfferCardDTO>(`http://localhost:8080/api/offers/${offerId}/decline`, { userId });
+
+  declineOffer(offerId: number) {
+    return this.http.post<OfferCardDTO>(
+      `http://localhost:8080/api/offers/${offerId}/decline`, {}
+    );
   }
 }

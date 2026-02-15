@@ -1,8 +1,10 @@
 <div class="page" *ngIf="!loading && !error && data; else state">
-  <h2>Request to approve</h2>
+  <h2>Request information</h2>
 
   <div class="header">
-    <div class="thumb"></div>
+    <div class="thumb">
+      <i class="fa-solid fa-briefcase"></i>
+    </div>
     <div class="title">
       <div class="name">{{ data.name }}</div>
       <div class="desc">{{ data.description }}</div>
@@ -11,44 +13,48 @@
 
   <div class="grid">
     <div>
-      <span class="label">Status</span>
+      <span class="label"><i class="fa-solid fa-circle-info"></i> Status</span>
       <div class="value">{{ data.status }}</div>
     </div>
     <div>
-      <span class="label">Open until</span>
+      <span class="label"><i class="fa-solid fa-calendar-days"></i> Open until</span>
       <div class="value">{{ openUntil() | date:'dd.MM.yyyy.' }}</div>
     </div>
     <div>
-      <span class="label">Location</span>
+      <span class="label"><i class="fa-solid fa-location-dot"></i> Location</span>
       <div class="value">{{ data.location }}</div>
     </div>
     <div>
-      <span class="label">Seniority level</span>
+      <span class="label"><i class="fa-solid fa-user-tie"></i> Seniority level</span>
       <div class="value">{{ data.seniority }}</div>
     </div>
     <div>
-      <span class="label">Created by</span>
+      <span class="label"><i class="fa-solid fa-user"></i> Created by</span>
       <div class="value">
         {{ data.createdByFullName }}
       </div>
     </div>
     <div>
-      <span class="label">Working hours</span>
+      <span class="label"><i class="fa-solid fa-clock"></i> Working hours</span>
       <div class="value">7-15h</div> <!-- $any(data)?.workingHours || '—' -->
     </div>
     <div>
-      <span class="label">Salary</span>
+      <span class="label"><i class="fa-solid fa-money-bill-wave"></i> Salary</span>
       <div class="value">{{ data.budget | number:'1.0-0' }}</div>
     </div>
     <div>
-      <span class="label">Technologies</span>
+      <span class="label"><i class="fa-solid fa-code"></i> Technologies</span>
       <div class="value">{{ data.programmingLanguages }}</div>
     </div>
   </div>
 
   <div class="actions" *ngIf="canAct()">
-    <button class="danger" (click)="openModal('reject')">Refuse request</button>
-    <button class="primary" (click)="openModal('approve')">Approve</button>
+    <button class="danger" (click)="openModal('reject')">
+      <i class="fa-solid fa-xmark"></i> Refuse request
+    </button>
+    <button class="primary" (click)="openModal('approve')">
+      <i class="fa-solid fa-check"></i> Approve
+    </button>
   </div>
 </div>
 <div class="overlay" *ngIf="modalOpen" (click)="closeModal()"></div>

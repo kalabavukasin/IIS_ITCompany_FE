@@ -14,7 +14,6 @@ import { WorkflowService } from '../workflow.service';
 export class CreateJobRequestComponent implements OnInit {
 
   seniorities: Seniority[] = ['INTERN','JUNIOR','MID','SENIOR','LEAD','PRINCIPAL'];
-  userId: number | null = null;
   workflows: WorkflowSummary[] = [];
 
   form = this.fb.group({
@@ -41,9 +40,6 @@ export class CreateJobRequestComponent implements OnInit {
       this.router.navigate(['/']);
       return;
     }
-    else{
-      this.userId = user.id;
-    }
     this.wfSvc.list().subscribe({
       next: (data) => (this.workflows = data),
       error: () => (this.workflows = [])
@@ -57,19 +53,19 @@ export class CreateJobRequestComponent implements OnInit {
     }
     this.submitting = true;
     ///console.log(this.form.value);
-    if(this.userId !== null){
-      this.svc.create(this.form.value as any,this.userId).subscribe({
-        next: (response) => {
-          this.submitting = false;
-          console.log('Job request created:', response);
-          this.router.navigate(['/requests']);
-        },
-        error: err => {
-          this.submitting = false;
-          this.serverError = err?.error?.message ?? 'Došlo je do greške pri čuvanju.';
-        }
-      });
-    }
+    const user = this.authService.getLoggedInUser();
+    if (!user) { this.router.navigate(['/']); return; }
+    this.svc.create(this.form.value as any).subscribe({
+      next: (response) => {
+        this.submitting = false;
+        console.log('Job request created:', response);
+        this.router.navigate(['/requests']);
+      },
+      error: err => {
+        this.submitting = false;
+        this.serverError = err?.error?.message ?? 'Došlo je do greške pri čuvanju.';
+      }
+    });
   }
 
   cancel() {

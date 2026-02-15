@@ -4,38 +4,41 @@
   <div class="list">
     <div class="card" *ngFor="let i of items">
       <div class="ad-left">
-        <div class="thumb"></div>
+        <div class="thumb">
+          <i class="fa-solid fa-comments"></i>
+        </div>
       </div>
 
       <div class="ad-main">
-        <div class="ad-title">Type of interview</div>
 
         <div class="grid">
           <div>
-            <div class="label">Type</div>
+            <div class="label"><i class="fa-solid fa-tag"></i> Type</div>
             <div class="value name">{{ prettyEnum(i.type) }}</div>
 
-            <div class="label mt">Candidate</div>
+            <div class="label mt"><i class="fa-solid fa-user"></i> Candidate</div>
             <div class="value">{{ i.candidateName }}</div>
 
-            <div class="label mt">Duration</div>
+            <div class="label mt"><i class="fa-solid fa-clock"></i> Duration</div>
             <div class="value">{{ i.duration }} min</div>
           </div>
 
           <div>
-            <div class="label">Status</div>
+            <div class="label"><i class="fa-solid fa-circle-info"></i> Status</div>
             <div [class]="statusClass(i.status)">{{ prettyEnum(i.status) }}</div>
 
-            <div class="label mt">Location</div>
+            <div class="label mt"><i class="fa-solid fa-location-dot"></i> Location</div>
             <div class="value">{{ i.location || '—' }}</div>
 
-            <div class="label mt">Date and time</div>
+            <div class="label mt"><i class="fa-solid fa-calendar-days"></i> Date and time</div>
             <div class="value">{{ i.scheduledAt | date: 'dd.MM.yyyy. HH:mm' }}</div>
 
             <div class="more-wrapper">
             <a class="more"
                 *ngIf="canEvaluate(i)"
-                (click)="openEval(i)">Evaluate</a>
+                (click)="openEval(i)">
+              <i class="fa-solid fa-pen-to-square"></i> Evaluate
+            </a>
             </div>
           </div>
         </div>

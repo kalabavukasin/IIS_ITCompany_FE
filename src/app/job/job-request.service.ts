@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { CreateRequestion, RequestionResponse } from './model/requestion.model';
 
@@ -9,34 +9,31 @@ export class JobRequestService {
 
   constructor(private http: HttpClient) {}
 
-  create(payload: CreateRequestion, userId : number): Observable<RequestionResponse> {
-    const url = `${this.api}?userId=${userId}`;
-    return this.http.post<RequestionResponse>(url, payload);
+  create(payload: CreateRequestion): Observable<RequestionResponse> {
+    return this.http.post<RequestionResponse>(this.api, payload);
   }
 
   list(): Observable<RequestionResponse[]> {
     return this.http.get<RequestionResponse[]>(this.api);
   }
-  listMine(userId: number): Observable<RequestionResponse[]> {
-    const params = new HttpParams().set('userId', userId);
-    return this.http.get<RequestionResponse[]>(`${this.api}/mine`, { params });
+
+  listMine(): Observable<RequestionResponse[]> {
+    return this.http.get<RequestionResponse[]>(`${this.api}/mine`);
   }
 
-  listToApprove(userId: number): Observable<RequestionResponse[]> {
-    const params = new HttpParams().set('userId', userId);
-    return this.http.get<RequestionResponse[]>(`${this.api}/to-approve`, { params });
+  listToApprove(): Observable<RequestionResponse[]> {
+    return this.http.get<RequestionResponse[]>(`${this.api}/to-approve`);
   }
+
   getById(id: number): Observable<RequestionResponse> {
     return this.http.get<RequestionResponse>(`${this.api}/${id}`);
   }
 
-  approve(id: number, userId: number, comment: string): Observable<RequestionResponse> {
-    const params = new HttpParams().set('userId', userId.toString());
-    return this.http.post<RequestionResponse>(`${this.api}/${id}/approve`, { comment }, { params });
+  approve(id: number, comment: string): Observable<RequestionResponse> {
+    return this.http.post<RequestionResponse>(`${this.api}/${id}/approve`, { comment });
   }
 
-  reject(id: number, userId: number, comment: string): Observable<RequestionResponse> {
-    const params = new HttpParams().set('userId', userId.toString());
-    return this.http.post<RequestionResponse>(`${this.api}/${id}/reject`, { comment }, { params });
+  reject(id: number, comment: string): Observable<RequestionResponse> {
+    return this.http.post<RequestionResponse>(`${this.api}/${id}/reject`, { comment });
   }
 }

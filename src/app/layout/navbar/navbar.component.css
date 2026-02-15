@@ -6,7 +6,7 @@
   height: 100%;
   width: 220px;
   background-color: #ffffff;
-  border-right: 1px solid #e9e9e9;
+  border-right: 1px solid #818181;
   padding: 1rem;
   display: flex;
   flex-direction: column;
@@ -23,12 +23,26 @@
   height: 50px;
 }
 
+/* Sidebar content fills height, pushes bottom links down */
+.sidebar-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
 /* Links */
 .nav-links {
   list-style: none;
   padding: 0;
   margin: 0;
   width: 100%;
+}
+
+.nav-bottom {
+  margin-top: auto;
+  border-top: 1px solid #818181;
+  padding-top: 0.5rem;
 }
 .nav-links li {
   margin: 1rem 0;

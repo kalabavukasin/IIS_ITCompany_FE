@@ -2,7 +2,9 @@
   <h2>Applications details</h2>
 
   <div class="header">
-    <div class="thumb"></div>
+    <div class="thumb">
+      <i class="fa-solid fa-briefcase"></i>
+    </div>
     <div class="title">
       <div class="name">{{ data.requestName }}</div>
       <div class="desc">{{ data.requestDescription }}</div>
@@ -11,69 +13,73 @@
 
   <div class="grid spec">
     <div>
-      <div class="label">Current status</div>
+      <div class="label"><i class="fa-solid fa-circle-info"></i> Current status</div>
       <div class="value badge">{{ data.applicationStatus }}</div>
     </div>
     <div>
-      <div class="label">Applied at</div>
+      <div class="label"><i class="fa-solid fa-calendar-check"></i> Applied at</div>
       <div class="value">{{ data.appliedAt | date:'dd.MM.yyyy. HH:mm' }}</div>
     </div>
     <div>
-      <div class="label">Location</div>
+      <div class="label"><i class="fa-solid fa-location-dot"></i> Location</div>
       <div class="value">{{ data.requestLocation || '—' }}</div>
     </div>
 
     <div>
-      <div class="label">Seniority level</div>
+      <div class="label"><i class="fa-solid fa-user-tie"></i> Seniority level</div>
       <div class="value">{{ data.seniority || '—' }}</div>
     </div>
     <div>
-      <div class="label">Open until</div>
+      <div class="label"><i class="fa-solid fa-calendar-days"></i> Open until</div>
       <div class="value">{{ data.openUntil ? (data.openUntil | date:'dd.MM.yyyy.') : '—' }}</div>
     </div>
     <div>
-      <div class="label">Working hours</div>
+      <div class="label"><i class="fa-solid fa-clock"></i> Working hours</div>
       <div class="value">7-15h</div>
     </div>
 
     <div>
-      <div class="label">Salary</div>
+      <div class="label"><i class="fa-solid fa-money-bill-wave"></i> Salary</div>
       <div class="value">{{ data.salary | currency:'EUR':'symbol-narrow':'1.0-0' }}</div>
     </div>
     <div>
-      <div class="label">Created by</div>
+      <div class="label"><i class="fa-solid fa-user"></i> Created by</div>
       <div class="value">{{ data.createdBy || '—' }}</div>
     </div>
     <div>
-      <div class="label">Technologies</div>
+      <div class="label"><i class="fa-solid fa-code"></i> Technologies</div>
       <div class="value">{{ data.technologies || '—' }}</div>
     </div>
   </div>
 
   <div class="user">
-    <div class="avatar"></div>
+    <div class="avatar">
+      <i class="fa-solid fa-user"></i>
+    </div>
     <div class="user-grid">
       <div>
-        <div class="label">Full name</div>
+        <div class="label"><i class="fa-solid fa-user"></i> Full name</div>
         <div class="value">{{ data.candidateFullName }}</div>
       </div>
       <div>
-        <div class="label">e-mail</div>
+        <div class="label"><i class="fa-solid fa-envelope"></i> e-mail</div>
         <div class="value">{{ data.candidateEmail || '—' }}</div>
       </div>
       <div>
-        <div class="label">Phone number</div>
+        <div class="label"><i class="fa-solid fa-phone"></i> Phone number</div>
         <div class="value">{{ data.candidatePhone || '—' }}</div>
       </div>
 
       <div class="cv">
-        <a *ngIf="data.cvDownloadUrl" (click)="downloadCv()">Download user CV</a>
+        <a *ngIf="data.cvDownloadUrl" (click)="downloadCv()">
+          <i class="fa-solid fa-download"></i> Download user CV
+        </a>
       </div>
     </div>
   </div>
 
   <div class="phases">
-    <div class="section-title">Current phase</div>
+    <div class="section-title"><i class="fa-solid fa-list-check"></i> Current phase</div>
     <div class="flow">
       <ng-container *ngFor="let p of data.phases; let i = index">
         <div class="phase">
@@ -94,7 +100,7 @@
   </div>
   <!-- === TEST (read-only) === -->
 <div class="test-section">
-  <div class="section-title">Test</div>
+  <div class="section-title"><i class="fa-solid fa-file-lines"></i> Test</div>
 
   <div *ngIf="testLoading">Učitavam test…</div>
   <div *ngIf="!testLoading && testError" class="err">{{ testError }}</div>
@@ -106,23 +112,23 @@
     <!-- Postoji test -->
     <div *ngIf="test" class="test-grid">
       <div>
-        <span class="label">Type</span>
+        <span class="label"><i class="fa-solid fa-tag"></i> Type</span>
         <div class="value">{{ test.type || '—' }}</div>
       </div>
       <div>
-        <span class="label">Invite status</span>
+        <span class="label"><i class="fa-solid fa-envelope"></i> Invite status</span>
         <div class="value">{{ test.inviteStatus || '—' }}</div>
       </div>
       <div>
-        <span class="label">Deadline</span>
+        <span class="label"><i class="fa-solid fa-hourglass-end"></i> Deadline</span>
         <div class="value">{{ test.deadline ? (test.deadline | date:'dd.MM.yyyy. HH:mm') : '—' }}</div>
       </div>
       <div>
-        <span class="label">Score</span>
+        <span class="label"><i class="fa-solid fa-star"></i> Score</span>
         <div class="value">{{ (test.score ?? '—') }}</div>
       </div>
       <div>
-        <span class="label">Passed</span>
+        <span class="label"><i class="fa-solid fa-check-circle"></i> Passed</span>
         <div class="value">
           <ng-container *ngIf="test.passed === true">Yes</ng-container>
           <ng-container *ngIf="test.passed === false">No</ng-container>
@@ -130,9 +136,9 @@
         </div>
       </div>
       <div class="fullrow" *ngIf="test.link">
-        <span class="label">Link</span>
+        <span class="label"><i class="fa-solid fa-link"></i> Link</span>
         <div class="value" *ngIf="canOpenTestLink(); else disabledLink">
-          <a [href]="test.link" target="_blank" rel="noopener">Open test</a>
+          <a [href]="test.link" target="_blank" rel="noopener"><i class="fa-solid fa-external-link-alt"></i> Open test</a>
         </div>
         <ng-template #disabledLink>
           <div class="value muted">Link disabled — invite not active</div>
@@ -144,7 +150,7 @@
 
 <!-- === EVALUATION === -->
 <div class="test-section" style="margin-top:16px;">
-  <div class="section-title">Evaluation</div>
+  <div class="section-title"><i class="fa-solid fa-clipboard-check"></i> Evaluation</div>
 
   <div *ngIf="evalLoading">Učitavam evaluaciju…</div>
   <div *ngIf="!evalLoading && evalError" class="err">{{ evalError }}</div>
@@ -156,15 +162,15 @@
     <!-- Postoji evaluacija -->
     <div *ngIf="evaluation as ev" class="test-grid">
       <div>
-        <span class="label">Final grade</span>
+        <span class="label"><i class="fa-solid fa-star"></i> Final grade</span>
         <div class="value">{{ ev.grade || '—' }}</div>
       </div>
       <div>
-        <span class="label">Created at</span>
+        <span class="label"><i class="fa-solid fa-calendar-days"></i> Created at</span>
         <div class="value">{{ ev.createdAt ? (ev.createdAt | date:'dd.MM.yyyy. HH:mm') : '—' }}</div>
       </div>
       <div class="fullrow" *ngIf="ev.comment">
-        <span class="label">Comment</span>
+        <span class="label"><i class="fa-solid fa-comment"></i> Comment</span>
         <div class="value">{{ ev.comment }}</div>
       </div>
     </div>

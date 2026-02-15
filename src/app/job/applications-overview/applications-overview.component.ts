@@ -19,7 +19,12 @@ export class ApplicationsOverviewComponent implements OnInit {
   ngOnInit(): void {
     const u = this.auth.getLoggedInUser();
     if (!u || (u.role !== 'HR_MANAGER' && u.role !== 'HIRING_MANAGER')) { this.router.navigate(['']); return; }
-    this.svc.getAllApplicationCards().subscribe({
+
+    const cards$ = u.role === 'HR_MANAGER'
+      ? this.svc.getMyCreatedCards()
+      : this.svc.getMyManagedCards();
+
+    cards$.subscribe({
       next: (list) => { this.items = list; this.loading = false; },
       error: (_) => { this.error = 'Failed to load applications.'; this.loading = false; }
     });
