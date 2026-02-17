@@ -112,7 +112,7 @@ export class ApplicationService {
   }
 
   makeOffer(dto: OfferCreateDTO) {
-    return this.http.post<void>(`${this.api}/offer`, dto);
+    return this.http.post<void>('http://localhost:8080/api/offers', dto);
   }
 
   refuseAfterTest(dto: TestRefuseDTO, applicationId: number) {
