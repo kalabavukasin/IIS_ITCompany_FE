@@ -1,0 +1,120 @@
+<div class="page" *ngIf="!loading; else state">
+
+  <!-- BACK -->
+  <button class="btn-back" (click)="goBack()">
+    <i class="fa-solid fa-arrow-left"></i> Back to postings
+  </button>
+
+  <!-- HEADER -->
+  <div class="header" *ngIf="postingName">
+    <div class="thumb" [ngClass]="seniorityBadge(postingSeniority).css">
+      <span class="seniority-emoji">{{ seniorityBadge(postingSeniority).emoji }}</span>
+      <span class="seniority-label">{{ seniorityBadge(postingSeniority).label }}</span>
+    </div>
+    <div class="header-info">
+      <div class="posting-name">{{ postingName }}</div>
+      <div class="posting-desc">{{ postingDesc }}</div>
+      <div class="posting-meta">
+        <span *ngIf="postingLocation"><i class="fa-solid fa-location-dot"></i> {{ postingLocation }}</span>
+        <span *ngIf="postingOpenUntil"><i class="fa-solid fa-calendar-days"></i> Open until: {{ postingOpenUntil | date:'dd.MM.yyyy.' }}</span>
+        <span><i class="fa-solid fa-users"></i> {{ items.length }} applicant{{ items.length !== 1 ? 's' : '' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="error" class="err">{{ error }}</div>
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar">
+    <div class="phase-tabs">
+      <button
+        *ngFor="let p of uniquePhases"
+        [class.active]="selectedPhase === p"
+        (click)="selectPhase(p)">
+        {{ p }} <span class="tab-count">{{ phaseCount(p) }}</span>
+      </button>
+    </div>
+    <div class="status-toggle">
+      <button [class.active]="!showAll" (click)="showAll = false; clearSelection()">Active only</button>
+      <button [class.active]="showAll"  (click)="showAll = true;  clearSelection()">All</button>
+    </div>
+  </div>
+
+  <!-- BULK ACTION BAR -->
+  <div class="bulk-bar" *ngIf="selectedCount > 0">
+    <span class="bulk-count">
+       {{ selectedCount }} selected
+    </span>
+    <div class="bulk-actions">
+      <button class="bulk-btn bulk-refuse" disabled title="Coming soon">
+        <i class="fa-solid fa-xmark"></i> Refuse selected
+      </button>
+      <button class="bulk-btn bulk-proceed" disabled title="Coming soon">
+        Proceed selected <i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </div>
+    <button class="bulk-clear" (click)="clearSelection()">
+      <i class="fa-solid fa-xmark"></i> Clear
+    </button>
+  </div>
+
+  <!-- CANDIDATES TABLE -->
+  <div class="table-wrapper">
+    <div *ngIf="filteredItems.length === 0" class="empty">
+      <ng-container *ngIf="items.length === 0">No applicants for this posting.</ng-container>
+      <ng-container *ngIf="items.length > 0">No candidates match the current filter.</ng-container>
+    </div>
+
+    <table *ngIf="filteredItems.length > 0">
+      <thead>
+        <tr>
+          <th class="th-check">
+            <input
+              type="checkbox"
+              [checked]="allSelected"
+              (change)="toggleSelectAll($any($event.target).checked)"
+            />
+          </th>
+          <th>Candidate</th>
+          <th>Phase</th>
+          <th>Status</th>
+          <th>CV</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let a of filteredItems" [class.row-selected]="selectedIds.has(a.applicationId)">
+          <td class="td-check">
+            <input
+              type="checkbox"
+              [checked]="selectedIds.has(a.applicationId)"
+              (change)="toggleSelect(a.applicationId, $any($event.target).checked)"
+            />
+          </td>
+          <td class="td-name">{{ a.candidateName }}</td>
+          <td class="td-phase">{{ a.currentPhase || '—' }}</td>
+          <td class="td-status">
+            <span class="status-badge" [ngClass]="'status-' + a.status.toLowerCase()">
+              {{ a.status }}
+            </span>
+          </td>
+          <td class="td-cv">
+            <a *ngIf="a.cvDownloadUrl" class="btn-cv" (click)="downloadCv(a.cvDownloadUrl!)">
+              <i class="fa-solid fa-download"></i> Download
+            </a>
+            <span *ngIf="!a.cvDownloadUrl" class="no-cv">—</span>
+          </td>
+          <td class="td-actions">
+            <button class="btn-view" (click)="viewApplication(a)">
+              <i class="fa-solid fa-eye"></i> View
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<ng-template #state>
+  <p class="state-msg"><i class="fa-solid fa-spinner fa-spin"></i> Loading…</p>
+</ng-template>

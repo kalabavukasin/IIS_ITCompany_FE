@@ -1,165 +1,177 @@
 <div class="page" *ngIf="!loading && !error && data; else state">
   <h2>Application Details</h2>
 
-  <div class="header">
-    <div class="thumb">
-      <i class="fa-solid fa-briefcase"></i>
+  <!-- HEADER -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="posting-title">{{ data.requestName }}</div>
+      <div class="posting-desc">{{ data.requestDescription }}</div>
     </div>
-    <div class="title">
-      <div class="name">{{ data.requestName }}</div>
-      <div class="desc">{{ data.requestDescription }}</div>
+    <button class="btn-job-details" (click)="showJobDetails = !showJobDetails">
+      <i class="fa-solid" [ngClass]="showJobDetails ? 'fa-chevron-up' : 'fa-solid fa-circle-info'"></i>
+      {{ showJobDetails ? 'Hide job details' : 'Job details' }}
+    </button>
+  </div>
+
+  <!-- JOB DETAILS CARD (collapsible) -->
+  <div *ngIf="showJobDetails" class="details-card">
+    <div class="section-title"><i class="fa-solid fa-circle-info"></i> Job details</div>
+    <div class="jd-grid">
+      <div class="jd-item">
+        <span class="jd-label"><i class="fa-solid fa-user-tie"></i> Seniority</span>
+        <span class="jd-value">{{ data.seniority || '—' }}</span>
+      </div>
+      <div class="jd-item">
+        <span class="jd-label"><i class="fa-solid fa-location-dot"></i> Location</span>
+        <span class="jd-value">{{ data.requestLocation || '—' }}</span>
+      </div>
+      <div class="jd-item">
+        <span class="jd-label"><i class="fa-solid fa-money-bill-wave"></i> Salary</span>
+        <span class="jd-value">€{{ salaryFormatted() }}</span>
+      </div>
+      <div class="jd-item">
+        <span class="jd-label"><i class="fa-solid fa-calendar-days"></i> Open until</span>
+        <span class="jd-value">{{ data.openUntil | date:'dd.MM.yyyy.' }}</span>
+      </div>
+      <div class="jd-item">
+        <span class="jd-label"><i class="fa-solid fa-code"></i> Technologies</span>
+        <span class="jd-value">{{ data.technologies || '—' }}</span>
+      </div>
+      <div class="jd-item">
+        <span class="jd-label"><i class="fa-solid fa-user"></i> Created by</span>
+        <span class="jd-value">{{ data.createdBy || '—' }}</span>
+      </div>
     </div>
   </div>
 
-  <div class="grid">
-    <div>
-      <span class="label"><i class="fa-solid fa-user-tie"></i> Seniority level</span>
-      <div class="value">{{ data.seniority || '—' }}</div>
+  <!-- MY APPLICATION CARD -->
+  <div class="details-card">
+    <div class="section-title"><i class="fa-solid fa-file-signature"></i> My application</div>
+    <div class="jd-grid">
+      <div class="jd-item">
+        <span class="jd-label"><i class="fa-solid fa-circle-info"></i> Status</span>
+        <span class="jd-value">
+          <span class="app-status-badge" [ngClass]="'app-' + data.applicationStatus.toLowerCase()">
+            {{ data.applicationStatus }}
+          </span>
+        </span>
+      </div>
+      <div class="jd-item">
+        <span class="jd-label"><i class="fa-solid fa-calendar-check"></i> Applied at</span>
+        <span class="jd-value">{{ data.appliedAt | date:'dd.MM.yyyy. HH:mm' }}</span>
+      </div>
+      <div class="jd-item">
+        <span class="jd-label"><i class="fa-solid fa-layer-group"></i> Current phase</span>
+        <span class="jd-value">{{ data.currentPhase || '—' }}</span>
+      </div>
     </div>
-    <div>
-      <span class="label"><i class="fa-solid fa-location-dot"></i> Location</span>
-      <div class="value">{{ data.requestLocation || '—' }}</div>
-    </div>
-    <div>
-      <span class="label"><i class="fa-solid fa-code"></i> Technologies</span>
-      <div class="value">{{ data.technologies || '—' }}</div>
-    </div>
-    <div>
-      <span class="label"><i class="fa-solid fa-calendar-days"></i> Open until</span>
-      <div class="value">{{ data.openUntil | date:'dd.MM.yyyy.' }}</div>
-    </div>
-    <div>
-      <span class="label"><i class="fa-solid fa-money-bill-wave"></i> Salary</span>
-      <div class="value">{{ salaryFormatted() }}</div>
-    </div>
-    <div>
-      <span class="label"><i class="fa-solid fa-user"></i> Created by</span>
-      <div class="value">{{ data.createdBy || '—' }}</div>
-    </div>
-  </div>
-
-  <div class="info-cards">
-    <div class="info-card">
-      <div class="ic-label"><i class="fa-solid fa-circle-info"></i> Application status</div>
-      <div class="ic-value">{{ data.applicationStatus }}</div>
-    </div>
-    <div class="info-card">
-      <div class="ic-label"><i class="fa-solid fa-calendar-check"></i> Applied at</div>
-      <div class="ic-value">{{ data.appliedAt | date:'dd.MM.yyyy. HH:mm' }}</div>
-    </div>
-    <div class="info-card">
-      <div class="ic-label"><i class="fa-solid fa-layer-group"></i> Current phase</div>
-      <div class="ic-value">{{ data.currentPhase || '—' }}</div>
+    <div *ngIf="data.comment" class="comment-row">
+      <span class="jd-label"><i class="fa-solid fa-comment"></i> Comment from HR</span>
+      <p class="comment-text">{{ data.comment }}</p>
     </div>
   </div>
-  <div *ngIf="data?.comment" style="margin:16px 0 4px; text-align:center;">
-    <div class="label" style="display:block; margin-bottom:6px;">Comment</div>
-    <div class="comment" style="font-style: italic;">
-        {{ data.comment }}
+
+  <!-- BOTTOM GRID: Test + Interview -->
+  <div class="bottom-grid">
+
+    <!-- TEST -->
+    <div class="details-card">
+      <div class="section-title"><i class="fa-solid fa-file-lines"></i> Test</div>
+
+      <div *ngIf="testLoading" class="muted">Loading…</div>
+      <div *ngIf="!testLoading && testError" class="err">{{ testError }}</div>
+
+      <ng-container *ngIf="!testLoading && !testError">
+        <div *ngIf="!test" class="muted">No test for this application.</div>
+
+        <div *ngIf="test" class="info-rows">
+          <div class="info-row-item">
+            <span class="ir-label"><i class="fa-solid fa-tag"></i> Type</span>
+            <span class="ir-value">{{ test.type || '—' }}</span>
+          </div>
+          <div class="info-row-item">
+            <span class="ir-label"><i class="fa-solid fa-envelope"></i> Invite status</span>
+            <span class="ir-value">{{ test.inviteStatus || '—' }}</span>
+          </div>
+          <div class="info-row-item">
+            <span class="ir-label"><i class="fa-solid fa-hourglass-end"></i> Deadline</span>
+            <span class="ir-value">{{ test.deadline ? (test.deadline | date:'dd.MM.yyyy. HH:mm') : '—' }}</span>
+          </div>
+          <div class="info-row-item">
+            <span class="ir-label"><i class="fa-solid fa-star"></i> Score</span>
+            <span class="ir-value">{{ test.score ?? '—' }}</span>
+          </div>
+          <div class="info-row-item">
+            <span class="ir-label"><i class="fa-solid fa-check-circle"></i> Passed</span>
+            <span class="ir-value">
+              <ng-container *ngIf="test.passed === true">✅ Yes</ng-container>
+              <ng-container *ngIf="test.passed === false">❌ No</ng-container>
+              <ng-container *ngIf="test.passed === null || test.passed === undefined">—</ng-container>
+            </span>
+          </div>
+          <div class="info-row-item" *ngIf="test.link">
+            <span class="ir-label"><i class="fa-solid fa-link"></i> Test link</span>
+            <span class="ir-value">
+              <a *ngIf="canOpenTestLink()" [href]="test.link" target="_blank" rel="noopener">
+                <i class="fa-solid fa-external-link-alt"></i> Open test
+              </a>
+              <span *ngIf="!canOpenTestLink()" class="muted">Not yet active</span>
+            </span>
+          </div>
+          <div class="info-row-item" *ngIf="canUploadTest()">
+            <span class="ir-label"><i class="fa-solid fa-upload"></i> Submit solution</span>
+            <span class="ir-value upload-row">
+              <input type="file" (change)="onSolutionSelected($event)" />
+              <button class="primary" (click)="replaceTestFile()" [disabled]="!newTestFile || !!newTestFileError">
+                <i class="fa-solid fa-cloud-upload-alt"></i> Upload
+              </button>
+              <div *ngIf="newTestFileError" class="err">{{ newTestFileError }}</div>
+            </span>
+          </div>
+        </div>
+      </ng-container>
     </div>
-   </div>
-   <!-- TEST sekcija -->
-        <div class="test-section">
-            <div class="section-title"><i class="fa-solid fa-file-lines"></i> Test</div>
 
-            <div *ngIf="testLoading">Učitavam test…</div>
-            <div *ngIf="!testLoading && testError" class="err">{{ testError }}</div>
+    <!-- INTERVIEW -->
+    <div class="details-card">
+      <div class="section-title"><i class="fa-solid fa-comments"></i> Interview</div>
 
-            <ng-container *ngIf="!testLoading && !testError">
-                <!-- Nema testa -->
-                <div *ngIf="!test" class="muted">Test ne postoji za ovu aplikaciju.</div>
+      <div *ngIf="interviewLoading" class="muted">Loading…</div>
+      <div *ngIf="!interviewLoading && interviewError" class="err">{{ interviewError }}</div>
 
-                <!-- Postoji test -->
-                <div *ngIf="test" class="test-grid">
-                <div>
-                    <span class="label"><i class="fa-solid fa-tag"></i> Type</span>
-                    <div class="value">{{ test.type || '—' }}</div>
-                </div>
-                <div>
-                    <span class="label"><i class="fa-solid fa-envelope"></i> Invite status</span>
-                    <div class="value">{{ test.inviteStatus || '—' }}</div>
-                </div>
-                <div>
-                    <span class="label"><i class="fa-solid fa-hourglass-end"></i> Deadline</span>
-                    <div class="value">
-                    {{ test.deadline ? (test.deadline | date:'dd.MM.yyyy. HH:mm') : '—' }}
-                    </div>
-                </div>
-                <div>
-                    <span class="label"><i class="fa-solid fa-star"></i> Score</span>
-                    <div class="value">{{ (test.score ?? '—') }}</div>
-                </div>
-                <div>
-                    <span class="label"><i class="fa-solid fa-check-circle"></i> Passed</span>
-                    <div class="value">
-                    <ng-container *ngIf="test.passed === true">Yes</ng-container>
-                    <ng-container *ngIf="test.passed === false">No</ng-container>
-                    <ng-container *ngIf="test.passed === null || test.passed === undefined">—</ng-container>
-                    </div>
-                </div>
-                <div class="fullrow" *ngIf="test.link">
-                    <span class="label"><i class="fa-solid fa-link"></i> Link</span>
-                    <div class="value" *ngIf="canOpenTestLink(); else disabledLink">
-                        <a [href]="test.link" target="_blank" rel="noopener"><i class="fa-solid fa-external-link-alt"></i> Open test</a></div>
-                    </div>
-                    <ng-template #disabledLink>
-                        <div class="value muted">
-                        Link disabled — invite not active
-                        </div>
-                    </ng-template>
-                </div>
-                <div class="fullrow" *ngIf="canUploadTest()">
-                    <span class="label"><i class="fa-solid fa-upload"></i> Upload test</span>
-                    <div class="value">
-                        <input type="file" (change)="onSolutionSelected($event)" />
-                        <button class="primary" (click)="replaceTestFile()" [disabled]="!newTestFile || !!newTestFileError">
-                          <i class="fa-solid fa-cloud-upload-alt"></i> Upload
-                        </button>
-                        <div *ngIf="newTestFileError" class="err" style="margin-top:6px;">
-                            {{ newTestFileError }}
-                        </div>
-                    </div>
-                </div>
-        </ng-container>
+      <ng-container *ngIf="!interviewLoading && !interviewError">
+        <div *ngIf="!interview" class="muted">No interview scheduled.</div>
+
+        <div *ngIf="interview as iv" class="info-rows">
+          <div class="info-row-item">
+            <span class="ir-label"><i class="fa-solid fa-tag"></i> Type</span>
+            <span class="ir-value">{{ iv.type || '—' }}</span>
+          </div>
+          <div class="info-row-item">
+            <span class="ir-label"><i class="fa-solid fa-circle-info"></i> Status</span>
+            <span class="ir-value">{{ iv.status || '—' }}</span>
+          </div>
+          <div class="info-row-item">
+            <span class="ir-label"><i class="fa-solid fa-calendar-days"></i> Scheduled at</span>
+            <span class="ir-value">{{ iv.scheduledAt ? (iv.scheduledAt | date:'dd.MM.yyyy. HH:mm') : '—' }}</span>
+          </div>
+          <div class="info-row-item">
+            <span class="ir-label"><i class="fa-solid fa-location-dot"></i> Location</span>
+            <span class="ir-value">{{ iv.location || '—' }}</span>
+          </div>
+          <div class="info-row-item">
+            <span class="ir-label"><i class="fa-solid fa-clock"></i> Duration</span>
+            <span class="ir-value">{{ iv.durationMinutes ? (iv.durationMinutes + ' min') : '—' }}</span>
+          </div>
+        </div>
+      </ng-container>
     </div>
-    <div class="test-section" style="margin-top:16px;">
-        <div class="section-title"><i class="fa-solid fa-comments"></i> Interview</div>
 
-        <div *ngIf="interviewLoading">Učitavam intervju…</div>
-        <div *ngIf="!interviewLoading && interviewError" class="err">{{ interviewError }}</div>
+  </div>
 
-        <ng-container *ngIf="!interviewLoading && !interviewError">
-            <div *ngIf="!interview" class="muted">Nema intervjua za ovu aplikaciju.</div>
-
-            <div *ngIf="interview as iv" class="test-grid">
-            <div>
-                <span class="label"><i class="fa-solid fa-tag"></i> Type</span>
-                <div class="value">{{ iv.type || '—' }}</div>
-            </div>
-            <div>
-                <span class="label"><i class="fa-solid fa-circle-info"></i> Status</span>
-                <div class="value">{{ iv.status || '—' }}</div>
-            </div>
-            <div>
-                <span class="label"><i class="fa-solid fa-calendar-days"></i> Scheduled at</span>
-                <div class="value">
-                {{ iv.scheduledAt ? (iv.scheduledAt | date:'dd.MM.yyyy. HH:mm') : '—' }}
-                </div>
-            </div>
-            <div>
-                <span class="label"><i class="fa-solid fa-location-dot"></i> Location</span>
-                <div class="value">{{ iv.location || '—' }}</div>
-            </div>
-            <div>
-                <span class="label"><i class="fa-solid fa-clock"></i> Duration</span>
-                <div class="value">{{ iv.durationMinutes ? (iv.durationMinutes + ' min') : '—' }}</div>
-            </div>
-            </div>
-        </ng-container>
-    </div>
 </div>
 
 <ng-template #state>
-  <p *ngIf="loading">Loading…</p>
-  <p *ngIf="!loading && error" class="err">{{ error }}</p>
+  <p *ngIf="loading" class="state-msg"><i class="fa-solid fa-spinner fa-spin"></i> Loading…</p>
+  <p *ngIf="!loading && error" class="err state-msg">{{ error }}</p>
 </ng-template>

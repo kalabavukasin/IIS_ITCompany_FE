@@ -12,6 +12,7 @@ export class ApplicationViewComponent {
   loading = false;
   error: string | null = null;
   data: ApplicationDetailsDto | null = null;
+  showJobDetails = false;
 
   testLoading = false;
   testError: string | null = null;

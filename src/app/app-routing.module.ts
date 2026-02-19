@@ -14,6 +14,7 @@ import { ApplicationsOverviewComponent } from './job/applications-overview/appli
 import { ApplicationDetailsComponent } from './job/application-details/application-details.component';
 import { ApplicationViewComponent } from './job/application-view/application-view.component';
 import { InterviewShowComponent } from './job/interview-show/interview-show.component';
+import { PostingApplicantsComponent } from './job/posting-applicants/posting-applicants.component';
 
 
 const routes: Routes = [
@@ -28,6 +29,7 @@ const routes: Routes = [
   { path: 'profile', component: UserProfileComponent},
   { path: 'applications/overview', component: ApplicationsOverviewComponent},
   { path: 'applications/:id', component: ApplicationDetailsComponent },
+  { path: 'postings/:id/applicants', component: PostingApplicantsComponent },
   { path: 'viewApplication/:id', component: ApplicationViewComponent },
   { path: 'interviews', component: InterviewShowComponent},
   { path: '', component: HomeComponent}

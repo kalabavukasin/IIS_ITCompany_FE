@@ -3,6 +3,16 @@ import { ApplicationService, ApplicationWithUserDTO } from '../application.servi
 import { AuthService } from 'src/app/infrastructure/auth/auth.service';
 import { Router } from '@angular/router';
 
+export interface PostingGroup {
+  jobPostingId: number;
+  requestName: string;
+  requestDescription: string;
+  requestLocation?: string;
+  seniority?: string;
+  openUntil?: string;
+  count: number;
+}
+
 @Component({
   selector: 'app-applications-overview',
   templateUrl: './applications-overview.component.html',
@@ -30,7 +40,38 @@ export class ApplicationsOverviewComponent implements OnInit {
     });
   }
 
-  more(a: ApplicationWithUserDTO) {
-    this.router.navigate(['/applications', a.applicationId]);
+  get groupedByPosting(): PostingGroup[] {
+    const map = new Map<number, PostingGroup>();
+    for (const a of this.items) {
+      if (!map.has(a.jobPostingId)) {
+        map.set(a.jobPostingId, {
+          jobPostingId: a.jobPostingId,
+          requestName: a.requestName,
+          requestDescription: a.requestDescription,
+          requestLocation: a.requestLocation,
+          seniority: a.seniority,
+          openUntil: a.openUntil,
+          count: 0
+        });
+      }
+      map.get(a.jobPostingId)!.count++;
+    }
+    return Array.from(map.values());
+  }
+
+  seniorityBadge(seniority: string | undefined | null): { emoji: string; label: string; css: string } {
+    switch (seniority) {
+      case 'INTERN':    return { emoji: '🎓', label: 'Intern',    css: 'seniority-intern' };
+      case 'JUNIOR':    return { emoji: '🌱', label: 'Junior',    css: 'seniority-junior' };
+      case 'MID':       return { emoji: '💼', label: 'Mid',       css: 'seniority-mid' };
+      case 'SENIOR':    return { emoji: '⭐', label: 'Senior',    css: 'seniority-senior' };
+      case 'LEAD':      return { emoji: '🚀', label: 'Lead',      css: 'seniority-lead' };
+      case 'PRINCIPAL': return { emoji: '👑', label: 'Principal', css: 'seniority-principal' };
+      default:          return { emoji: '💼', label: 'General',   css: 'seniority-default' };
+    }
+  }
+
+  viewPosting(g: PostingGroup) {
+    this.router.navigate(['/postings', g.jobPostingId, 'applicants']);
   }
 }
