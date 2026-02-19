@@ -1,4 +1,6 @@
-<div class="page" *ngIf="!loading && !error && data; else state">
+<div class="page" *ngIf="!loading && data; else state">
+  <p *ngIf="error" class="err" style="margin-bottom: 16px; padding: 12px; background-color: #fee; border-left: 4px solid #f44;">{{ error }}</p>
+
   <h2>Request information</h2>
 
   <div class="header">
@@ -48,11 +50,11 @@
     </div>
   </div>
 
-  <div class="actions" *ngIf="canAct()">
-    <button class="danger" (click)="openModal('reject')">
+  <div class="actions" *ngIf="showButtons()">
+    <button class="danger" *ngIf="canReject()" (click)="openModal('reject')">
       <i class="fa-solid fa-xmark"></i> Refuse request
     </button>
-    <button class="primary" (click)="openModal('approve')">
+    <button class="primary" *ngIf="canApprove()" (click)="openModal('approve')">
       <i class="fa-solid fa-check"></i> Approve
     </button>
   </div>

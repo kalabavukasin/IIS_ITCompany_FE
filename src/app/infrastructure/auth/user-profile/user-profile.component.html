@@ -1,107 +1,146 @@
 <div class="page" *ngIf="!loading && !error && profile; else state">
-  <h2>Profile</h2>
 
-  <div class="info">
-    <div class="row">
-      <span class="label">Full name</span>
-      <span class="value">{{ profile.firstName }} {{ profile.lastName }}</span>
+  <!-- PROFILE HEADER -->
+  <div class="profile-header">
+    <div class="avatar">
+      <i class="fa-solid fa-user"></i>
     </div>
-    <div class="row">
-      <span class="label">Email address</span>
-      <span class="value">{{ profile.email }}</span>
-    </div>
-
-    <div class="row middle">
-      <span class="label">Phone number</span>
-      <span class="value" *ngIf="!showPhoneEdit">{{ profile.phone || '—' }}</span>
-      <form *ngIf="showPhoneEdit" [formGroup]="phoneForm" (ngSubmit)="savePhone()" class="inline">
-        <input formControlName="phone" placeholder="Phone number">
-        <button class="primary" type="submit" [disabled]="phoneForm.invalid">Save</button>
-        <button type="button" (click)="showPhoneEdit=false">Cancel</button>
-      </form>
-      <a class="link" *ngIf="!showPhoneEdit" (click)="showPhoneEdit=true">Update</a>
-    </div>
-
-    <div class="row middle">
-      <span class="label">Password</span>
-      <span class="value">********</span>
-      <form *ngIf="showPwdEdit" [formGroup]="pwdForm" (ngSubmit)="savePassword()" class="inline">
-        <input type="password" formControlName="oldPassword" placeholder="Old password">
-        <input type="password" formControlName="newPassword" placeholder="New password">
-        <button class="primary" type="submit" [disabled]="pwdForm.invalid">Save</button>
-        <button type="button" (click)="showPwdEdit=false">Cancel</button>
-      </form>
-      <a class="link" *ngIf="!showPwdEdit" (click)="showPwdEdit=true">Update</a>
+    <div class="profile-meta">
+      <div class="profile-name">{{ profile.firstName }} {{ profile.lastName }}</div>
+      <div class="profile-email">{{ profile.email }}</div>
     </div>
   </div>
 
-  <h3>My Applications</h3>
-  <div class="list">
-    <div class="card" *ngFor="let a of apps">
-      <div class="thumb"></div>
+  <!-- PROFILE DETAILS + CONTENT SPLIT -->
+  <div class="layout">
 
-      <div class="main">
-        <div class="name-row">
-          <div class="name">{{ a.requestName }}</div>
+    <!-- LEFT: Profile Details -->
+    <div class="sidebar">
+      <div class="section-card">
+        <div class="section-title"><i class="fa-solid fa-id-card"></i> Account Info</div>
+
+        <div class="info-row">
+          <span class="info-label">Email</span>
+          <span class="info-value">{{ profile.email }}</span>
         </div>
 
-        <div class="label small">Description</div>
-        <div class="desc">{{ a.requestDescription }}</div>
+        <div class="info-row">
+          <span class="info-label">Phone</span>
+          <ng-container *ngIf="!showPhoneEdit">
+            <span class="info-value">{{ profile.phone || '—' }}</span>
+            <a class="edit-link" (click)="showPhoneEdit=true"><i class="fa-solid fa-pen"></i></a>
+          </ng-container>
+          <form *ngIf="showPhoneEdit" [formGroup]="phoneForm" (ngSubmit)="savePhone()" class="edit-form">
+            <input formControlName="phone" placeholder="Phone number">
+            <button class="btn-save" type="submit" [disabled]="phoneForm.invalid">Save</button>
+            <button class="btn-cancel" type="button" (click)="showPhoneEdit=false">Cancel</button>
+          </form>
+        </div>
 
-        <a class="more" (click)="appMore(a)">More…</a>
+        <div class="info-row">
+          <span class="info-label">Password</span>
+          <ng-container *ngIf="!showPwdEdit">
+            <span class="info-value">••••••••</span>
+            <a class="edit-link" (click)="showPwdEdit=true"><i class="fa-solid fa-pen"></i></a>
+          </ng-container>
+          <form *ngIf="showPwdEdit" [formGroup]="pwdForm" (ngSubmit)="savePassword()" class="edit-form col">
+            <input type="password" formControlName="oldPassword" placeholder="Current password">
+            <input type="password" formControlName="newPassword" placeholder="New password (min 6 chars)">
+            <div class="edit-form">
+              <button class="btn-save" type="submit" [disabled]="pwdForm.invalid">Save</button>
+              <button class="btn-cancel" type="button" (click)="showPwdEdit=false">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Applications + Offers in tabs -->
+    <div class="main-content">
+
+      <!-- TAB BUTTONS -->
+      <div class="tabs">
+        <button class="tab" [class.active]="activeTab === 'applications'" (click)="activeTab='applications'">
+          <i class="fa-solid fa-file-lines"></i> Applications
+          <span class="badge" *ngIf="apps.length > 0">{{ apps.length }}</span>
+        </button>
+        <button class="tab" [class.active]="activeTab === 'offers'" (click)="activeTab='offers'">
+          <i class="fa-solid fa-handshake"></i> Job Offers
+          <span class="badge offer-badge" *ngIf="pendingOffers > 0">{{ pendingOffers }}</span>
+        </button>
       </div>
 
-      <div class="side">
-        <div class="label right">Status</div>
-        <div class="value status">{{ a.status }}</div>
+      <!-- TAB: APPLICATIONS -->
+      <div class="tab-content" *ngIf="activeTab === 'applications'">
+        <div *ngIf="apps.length === 0" class="empty-state">
+          <i class="fa-solid fa-inbox"></i>
+          <p>No applications yet.</p>
+        </div>
+        <div class="app-card" *ngFor="let a of apps">
+          <div class="app-info">
+            <div class="app-name">{{ a.requestName }}</div>
+            <div class="app-desc">{{ a.requestDescription }}</div>
+          </div>
+          <div class="app-side">
+            <span class="status-badge" [ngClass]="'status-' + a.status.toLowerCase()">{{ a.status }}</span>
+            <a class="btn-more" (click)="appMore(a)">View <i class="fa-solid fa-arrow-right"></i></a>
+          </div>
+        </div>
       </div>
+
+      <!-- TAB: OFFERS -->
+      <div class="tab-content" *ngIf="activeTab === 'offers'">
+        <div *ngIf="offers.length === 0" class="empty-state">
+          <i class="fa-solid fa-envelope-open"></i>
+          <p>No job offers in the last 30 days.</p>
+        </div>
+        <div class="offer-card" *ngFor="let o of offers">
+          <div class="offer-info">
+            <div class="offer-name">{{ o.requestName }}</div>
+            <div class="offer-desc">{{ o.requestDescription }}</div>
+            <div class="offer-date" *ngIf="o.startDate">
+              <i class="fa-solid fa-calendar"></i> Start: {{ o.startDate | date:'dd.MM.yyyy.' }}
+            </div>
+          </div>
+          <div class="offer-side">
+            <span class="status-badge" [ngClass]="'status-' + o.status.toLowerCase()">{{ o.status }}</span>
+            <button class="btn-decide" *ngIf="isAcceptEnabled(o)" (click)="openAccept(o)">
+              <i class="fa-solid fa-circle-question"></i> Respond
+            </button>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
-
-  <h3>Job Offers</h3>
-  <div class="list">
-  <div class="card" *ngFor="let o of offers">
-    <div class="thumb"></div>
-
-    <div class="main">
-      <div class="name">{{ o.requestName }}</div>
-
-      <div class="label small">Description</div>
-      <div class="desc">{{ o.requestDescription }}</div>
-    </div>
-
-    <div class="side">
-      <div class="row">
-        <div class="label">Status</div>
-        <div class="value">{{ o.status }}</div>
-      </div>
-      <div class="row">
-        <div class="label">Start date</div>
-        <div class="value">{{ o.startDate | date:'dd.MM.yyyy.' }}</div>
-      </div>
-
-      <a class="more" *ngIf="isAcceptEnabled(o)" (click)="openAccept(o)">Accept</a>
-    </div>
-  </div>
-
-  <p class="empty" *ngIf="offers.length === 0">No job offers in the last 30 days.</p>
 </div>
-</div>
+
 <!-- MODAL -->
-<div class="modal-backdrop" *ngIf="showAcceptModal">
-  <div class="modal">
-    <h3>Job offer</h3>
-    <p>Da li želite da prihvatite ili odbijete ponudu za: <b>{{ offerToAccept?.requestName }}</b>?</p>
-
+<div class="modal-backdrop" *ngIf="showAcceptModal" (click)="cancelAccept()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <i class="fa-solid fa-handshake modal-icon"></i>
+      <h3>Respond to Job Offer</h3>
+    </div>
+    <p class="modal-body">
+      You received a job offer for: <b>{{ offerToAccept?.requestName }}</b>.<br>
+      Would you like to accept or decline this offer?
+    </p>
     <div class="modal-actions">
-      <button (click)="confirmAccept()">Accept</button>
-      <button class="danger" (click)="confirmDecline()">Decline</button>
-      <button class="secondary" (click)="cancelAccept()">Cancel</button>
+      <button class="btn-modal-cancel" (click)="cancelAccept()">
+        <i class="fa-solid fa-xmark"></i> Cancel
+      </button>
+      <button class="btn-modal-decline" (click)="confirmDecline()">
+        <i class="fa-solid fa-thumbs-down"></i> Decline
+      </button>
+      <button class="btn-modal-accept" (click)="confirmAccept()">
+        <i class="fa-solid fa-thumbs-up"></i> Accept
+      </button>
     </div>
   </div>
 </div>
 
 <ng-template #state>
-  <p *ngIf="loading">Loading…</p>
+  <p *ngIf="loading" class="state-msg"><i class="fa-solid fa-spinner fa-spin"></i> Loading…</p>
   <p *ngIf="!loading && error" class="err">{{ error }}</p>
 </ng-template>

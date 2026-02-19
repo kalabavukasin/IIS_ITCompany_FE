@@ -23,6 +23,11 @@ export class UserProfileComponent implements OnInit {
   offers: OfferCardDTO[] = [];
   showAcceptModal = false;
   offerToAccept: OfferCardDTO | null = null;
+  activeTab: 'applications' | 'offers' = 'applications';
+
+  get pendingOffers(): number {
+    return this.offers.filter(o => o.status === 'SENT').length;
+  }
 
   phoneForm = this.fb.group({ phone: ['', [Validators.required, Validators.minLength(6)]] });
   pwdForm   = this.fb.group({

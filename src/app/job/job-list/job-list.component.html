@@ -3,8 +3,9 @@
 
   <ng-container *ngIf="!loading && !error; else state">
     <div *ngFor="let j of items" class="card">
-      <div class="thumb">
-        <i class="fa-solid fa-briefcase"></i>
+      <div class="thumb" [ngClass]="seniorityBadge(j.seniority).css">
+        <span class="seniority-emoji">{{ seniorityBadge(j.seniority).emoji }}</span>
+        <span class="seniority-label">{{ seniorityBadge(j.seniority).label }}</span>
       </div>
 
       <div class="main">

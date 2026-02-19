@@ -2,8 +2,9 @@
   <h2>Job Posting</h2>
 
   <div class="header">
-    <div class="thumb">
-      <i class="fa-solid fa-briefcase"></i>
+    <div class="thumb" [ngClass]="seniorityBadge(data.seniority).css">
+      <span class="seniority-emoji">{{ seniorityBadge(data.seniority).emoji }}</span>
+      <span class="seniority-label">{{ seniorityBadge(data.seniority).label }}</span>
     </div>
     <div class="title">
       <div class="name">{{ data.name }}</div>
