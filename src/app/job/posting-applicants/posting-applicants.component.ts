@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApplicationService, ApplicationWithUserDTO } from '../application.service';
 import { AuthService } from 'src/app/infrastructure/auth/auth.service';
+import { JobPostingService } from '../job-posting.service';
 
 // TODO: bulk actions — send test, make offer, schedule interview
 
@@ -16,22 +17,43 @@ export class PostingApplicantsComponent implements OnInit {
   error = '';
   postingId!: number;
 
-  // Posting info (extracted from first item)
+  // Posting info (loaded via GET /api/postings/{id})
   postingName = '';
   postingDesc = '';
   postingLocation = '';
   postingOpenUntil: string | undefined;
   postingSeniority: string | undefined;
+  postingStatus = '';
 
   // Filtering & selection
   selectedPhase = 'All';
   showAll = true;
   selectedIds = new Set<number>();
 
+  // Action state
+  showExtendInput = false;
+  showRepublishInput = false;
+  extendDate = '';
+  republishDate = '';
+  actionError = '';
+  actionLoading = false;
+
+  get validToInPast(): boolean {
+    if (!this.postingOpenUntil) return true;
+    return new Date(this.postingOpenUntil) < new Date(new Date().toDateString());
+  }
+
+  get minDate(): string {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow.toISOString().split('T')[0];
+  }
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private svc: ApplicationService,
+    private postingSvc: JobPostingService,
     private auth: AuthService
   ) {}
 
@@ -42,17 +64,22 @@ export class PostingApplicantsComponent implements OnInit {
       return;
     }
     this.postingId = Number(this.route.snapshot.paramMap.get('id'));
+
+    this.postingSvc.getPosting(this.postingId).subscribe({
+      next: (p) => {
+        this.postingName = p.name;
+        this.postingDesc = p.description;
+        this.postingLocation = p.location ?? '';
+        this.postingOpenUntil = p.expires;
+        this.postingSeniority = p.seniority ?? undefined;
+        this.postingStatus = p.status;
+      },
+      error: () => { this.error = 'Failed to load posting info.'; }
+    });
+
     this.svc.getCardsByPosting(this.postingId).subscribe({
       next: (list) => {
         this.items = list;
-        if (list.length > 0) {
-          const first = list[0];
-          this.postingName = first.requestName;
-          this.postingDesc = first.requestDescription;
-          this.postingLocation = first.requestLocation ?? '';
-          this.postingOpenUntil = first.openUntil;
-          this.postingSeniority = first.seniority;
-        }
         this.loading = false;
       },
       error: (err) => {
@@ -60,6 +87,75 @@ export class PostingApplicantsComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  // ===== Posting actions =====
+
+  archive(): void {
+    if (!confirm('Archive this job posting? Candidates will no longer be able to apply.')) return;
+    this.actionLoading = true;
+    this.actionError = '';
+    this.postingSvc.archivePosting(this.postingId).subscribe({
+      next: (p) => {
+        this.postingStatus = p.status;
+        this.postingOpenUntil = p.expires;
+        this.actionLoading = false;
+      },
+      error: (err) => {
+        this.actionError = err?.error?.message ?? 'Failed to archive posting.';
+        this.actionLoading = false;
+      }
+    });
+  }
+
+  extend(): void {
+    if (!this.extendDate) return;
+    this.actionLoading = true;
+    this.actionError = '';
+    this.postingSvc.extendPosting(this.postingId, this.extendDate).subscribe({
+      next: (p) => {
+        this.postingStatus = p.status;
+        this.postingOpenUntil = p.expires;
+        this.showExtendInput = false;
+        this.extendDate = '';
+        this.actionLoading = false;
+      },
+      error: (err) => {
+        this.actionError = err?.error?.message ?? 'Failed to extend posting.';
+        this.actionLoading = false;
+      }
+    });
+  }
+
+  republish(): void {
+    if (this.validToInPast && !this.republishDate) return;
+    this.actionLoading = true;
+    this.actionError = '';
+    this.postingSvc.republishPosting(this.postingId, this.republishDate || undefined).subscribe({
+      next: (p) => {
+        this.postingStatus = p.status;
+        this.postingOpenUntil = p.expires;
+        this.showRepublishInput = false;
+        this.republishDate = '';
+        this.actionLoading = false;
+      },
+      error: (err) => {
+        this.actionError = err?.error?.message ?? 'Failed to republish posting.';
+        this.actionLoading = false;
+      }
+    });
+  }
+
+  toggleExtend(): void {
+    this.showExtendInput = !this.showExtendInput;
+    this.actionError = '';
+    this.extendDate = '';
+  }
+
+  toggleRepublish(): void {
+    this.showRepublishInput = !this.showRepublishInput;
+    this.actionError = '';
+    this.republishDate = '';
   }
 
   // ===== Filtering & selection =====

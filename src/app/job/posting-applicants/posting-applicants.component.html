@@ -12,13 +12,55 @@
       <span class="seniority-label">{{ seniorityBadge(postingSeniority).label }}</span>
     </div>
     <div class="header-info">
-      <div class="posting-name">{{ postingName }}</div>
+      <div class="posting-name-row">
+        <span class="posting-name">{{ postingName }}</span>
+        <span class="posting-status-badge" [ngClass]="'posting-status-' + postingStatus.toLowerCase()">
+          {{ postingStatus }}
+        </span>
+      </div>
       <div class="posting-desc">{{ postingDesc }}</div>
       <div class="posting-meta">
         <span *ngIf="postingLocation"><i class="fa-solid fa-location-dot"></i> {{ postingLocation }}</span>
         <span *ngIf="postingOpenUntil"><i class="fa-solid fa-calendar-days"></i> Open until: {{ postingOpenUntil | date:'dd.MM.yyyy.' }}</span>
         <span><i class="fa-solid fa-users"></i> {{ items.length }} applicant{{ items.length !== 1 ? 's' : '' }}</span>
       </div>
+
+      <!-- POSTING ACTIONS -->
+      <div class="posting-actions" *ngIf="postingStatus">
+        <ng-container *ngIf="postingStatus === 'PUBLISHED'">
+          <button class="btn-action btn-archive" (click)="archive()" [disabled]="actionLoading">
+            <i class="fa-solid fa-box-archive"></i> Archive
+          </button>
+          <button class="btn-action btn-extend" (click)="toggleExtend()" [disabled]="actionLoading">
+            <i class="fa-solid fa-calendar-plus"></i> Extend deadline
+          </button>
+        </ng-container>
+        <ng-container *ngIf="postingStatus === 'ARCHIVED'">
+          <button class="btn-action btn-republish" (click)="toggleRepublish()" [disabled]="actionLoading">
+            <i class="fa-solid fa-rotate"></i> Republish
+          </button>
+        </ng-container>
+      </div>
+
+      <!-- EXTEND FORM -->
+      <div class="date-input-row" *ngIf="showExtendInput">
+        <label>New deadline:</label>
+        <input type="date" [(ngModel)]="extendDate" [min]="minDate" />
+        <button class="btn-confirm" (click)="extend()" [disabled]="!extendDate || actionLoading">Confirm</button>
+        <button class="btn-cancel" (click)="toggleExtend()">Cancel</button>
+      </div>
+
+      <!-- REPUBLISH FORM -->
+      <div class="date-input-row" *ngIf="showRepublishInput">
+        <label *ngIf="validToInPast">New deadline (required — current date expired):</label>
+        <label *ngIf="!validToInPast">New deadline (optional):</label>
+        <input type="date" [(ngModel)]="republishDate" [min]="minDate" />
+        <button class="btn-confirm" (click)="republish()"
+          [disabled]="(validToInPast && !republishDate) || actionLoading">Confirm</button>
+        <button class="btn-cancel" (click)="toggleRepublish()">Cancel</button>
+      </div>
+
+      <div class="action-error" *ngIf="actionError">{{ actionError }}</div>
     </div>
   </div>
 
