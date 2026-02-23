@@ -45,6 +45,7 @@ export class ApplicationDetailsComponent implements OnInit {
   minDate: string = '';
 
   flowCompleted = false;
+  showJobDetails = false;
 
   staff: StaffMemberDTO[] = [];
   staffInterviewers: StaffMemberDTO[] = [];
@@ -372,6 +373,13 @@ export class ApplicationDetailsComponent implements OnInit {
       }
     });
   }
+  isPhaseCompleted(phase: string): boolean {
+    if (!this.data?.currentPhase || !this.data?.phases) return false;
+    const currentIdx = this.data.phases.indexOf(this.data.currentPhase);
+    const phaseIdx = this.data.phases.indexOf(phase);
+    return phaseIdx < currentIdx;
+  }
+
   private reloadDetails() {
   if (!this.data) return;
   

@@ -1,63 +1,36 @@
 <div class="page" *ngIf="!loading && !error; else state">
-  <h2>Advertisement applications</h2>
+  <h2>Job Postings</h2>
 
-  <div class="list">
-    <div class="card" *ngFor="let a of items">
-      <!-- Advertisement header -->
-      <div class="ad-left">
-        <div class="thumb">
-          <i class="fa-solid fa-briefcase"></i>
-        </div>
-      </div>
-      <div class="ad-main">
-        <div class="grid">
-          <div>
-            <div class="value name">{{ a.requestName }}</div>
+  <p *ngIf="groupedByPosting.length === 0" class="empty">No active job postings with applications.</p>
 
-            <div class="desc">{{ a.requestDescription }}</div>
-          </div>
-          <div>
-            <div class="label"><i class="fa-solid fa-location-dot"></i> Location</div>
-            <div class="value">{{ a.requestLocation || '—' }}</div>
+  <div class="card" *ngFor="let g of groupedByPosting">
 
-            <div class="label mt"><i class="fa-solid fa-calendar-days"></i> Open until</div>
-                <div class="value">
-                    {{ a.openUntil ? (a.openUntil | date: 'dd.MM.yyyy.') : '—' }}
-                </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- User info -->
-      <div class="user-main">
-        <div class="section-title"><h3><i class="fa-solid fa-user-circle"></i> User info</h3></div>
-            <div class="grid">
-                <div>
-                <div class="label2"><i class="fa-solid fa-user"></i> Name</div>
-                <div class="value2">{{ a.candidateName }}</div>
-                </div>
-                <div class="status-phase">
-                <div class="label2"><i class="fa-solid fa-circle-info"></i> Current status</div>
-                <div class="badge2"> {{ a.status }}</div>
-
-                <div class="label2"><i class="fa-solid fa-layer-group"></i> Current phase</div>
-                <div class="value2">{{ a.currentPhase || '—' }}</div>
-                </div>
-                <!-- More… link kao poseban grid item -->
-                <div class="more-wrapper">
-                <a class="more" (click)="more(a)">
-                  <i class="fa-solid fa-arrow-right"></i> More
-                </a>
-                </div>
-        </div>
-    </div>
+    <div class="main">
+      <div class="name">{{ g.requestName }}</div>
+      <div class="desc">{{ g.requestDescription }}</div>
     </div>
 
-    <p *ngIf="items.length === 0" class="empty">No applications.</p>
+    <div class="side">
+      <div class="row">
+        <span class="label"><i class="fa-solid fa-location-dot"></i> Location</span>
+        <span class="value">{{ g.requestLocation || '—' }}</span>
+      </div>
+      <div class="row">
+        <span class="label"><i class="fa-solid fa-calendar-days"></i> Open until</span>
+        <span class="value">{{ g.openUntil ? (g.openUntil | date:'dd.MM.yyyy.') : '—' }}</span>
+      </div>
+      <div class="row">
+        <span class="label"><i class="fa-solid fa-users"></i> Applicants</span>
+        <span class="value"><span class="count-badge">{{ g.count }}</span></span>
+      </div>
+      <button class="more" (click)="viewPosting(g)">
+        <i class="fa-solid fa-arrow-right"></i> View applicants
+      </button>
+    </div>
   </div>
 </div>
 
 <ng-template #state>
-  <p *ngIf="loading">Loading…</p>
+  <p *ngIf="loading" class="state-msg"><i class="fa-solid fa-spinner fa-spin"></i> Loading…</p>
   <p *ngIf="!loading && error" class="err">{{ error }}</p>
 </ng-template>

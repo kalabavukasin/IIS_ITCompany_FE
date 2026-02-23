@@ -13,10 +13,12 @@ export interface ApplicationWithUserDTO {
   requestName: string;
   requestDescription: string;
   requestLocation?: string;
+  seniority?: string;
 
   candidateId: number;
   candidateName: string;
   openUntil?: string;
+  cvDownloadUrl?: string;
 }
 export interface ApplicationDetailsDto {
   applicationId: number;
@@ -89,6 +91,10 @@ export class ApplicationService {
 
   getMyManagedCards() {
     return this.http.get<ApplicationWithUserDTO[]>(`${this.api}/cards/my-managed`);
+  }
+
+  getCardsByPosting(postingId: number) {
+    return this.http.get<ApplicationWithUserDTO[]>(`${this.api}/cards/by-posting/${postingId}`);
   }
 
   getDetails(id: number) {

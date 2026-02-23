@@ -23,6 +23,7 @@ import { ApplicationDetailsComponent } from './job/application-details/applicati
 import { ApplicationViewComponent } from './job/application-view/application-view.component';
 import { InterviewShowComponent } from './job/interview-show/interview-show.component';
 import { ReportModalComponent } from './layout/report-modal/report-modal.component';
+import { PostingApplicantsComponent } from './job/posting-applicants/posting-applicants.component';
 
 @NgModule({
   declarations: [
@@ -42,7 +43,8 @@ import { ReportModalComponent } from './layout/report-modal/report-modal.compone
     ApplicationDetailsComponent,
     ApplicationViewComponent,
     InterviewShowComponent,
-    ReportModalComponent
+    ReportModalComponent,
+    PostingApplicantsComponent
   ],
   imports: [
     BrowserModule,

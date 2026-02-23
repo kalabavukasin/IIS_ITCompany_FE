@@ -58,8 +58,41 @@ export class RequestViewComponent implements OnInit {
       : this.svc.reject(id, this.comment.trim());
 
     obs.subscribe({
-      next: (res) => { this.data = res; this.closeModal(); },
-      error: (err) => { this.error = err?.error?.message ?? 'Action failed.'; }
+      next: (res) => {
+        this.data = res;
+        this.closeModal();
+        this.error = ''; // Clearprevious errors
+      },
+      error: (err) => {
+        console.error('Error during approve/reject:', err);
+        this.closeModal();
+
+        // Extract error messages
+        let errorMsg = 'Action failed.';
+
+        if (err?.error?.message) {
+          errorMsg = err.error.message;
+        } else if (err?.message) {
+          errorMsg = err.message;
+        } else if (typeof err?.error === 'string') {
+          errorMsg = err.error;
+        } else if (err?.statusText) {
+          errorMsg = err.statusText;
+        }
+
+        if (errorMsg.toLowerCase().includes('candidates have already applied') ||
+            errorMsg.toLowerCase().includes('cannot reject')) {
+          this.error = 'Cannot reject: Candidates have already applied to this job posting.';
+        } else if (errorMsg.toLowerCase().includes('cannot approve') &&
+                   errorMsg.toLowerCase().includes('draft')) {
+          this.error = 'Cannot approve requestion in DRAFT status.';
+        } else if (errorMsg.toLowerCase().includes('cannot approve') &&
+                   errorMsg.toLowerCase().includes('closed')) {
+          this.error = 'Cannot approve requestion in CLOSED status.';
+        } else {
+          this.error = '' + errorMsg;
+        }
+      }
     });
   }
 
@@ -99,12 +132,22 @@ export class RequestViewComponent implements OnInit {
     const d = new Date(this.data.createdAt);
     d.setDate(d.getDate() + 30);
     return d;
-    // Alternativa: računati na backendu i vraćati kao polje
+    // Mybe calculate on backend later
   }
 
-  canAct(): boolean {
+  canApprove(): boolean {
     if (!this.isHiring || !this.data) return false;
-    return !['APPROVED', 'REJECTED', 'CLOSED', 'DRAFT'].includes(this.data.status);
+    return ['REJECTED', 'PENDING_APPROVAL'].includes(this.data.status);
+  }
+
+  canReject(): boolean {
+    if (!this.isHiring || !this.data) return false;
+    return ['APPROVED', 'PENDING_APPROVAL'].includes(this.data.status);
+  }
+
+  showButtons(): boolean {
+    if (!this.isHiring || !this.data) return false;
+    return !['DRAFT', 'CLOSED'].includes(this.data.status);
   }
 
  /* approve() {

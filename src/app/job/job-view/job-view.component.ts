@@ -39,6 +39,18 @@ export class JobViewComponent implements OnInit {
     });
   }
 
+  seniorityBadge(seniority: string | undefined | null): { emoji: string; label: string; css: string } {
+    switch (seniority) {
+      case 'INTERN':    return { emoji: '🎓', label: 'Intern',    css: 'seniority-intern' };
+      case 'JUNIOR':    return { emoji: '🌱', label: 'Junior',    css: 'seniority-junior' };
+      case 'MID':       return { emoji: '💼', label: 'Mid',       css: 'seniority-mid' };
+      case 'SENIOR':    return { emoji: '⭐', label: 'Senior',    css: 'seniority-senior' };
+      case 'LEAD':      return { emoji: '🚀', label: 'Lead',      css: 'seniority-lead' };
+      case 'PRINCIPAL': return { emoji: '👑', label: 'Principal', css: 'seniority-principal' };
+      default:          return { emoji: '💼', label: 'General',   css: 'seniority-default' };
+    }
+  }
+
   canApply(): boolean {
     const user = this.auth.getLoggedInUser();
     return !!user && user.role === 'CANDIDATE' && !this.applied;

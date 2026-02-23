@@ -3,8 +3,9 @@
 
   <ng-container *ngIf="!loading && !error; else state">
     <div *ngFor="let j of items" class="card">
-      <div class="thumb">
-        <i class="fa-solid fa-briefcase"></i>
+      <div class="thumb" [ngClass]="seniorityBadge(j.seniority).css">
+        <span class="seniority-emoji">{{ seniorityBadge(j.seniority).emoji }}</span>
+        <span class="seniority-label">{{ seniorityBadge(j.seniority).label }}</span>
       </div>
 
       <div class="main">
@@ -23,7 +24,7 @@
         </div>
         <div class="row">
           <span class="label"><i class="fa-solid fa-money-bill-wave"></i> Salary</span>
-          <span class="value">{{ j.salary | number:'1.0-0' }}</span>
+          <span class="value">€{{ j.salary | number:'1.0-0' }}</span>
         </div>
         <a class="more" (click)="more(j.id)">
           <i class="fa-solid fa-arrow-right"></i> More

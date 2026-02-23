@@ -6,6 +6,8 @@ export interface JobPostingCard {
   salary: number | null;
   expires: string;
   createdAt: string;
+  seniority: string | null;
+  status: string;
 }
 export interface JobPostingDetail {
   id: number;

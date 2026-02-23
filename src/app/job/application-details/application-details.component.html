@@ -1,183 +1,227 @@
 <div *ngIf="!loading && data; else state" class="page">
-  <h2>Applications details</h2>
+  <h2>Application Details</h2>
 
-  <div class="header">
-    <div class="thumb">
-      <i class="fa-solid fa-briefcase"></i>
+  <!-- ===== HEADER ===== -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="posting-title">{{ data.requestName }}</div>
+      <div class="posting-desc">{{ data.requestDescription }}</div>
     </div>
-    <div class="title">
-      <div class="name">{{ data.requestName }}</div>
-      <div class="desc">{{ data.requestDescription }}</div>
-    </div>
+    <button class="btn-job-details" (click)="showJobDetails = !showJobDetails">
+      <i class="fa-solid" [ngClass]="showJobDetails ? 'fa-chevron-up' : 'fa-solid fa-circle-info'"></i>
+      {{ showJobDetails ? 'Hide job details' : 'Job details' }}
+    </button>
   </div>
 
-  <div class="grid spec">
-    <div>
-      <div class="label"><i class="fa-solid fa-circle-info"></i> Current status</div>
-      <div class="value badge">{{ data.applicationStatus }}</div>
-    </div>
-    <div>
-      <div class="label"><i class="fa-solid fa-calendar-check"></i> Applied at</div>
-      <div class="value">{{ data.appliedAt | date:'dd.MM.yyyy. HH:mm' }}</div>
-    </div>
-    <div>
-      <div class="label"><i class="fa-solid fa-location-dot"></i> Location</div>
-      <div class="value">{{ data.requestLocation || '—' }}</div>
-    </div>
-
-    <div>
-      <div class="label"><i class="fa-solid fa-user-tie"></i> Seniority level</div>
-      <div class="value">{{ data.seniority || '—' }}</div>
-    </div>
-    <div>
-      <div class="label"><i class="fa-solid fa-calendar-days"></i> Open until</div>
-      <div class="value">{{ data.openUntil ? (data.openUntil | date:'dd.MM.yyyy.') : '—' }}</div>
-    </div>
-    <div>
-      <div class="label"><i class="fa-solid fa-clock"></i> Working hours</div>
-      <div class="value">7-15h</div>
-    </div>
-
-    <div>
-      <div class="label"><i class="fa-solid fa-money-bill-wave"></i> Salary</div>
-      <div class="value">{{ data.salary | currency:'EUR':'symbol-narrow':'1.0-0' }}</div>
-    </div>
-    <div>
-      <div class="label"><i class="fa-solid fa-user"></i> Created by</div>
-      <div class="value">{{ data.createdBy || '—' }}</div>
-    </div>
-    <div>
-      <div class="label"><i class="fa-solid fa-code"></i> Technologies</div>
-      <div class="value">{{ data.technologies || '—' }}</div>
-    </div>
-  </div>
-
-  <div class="user">
-    <div class="avatar">
-      <i class="fa-solid fa-user"></i>
-    </div>
-    <div class="user-grid">
-      <div>
-        <div class="label"><i class="fa-solid fa-user"></i> Full name</div>
-        <div class="value">{{ data.candidateFullName }}</div>
+  <!-- JOB DETAILS -->
+  <div *ngIf="showJobDetails" class="job-details-panel">
+    <div class="jd-grid">
+      <div class="jd-item">
+        <span class="jd-label"><i class="fa-solid fa-circle-info"></i> Status</span>
+        <span class="jd-value"><span class="status-badge">{{ data.applicationStatus }}</span></span>
       </div>
-      <div>
-        <div class="label"><i class="fa-solid fa-envelope"></i> e-mail</div>
-        <div class="value">{{ data.candidateEmail || '—' }}</div>
+      <div class="jd-item">
+        <span class="jd-label"><i class="fa-solid fa-location-dot"></i> Location</span>
+        <span class="jd-value">{{ data.requestLocation || '—' }}</span>
       </div>
-      <div>
-        <div class="label"><i class="fa-solid fa-phone"></i> Phone number</div>
-        <div class="value">{{ data.candidatePhone || '—' }}</div>
+      <div class="jd-item">
+        <span class="jd-label"><i class="fa-solid fa-user-tie"></i> Seniority</span>
+        <span class="jd-value">{{ data.seniority || '—' }}</span>
       </div>
-
-      <div class="cv">
-        <a *ngIf="data.cvDownloadUrl" (click)="downloadCv()">
-          <i class="fa-solid fa-download"></i> Download user CV
-        </a>
+      <div class="jd-item">
+        <span class="jd-label"><i class="fa-solid fa-money-bill-wave"></i> Salary</span>
+        <span class="jd-value">{{ data.salary | currency:'EUR':'symbol-narrow':'1.0-0' }}</span>
+      </div>
+      <div class="jd-item">
+        <span class="jd-label"><i class="fa-solid fa-calendar-days"></i> Open until</span>
+        <span class="jd-value">{{ data.openUntil ? (data.openUntil | date:'dd.MM.yyyy.') : '—' }}</span>
+      </div>
+      <div class="jd-item">
+        <span class="jd-label"><i class="fa-solid fa-code"></i> Technologies</span>
+        <span class="jd-value">{{ data.technologies || '—' }}</span>
+      </div>
+      <div class="jd-item">
+        <span class="jd-label"><i class="fa-solid fa-user"></i> Created by</span>
+        <span class="jd-value">{{ data.createdBy || '—' }}</span>
+      </div>
+      <div class="jd-item">
+        <span class="jd-label"><i class="fa-solid fa-clock"></i> Working hours</span>
+        <span class="jd-value">7–15h</span>
       </div>
     </div>
   </div>
 
-  <div class="phases">
-    <div class="section-title"><i class="fa-solid fa-list-check"></i> Current phase</div>
-    <div class="flow">
-      <ng-container *ngFor="let p of data.phases; let i = index">
-        <div class="phase">
-          <div class="phase-name">{{ p }}</div>
-          <div class="dot" 
-            [class.active]="p === data.currentPhase"
-            [class.stopped]="p === data.currentPhase && data.applicationStatus !== 'ACTIVE'"
-            [class.success]="p === 'Ponuda' && data.currentPhase === 'Ponuda'">{{ i }}</div>
+  <!-- ===== MAIN TWO-COLUMN LAYOUT ===== -->
+  <div class="main-grid">
+
+    <!-- LEFT: Candidate card -->
+    <div class="candidate-card">
+      <div class="candidate-header">
+        <div class="candidate-avatar"><i class="fa-solid fa-user"></i></div>
+        <div class="candidate-name-block">
+          <div class="candidate-name">{{ data.candidateFullName }}</div>
+          <span class="app-status-badge" [ngClass]="'app-' + data.applicationStatus.toLowerCase()">
+            {{ data.applicationStatus }}
+          </span>
         </div>
-        <div class="arrow" *ngIf="i < data.phases.length - 1">→</div>
+      </div>
+
+      <div class="candidate-fields">
+        <div class="cfield">
+          <span class="cfield-label"><i class="fa-solid fa-envelope"></i> Email</span>
+          <div class="cfield-row">
+            <span class="cfield-value">{{ data.candidateEmail || '—' }}</span>
+          </div>
+        </div>
+
+        <div class="cfield">
+          <span class="cfield-label"><i class="fa-solid fa-phone"></i> Phone</span>
+          <span class="cfield-value">{{ data.candidatePhone || '—' }}</span>
+        </div>
+
+        <div class="cfield">
+          <span class="cfield-label"><i class="fa-solid fa-calendar-check"></i> Applied at</span>
+          <span class="cfield-value">{{ data.appliedAt | date:'dd.MM.yyyy. HH:mm' }}</span>
+        </div>
+
+        <div class="cfield">
+          <span class="cfield-label"><i class="fa-solid fa-layer-group"></i> Current phase</span>
+          <span class="cfield-value">{{ data.currentPhase || '—' }}</span>
+        </div>
+      </div>
+
+      <a *ngIf="data.cvDownloadUrl" class="btn-cv" (click)="downloadCv()">
+        <i class="fa-solid fa-file-arrow-down"></i> Download CV
+      </a>
+      <span *ngIf="!data.cvDownloadUrl" class="cv-missing">
+        <i class="fa-solid fa-file-circle-xmark"></i> No CV uploaded
+      </span>
+    </div>
+
+    <!-- RIGHT: Phase flow + actions -->
+    <div class="workflow-card">
+      <div class="section-title"><i class="fa-solid fa-list-check"></i> Application progress</div>
+
+      <div class="flow">
+        <ng-container *ngFor="let p of data.phases; let i = index">
+          <div class="phase">
+            <div class="phase-name">{{ p }}</div>
+            <div class="dot"
+              [class.active]="p === data.currentPhase && data.applicationStatus === 'ACTIVE'"
+              [class.stopped]="p === data.currentPhase && data.applicationStatus !== 'ACTIVE'"
+              [class.success]="p === 'Ponuda' && data.currentPhase === 'Ponuda'">
+              <i class="fa-solid"
+                [ngClass]="{
+                  'fa-circle-check': isPhaseCompleted(p),
+                  'fa-circle-dot': p === data.currentPhase && data.applicationStatus === 'ACTIVE',
+                  'fa-circle-xmark': p === data.currentPhase && data.applicationStatus !== 'ACTIVE',
+                  'fa-circle': !isPhaseCompleted(p) && p !== data.currentPhase
+                }"></i>
+            </div>
+          </div>
+          <div class="arrow" *ngIf="i < data.phases.length - 1"></div>
+        </ng-container>
+      </div>
+
+      <div class="workflow-actions" *ngIf="data.applicationStatus === 'ACTIVE' && data.currentPhase !== 'Ponuda'">
+        <button class="btn-refuse" (click)="openRefuseModal()">
+          <i class="fa-solid fa-xmark"></i> Refuse
+        </button>
+        <button class="btn-proceed" (click)="onProceedClicked()">
+          Proceed to next phase <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+
+      <div *ngIf="data.applicationStatus !== 'ACTIVE'" class="status-note">
+        <i class="fa-solid fa-circle-info"></i>
+        Application is <strong>{{ data.applicationStatus }}</strong> — no further actions available.
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TEST + EVALUATION -->
+  <div class="bottom-grid">
+
+    <!-- TEST -->
+    <div class="info-card">
+      <div class="section-title"><i class="fa-solid fa-file-lines"></i> Test</div>
+
+      <div *ngIf="testLoading" class="muted">Loading…</div>
+      <div *ngIf="!testLoading && testError" class="err">{{ testError }}</div>
+
+      <ng-container *ngIf="!testLoading && !testError">
+        <div *ngIf="!test" class="muted">No test for this application.</div>
+
+        <div *ngIf="test" class="info-rows">
+          <div class="info-row-item">
+            <span class="ir-label"><i class="fa-solid fa-tag"></i> Type</span>
+            <span class="ir-value">{{ test.type || '—' }}</span>
+          </div>
+          <div class="info-row-item">
+            <span class="ir-label"><i class="fa-solid fa-envelope"></i> Status</span>
+            <span class="ir-value">{{ test.inviteStatus || '—' }}</span>
+          </div>
+          <div class="info-row-item">
+            <span class="ir-label"><i class="fa-solid fa-hourglass-end"></i> Deadline</span>
+            <span class="ir-value">{{ test.deadline ? (test.deadline | date:'dd.MM.yyyy. HH:mm') : '—' }}</span>
+          </div>
+          <div class="info-row-item">
+            <span class="ir-label"><i class="fa-solid fa-star"></i> Score</span>
+            <span class="ir-value">{{ test.score ?? '—' }}</span>
+          </div>
+          <div class="info-row-item">
+            <span class="ir-label"><i class="fa-solid fa-check-circle"></i> Passed</span>
+            <span class="ir-value">
+              <ng-container *ngIf="test.passed === true">✅ Yes</ng-container>
+              <ng-container *ngIf="test.passed === false">❌ No</ng-container>
+              <ng-container *ngIf="test.passed === null || test.passed === undefined">—</ng-container>
+            </span>
+          </div>
+          <div class="info-row-item" *ngIf="test.link">
+            <span class="ir-label"><i class="fa-solid fa-link"></i> Link</span>
+            <span class="ir-value">
+              <a *ngIf="canOpenTestLink()" [href]="test.link" target="_blank" rel="noopener">
+                <i class="fa-solid fa-external-link-alt"></i> Open test
+              </a>
+              <span *ngIf="!canOpenTestLink()" class="muted">Not yet active</span>
+            </span>
+          </div>
+        </div>
       </ng-container>
     </div>
 
-    <div class="actions" *ngIf="data.applicationStatus === 'ACTIVE' && data.currentPhase !== 'Ponuda'">
-      <button class="danger" (click)="openRefuseModal()">Refuse application</button>
-      <button class="primary" (click)="onProceedClicked()">Proceed to next phase</button>
+    <!-- EVALUATION -->
+    <div class="info-card">
+      <div class="section-title"><i class="fa-solid fa-clipboard-check"></i> Evaluation</div>
+
+      <div *ngIf="evalLoading" class="muted">Loading…</div>
+      <div *ngIf="!evalLoading && evalError" class="err">{{ evalError }}</div>
+
+      <ng-container *ngIf="!evalLoading && !evalError">
+        <div *ngIf="!evaluation" class="muted">No evaluation for this application.</div>
+
+        <div *ngIf="evaluation as ev" class="info-rows">
+          <div class="info-row-item">
+            <span class="ir-label"><i class="fa-solid fa-star"></i> Final grade</span>
+            <span class="ir-value grade">{{ ev.grade || '—' }}</span>
+          </div>
+          <div class="info-row-item">
+            <span class="ir-label"><i class="fa-solid fa-calendar-days"></i> Date</span>
+            <span class="ir-value">{{ ev.createdAt ? (ev.createdAt | date:'dd.MM.yyyy. HH:mm') : '—' }}</span>
+          </div>
+          <div class="info-row-item fullrow" *ngIf="ev.comment">
+            <span class="ir-label"><i class="fa-solid fa-comment"></i> Comment</span>
+            <span class="ir-value comment-text">{{ ev.comment }}</span>
+          </div>
+        </div>
+      </ng-container>
     </div>
+
   </div>
-  <!-- === TEST (read-only) === -->
-<div class="test-section">
-  <div class="section-title"><i class="fa-solid fa-file-lines"></i> Test</div>
 
-  <div *ngIf="testLoading">Učitavam test…</div>
-  <div *ngIf="!testLoading && testError" class="err">{{ testError }}</div>
-
-  <ng-container *ngIf="!testLoading && !testError">
-    <!-- Nema testa -->
-    <div *ngIf="!test" class="muted">Test ne postoji za ovu aplikaciju.</div>
-
-    <!-- Postoji test -->
-    <div *ngIf="test" class="test-grid">
-      <div>
-        <span class="label"><i class="fa-solid fa-tag"></i> Type</span>
-        <div class="value">{{ test.type || '—' }}</div>
-      </div>
-      <div>
-        <span class="label"><i class="fa-solid fa-envelope"></i> Invite status</span>
-        <div class="value">{{ test.inviteStatus || '—' }}</div>
-      </div>
-      <div>
-        <span class="label"><i class="fa-solid fa-hourglass-end"></i> Deadline</span>
-        <div class="value">{{ test.deadline ? (test.deadline | date:'dd.MM.yyyy. HH:mm') : '—' }}</div>
-      </div>
-      <div>
-        <span class="label"><i class="fa-solid fa-star"></i> Score</span>
-        <div class="value">{{ (test.score ?? '—') }}</div>
-      </div>
-      <div>
-        <span class="label"><i class="fa-solid fa-check-circle"></i> Passed</span>
-        <div class="value">
-          <ng-container *ngIf="test.passed === true">Yes</ng-container>
-          <ng-container *ngIf="test.passed === false">No</ng-container>
-          <ng-container *ngIf="test.passed === null || test.passed === undefined">—</ng-container>
-        </div>
-      </div>
-      <div class="fullrow" *ngIf="test.link">
-        <span class="label"><i class="fa-solid fa-link"></i> Link</span>
-        <div class="value" *ngIf="canOpenTestLink(); else disabledLink">
-          <a [href]="test.link" target="_blank" rel="noopener"><i class="fa-solid fa-external-link-alt"></i> Open test</a>
-        </div>
-        <ng-template #disabledLink>
-          <div class="value muted">Link disabled — invite not active</div>
-        </ng-template>
-      </div>
-    </div>
-  </ng-container>
 </div>
 
-<!-- === EVALUATION === -->
-<div class="test-section" style="margin-top:16px;">
-  <div class="section-title"><i class="fa-solid fa-clipboard-check"></i> Evaluation</div>
-
-  <div *ngIf="evalLoading">Učitavam evaluaciju…</div>
-  <div *ngIf="!evalLoading && evalError" class="err">{{ evalError }}</div>
-
-  <ng-container *ngIf="!evalLoading && !evalError">
-    <!-- Nema evaluacije -->
-    <div *ngIf="!evaluation" class="muted">Evaluacija ne postoji za ovu aplikaciju.</div>
-
-    <!-- Postoji evaluacija -->
-    <div *ngIf="evaluation as ev" class="test-grid">
-      <div>
-        <span class="label"><i class="fa-solid fa-star"></i> Final grade</span>
-        <div class="value">{{ ev.grade || '—' }}</div>
-      </div>
-      <div>
-        <span class="label"><i class="fa-solid fa-calendar-days"></i> Created at</span>
-        <div class="value">{{ ev.createdAt ? (ev.createdAt | date:'dd.MM.yyyy. HH:mm') : '—' }}</div>
-      </div>
-      <div class="fullrow" *ngIf="ev.comment">
-        <span class="label"><i class="fa-solid fa-comment"></i> Comment</span>
-        <div class="value">{{ ev.comment }}</div>
-      </div>
-    </div>
-  </ng-container>
-</div>
-</div>
-<!-- ===== Modal 0: general REFUSE (preselekcija/intervju) ===== -->
+<!-- ===== Modal 0: general REFUSE ===== -->
 <div class="modal-backdrop" *ngIf="refuseOpen"></div>
 <div class="modal" *ngIf="refuseOpen" role="dialog" aria-modal="true" aria-labelledby="refuseTitle">
   <h3 id="refuseTitle" class="modal-title">Type a reason</h3>
@@ -189,19 +233,15 @@
   </div>
 </div>
 
-<!-- ===== Modal 1: PRESELEKCIJA -> TEST (upload testa) ===== -->
+<!-- ===== Modal 1: PRESELEKCIJA -> TEST ===== -->
 <div class="modal-backdrop" *ngIf="testUploadOpen"></div>
 <div class="modal" *ngIf="testUploadOpen" role="dialog" aria-modal="true" aria-labelledby="testUploadTitle">
   <h3 id="testUploadTitle" class="modal-title">Upload test</h3>
-
   <label class="label">Upload test file</label>
   <input type="file" (change)="onTestFileSelected($event)" />
-
   <div class="err" *ngIf="testFileError">{{ testFileError }}</div>
-
   <label class="label" style="margin-top:8px;">Active until</label>
   <input type="datetime-local" [(ngModel)]="testActiveUntil" [min]="minDateTime" />
-
   <label class="label" style="margin-top:8px;">Test type</label>
   <select [(ngModel)]="testType">
     <option value="CODING">Coding</option>
@@ -210,41 +250,24 @@
     <option value="LANGUAGE">Language</option>
     <option value="OTHER">Other</option>
   </select>
-
-
   <div class="modal-actions">
-    <button class="primary" (click)="confirmProceedToTest()" 
-            [disabled]="!testFile || !testActiveUntil">Send test</button>
+    <button class="primary" (click)="confirmProceedToTest()" [disabled]="!testFile || !testActiveUntil">Send test</button>
     <button class="secondary" (click)="cancelTestUpload()">Cancel</button>
   </div>
 </div>
 
-<!-- ===== Modal 2: REFUSE u fazi TEST (unos poena + refuse) ===== -->
+<!-- ===== Modal 2: REFUSE u fazi TEST ===== -->
 <div class="modal-backdrop" *ngIf="testRefuseOpen"></div>
 <div class="modal" *ngIf="testRefuseOpen" role="dialog" aria-modal="true" aria-labelledby="testRefuseTitle">
-  <h3 id="testRefuseTitle" class="modal-title">Refuse nakon testa</h3>
-
-  <label class="label">Bodovi na testu</label>
-  <input type="number" min="0" class="input"
-         [(ngModel)]="testScoreRefuse"
-         (blur)="testScoreRefuseTouched = true"
-         placeholder="Unesi broj bodova" />
-  <div class="err" *ngIf="testScoreRefuseTouched && (testScoreRefuse === null || testScoreRefuse === undefined)">
-    Bodovi su obavezni.
-  </div>
-
-  <label class="label" style="margin-top:8px;">Komentar</label>
-  <textarea rows="5"
-            [(ngModel)]="testRefuseReason"
-            (blur)="testRefuseReasonTouched = true"
-            placeholder="Navedite razlog odbijanja…"></textarea>
-  <div class="err" *ngIf="testRefuseReasonTouched && !testRefuseReason?.trim()">
-    Komentar je obavezan.
-  </div>
-
+  <h3 id="testRefuseTitle" class="modal-title">Refuse after test</h3>
+  <label class="label">Test score</label>
+  <input type="number" min="0" class="input" [(ngModel)]="testScoreRefuse" (blur)="testScoreRefuseTouched = true" placeholder="Enter score" />
+  <div class="err" *ngIf="testScoreRefuseTouched && (testScoreRefuse === null || testScoreRefuse === undefined)">Score is required.</div>
+  <label class="label" style="margin-top:8px;">Comment</label>
+  <textarea rows="5" [(ngModel)]="testRefuseReason" (blur)="testRefuseReasonTouched = true" placeholder="Write the reason…"></textarea>
+  <div class="err" *ngIf="testRefuseReasonTouched && !testRefuseReason?.trim()">Comment is required.</div>
   <div class="modal-actions">
-    <button class="danger"
-            (click)="confirmRefuseFromTest()"
+    <button class="danger" (click)="confirmRefuseFromTest()"
             [disabled]="(testScoreRefuse === null || testScoreRefuse === undefined) || !testRefuseReason?.trim()">
       Refuse application
     </button>
@@ -256,18 +279,14 @@
 <div class="modal-backdrop" *ngIf="interviewOpen"></div>
 <div class="modal" *ngIf="interviewOpen" role="dialog" aria-modal="true" aria-labelledby="interviewTitle">
   <h3 id="interviewTitle" class="modal-title">Proceed to interview phase</h3>
-
   <ng-container *ngIf="isFromTest()">
     <label class="label">How many points did user score</label>
     <input type="number" min="0" class="input" [(ngModel)]="testScoreProceed" />
   </ng-container>
-
   <label class="label" style="margin-top:8px;">Select interview date and time</label>
   <input type="datetime-local" [(ngModel)]="interviewDateTime" [min]="minDateTime"/>
-
   <label class="label" style="margin-top:8px;">Type interview location</label>
   <input type="text" class="input" [(ngModel)]="interviewLocation" />
-
   <label class="label" style="margin-top:8px;">Type of interview</label>
   <select [(ngModel)]="interviewType">
     <option value="HR_SCREEN">HR screen</option>
@@ -276,32 +295,22 @@
     <option value="MANAGERIAL">Managerial</option>
     <option value="FINAL">Final</option>
   </select>
-
   <label class="label" style="margin-top:8px;">Duration of interview (minutes)</label>
   <input type="number" min="10" class="input" [(ngModel)]="interviewDuration" />
-
   <label class="label" style="margin-top:8px;">Select interviewer</label>
   <select [(ngModel)]="interviewerId">
     <option [ngValue]="null" disabled>Select interviewer…</option>
-    <option *ngFor="let m of staffInterviewers" [ngValue]="m.id">
-      {{ m.fullName }} — {{ m.role }}
-    </option>
+    <option *ngFor="let m of staffInterviewers" [ngValue]="m.id">{{ m.fullName }} — {{ m.role }}</option>
   </select>
-
-  <!-- Observers (čekboks; samo HR_MANAGER i HIRING_MANAGER) -->
   <label class="label" style="margin-top:8px;">Select observers (optional)</label>
   <div class="observer-list">
     <label class="chk" *ngFor="let m of staffObservers">
-      <input type="checkbox"
-            [checked]="isObserverSelected(m.id)"
-            (change)="onObserverChange(m.id, $event)">
+      <input type="checkbox" [checked]="isObserverSelected(m.id)" (change)="onObserverChange(m.id, $event)">
       <span>{{ m.fullName }} — {{ m.role }}</span>
     </label>
   </div>
-
   <div class="modal-actions">
-    <button class="primary" (click)="confirmProceedToInterview()"
-            [disabled]="!isInterviewFormValid()">Proceed to interview phase</button>
+    <button class="primary" (click)="confirmProceedToInterview()" [disabled]="!isInterviewFormValid()">Proceed to interview phase</button>
     <button class="secondary" (click)="cancelInterview()">Cancel</button>
   </div>
 </div>
@@ -310,9 +319,7 @@
 <div class="modal-backdrop" *ngIf="offerOpen"></div>
 <div class="modal" *ngIf="offerOpen" role="dialog" aria-modal="true" aria-labelledby="offerTitle">
   <h3 id="offerTitle" class="modal-title">Starting date</h3>
-
   <input type="date" [(ngModel)]="offerStartDate" [min]="minDate"/>
-
   <div class="modal-actions">
     <button class="primary" (click)="confirmMakeOffer()" [disabled]="!offerStartDate">Make an offer</button>
     <button class="secondary" (click)="cancelOffer()">Cancel</button>
@@ -320,6 +327,6 @@
 </div>
 
 <ng-template #state>
-  <p *ngIf="loading">Loading…</p>
+  <p *ngIf="loading" class="state-msg"><i class="fa-solid fa-spinner fa-spin"></i> Loading…</p>
   <p *ngIf="!loading && error" class="err">{{ error }}</p>
 </ng-template>

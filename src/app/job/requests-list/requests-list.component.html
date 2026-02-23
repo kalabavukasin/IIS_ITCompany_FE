@@ -3,9 +3,6 @@
 
   <ng-container *ngIf="!loading && !error; else state">
     <div *ngFor="let r of items" class="card">
-      <div class="thumb">
-        <i class="fa-solid fa-briefcase"></i>
-      </div>
 
       <div class="main">
         <div class="name">{{ r.name }}</div>
