@@ -2,53 +2,96 @@
   <h2>Create job request</h2>
 
   <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="card">
-    <label>Name</label>
-    <input type="text" formControlName="name" />
-    <p class="err" *ngIf="hasError('name','required')">Name is required.</p>
-    <p class="err" *ngIf="hasError('name','minlength')">Name must be at least 2 characters.</p>
-    <label>Position in firm</label>
-    <input type="text" formControlName="positionInFirm" />
-    <p class="err" *ngIf="hasError('positionInFirm','required')">Position is required.</p>
 
-    <label>Description</label>
-    <textarea rows="5" formControlName="description"></textarea>
-    <p class="err" *ngIf="hasError('description','required')">Description is required.</p>
+    <div class="section-label span-4">Position details</div>
 
-    <label>Programming languages</label>
-    <input type="text" placeholder="e.g. Java, Spring, Angular" formControlName="programmingLanguages" />
-    <p class="err" *ngIf="hasError('programmingLanguages','required')">Enter at least one technology.</p>
+    <div class="field span-2">
+      <label>Name</label>
+      <input type="text" formControlName="name" />
+      <p class="err" *ngIf="hasError('name','required')">Name is required.</p>
+      <p class="err" *ngIf="hasError('name','minlength')">At least 2 characters.</p>
+    </div>
+    <div class="field span-2">
+      <label>Position in firm</label>
+      <input type="text" formControlName="positionInFirm" />
+      <p class="err" *ngIf="hasError('positionInFirm','required')">Position is required.</p>
+    </div>
 
-    <label>Seniority</label>
-    <select formControlName="seniority">
-      <option *ngFor="let s of seniorities" [value]="s">{{ s }}</option>
-    </select>
+    <div class="section-label span-4">Job details</div>
 
-    <label>Location</label>
-    <input type="text" formControlName="location" />
-    <p class="err" *ngIf="hasError('location','required')">Location is required.</p>
+    <div class="field span-4">
+      <label>Description</label>
+      <textarea rows="3" formControlName="description"></textarea>
+      <p class="err" *ngIf="hasError('description','required')">Description is required.</p>
+    </div>
 
-    <label>Budget</label>
-    <input type="number" formControlName="budget" />
-    <p class="err" *ngIf="hasError('budget','required')">Budget is required.</p>
-    <p class="err" *ngIf="hasError('budget','min')">Budget can’t be negative.</p>
+    <div class="field span-2">
+      <label>Programming languages</label>
+      <input type="text" placeholder="e.g. Java, Spring, Angular" formControlName="programmingLanguages" />
+      <p class="err" *ngIf="hasError('programmingLanguages','required')">Enter at least one technology.</p>
+    </div>
+    <div class="field span-2">
+      <label>Seniority</label>
+      <select formControlName="seniority">
+        <option *ngFor="let s of seniorities" [value]="s">{{ s }}</option>
+      </select>
+    </div>
+    <div class="field span-4">
+      <label>Location</label>
+      <input type="text" formControlName="location" />
+      <p class="err" *ngIf="hasError('location','required')">Location is required.</p>
+    </div>
 
-    <label>Workflow (pipeline)</label>
-    <select formControlName="pipelineWorkflowId">
-      <option [ngValue]="null" disabled>-- choose workflow --</option>
-      <option *ngFor="let w of workflows" [value]="w.id">
-        {{ w.name }} (v{{ w.version }}) — {{ w.stageNames.length ? w.stageNames.join(', ') : '—' }}
-      </option>
-    </select>
-    <p class="err" *ngIf="hasError('pipelineWorkflowId','required')">
-      Workflow is required.
-    </p>
-    
+    <div class="section-label span-4">Business</div>
 
-    <div class="actions">
+    <div class="field span-1">
+      <label>Budget</label>
+      <input type="number" formControlName="budget" />
+      <p class="err" *ngIf="hasError('budget','required')">Budget is required.</p>
+      <p class="err" *ngIf="hasError('budget','min')">Can't be negative.</p>
+    </div>
+    <div class="field span-3">
+      <label>Workflow (pipeline)</label>
+      <select formControlName="pipelineWorkflowId">
+        <option [ngValue]="null" disabled>-- choose workflow --</option>
+        <option *ngFor="let w of workflows" [value]="w.id">
+          {{ w.name }} (v{{ w.version }}) — {{ w.stageNames.length ? w.stageNames.join(', ') : '—' }}
+        </option>
+      </select>
+      <p class="err" *ngIf="hasError('pipelineWorkflowId','required')">Workflow is required.</p>
+    </div>
+
+    <div class="section-label span-4">Enrichment</div>
+
+    <div class="field span-1">
+      <label>Ad duration (days) <span class="hint">— HR suggestion to HM</span></label>
+      <input type="number" formControlName="durationDays" min="1" placeholder="e.g. 30" />
+      <p class="err" *ngIf="hasError('durationDays','required')">Required.</p>
+      <p class="err" *ngIf="hasError('durationDays','min')">Min 1 day.</p>
+    </div>
+    <div class="field span-1">
+      <label>Review deadline</label>
+      <input type="date" formControlName="reviewDeadline" />
+      <p class="err" *ngIf="hasError('reviewDeadline','required')">Required.</p>
+    </div>
+    <div class="field span-1">
+      <label>Min. experience (yrs)</label>
+      <input type="number" formControlName="minExperienceYears" min="0" placeholder="e.g. 3" />
+      <p class="err" *ngIf="hasError('minExperienceYears','required')">Required.</p>
+      <p class="err" *ngIf="hasError('minExperienceYears','min')">Can't be negative.</p>
+    </div>
+    <div class="field span-1">
+      <label>Nice to have skills</label>
+      <input type="text" formControlName="niceToHaveSkills" placeholder="e.g. Docker, Kubernetes" />
+      <p class="err" *ngIf="hasError('niceToHaveSkills','required')">Required.</p>
+    </div>
+
+    <div class="actions span-4">
       <button type="button" class="secondary" (click)="cancel()">Cancel</button>
       <button type="submit" [disabled]="submitting || form.invalid">Create job request</button>
     </div>
 
-    <p class="server-error" *ngIf="serverError">{{ serverError }}</p>
+    <p class="server-error span-4" *ngIf="serverError">{{ serverError }}</p>
+
   </form>
 </div>

@@ -1,11 +1,9 @@
 <div class="page" *ngIf="!loading; else state">
 
-  <!-- BACK -->
   <button class="btn-back" (click)="goBack()">
     <i class="fa-solid fa-arrow-left"></i> Back to postings
   </button>
 
-  <!-- HEADER -->
   <div class="header" *ngIf="postingName">
     <div class="thumb" [ngClass]="seniorityBadge(postingSeniority).css">
       <span class="seniority-emoji">{{ seniorityBadge(postingSeniority).emoji }}</span>
@@ -25,7 +23,6 @@
         <span><i class="fa-solid fa-users"></i> {{ items.length }} applicant{{ items.length !== 1 ? 's' : '' }}</span>
       </div>
 
-      <!-- POSTING ACTIONS -->
       <div class="posting-actions" *ngIf="postingStatus">
         <ng-container *ngIf="postingStatus === 'PUBLISHED'">
           <button class="btn-action btn-archive" (click)="archive()" [disabled]="actionLoading">
@@ -42,7 +39,6 @@
         </ng-container>
       </div>
 
-      <!-- EXTEND FORM -->
       <div class="date-input-row" *ngIf="showExtendInput">
         <label>New deadline:</label>
         <input type="date" [(ngModel)]="extendDate" [min]="minDate" />
@@ -50,7 +46,6 @@
         <button class="btn-cancel" (click)="toggleExtend()">Cancel</button>
       </div>
 
-      <!-- REPUBLISH FORM -->
       <div class="date-input-row" *ngIf="showRepublishInput">
         <label *ngIf="validToInPast">New deadline (required — current date expired):</label>
         <label *ngIf="!validToInPast">New deadline (optional):</label>
@@ -66,7 +61,6 @@
 
   <div *ngIf="error" class="err">{{ error }}</div>
 
-  <!-- FILTER BAR -->
   <div class="filter-bar">
     <div class="phase-tabs">
       <button
@@ -82,7 +76,6 @@
     </div>
   </div>
 
-  <!-- BULK ACTION BAR -->
   <div class="bulk-bar" *ngIf="selectedCount > 0">
     <span class="bulk-count">
        {{ selectedCount }} selected
@@ -100,7 +93,6 @@
     </button>
   </div>
 
-  <!-- CANDIDATES TABLE -->
   <div class="table-wrapper">
     <div *ngIf="filteredItems.length === 0" class="empty">
       <ng-container *ngIf="items.length === 0">No applicants for this posting.</ng-container>

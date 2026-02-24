@@ -21,6 +21,8 @@ export class RequestViewComponent implements OnInit {
   modalAction: 'approve' | 'reject' | null = null;
   comment = '';
   commentErr = '';
+  approveDurationDays: number | null = null;
+  useCustomDuration = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -43,6 +45,8 @@ export class RequestViewComponent implements OnInit {
     this.modalAction = null;
     this.comment = '';
     this.commentErr = '';
+    this.approveDurationDays = null;
+    this.useCustomDuration = false;
   }
 
   confirmModal() {
@@ -54,7 +58,7 @@ export class RequestViewComponent implements OnInit {
     const id = this.data.id;
 
     const obs = this.modalAction === 'approve'
-      ? this.svc.approve(id, this.comment.trim())
+      ? this.svc.approve(id, this.comment.trim(), this.approveDurationDays)
       : this.svc.reject(id, this.comment.trim());
 
     obs.subscribe({
@@ -125,14 +129,6 @@ export class RequestViewComponent implements OnInit {
       },
       error: (err) => { this.error = err?.error?.message ?? 'Failed to load request.'; this.loading = false; }
     });
-  }
-
-  openUntil(): Date | null {
-    if (!this.data) return null;
-    const d = new Date(this.data.createdAt);
-    d.setDate(d.getDate() + 30);
-    return d;
-    // Mybe calculate on backend later
   }
 
   canApprove(): boolean {

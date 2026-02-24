@@ -2,13 +2,18 @@ export type Seniority = 'INTERN' | 'JUNIOR' | 'MID' | 'SENIOR' | 'LEAD' | 'PRINC
 export type RequestionStatus = 'DRAFT'|'PENDING_APPROVAL'|'APPROVED'|'REJECTED'|'CLOSED';
 
 export interface CreateRequestion {
+  name: string;
   positionInFirm: string;
   description: string;
-  programmingLanguages: string; // "Java, Spring, Angular"
+  programmingLanguages: string;
   seniority: Seniority;
   location: string;
   budget: number;
   pipelineWorkflowId: number;
+  durationDays: number;
+  reviewDeadline: string;
+  minExperienceYears: number;
+  niceToHaveSkills: string;
 }
 
 export interface RequestionResponse {
@@ -24,6 +29,11 @@ export interface RequestionResponse {
   programmingLanguages?: string;
   seniority?: string;
   budget?: number;
+  pipelineWorkflowId?: number;
+  durationDays?: number;
+  reviewDeadline?: string;
+  minExperienceYears?: number;
+  niceToHaveSkills?: string;
 }
 export interface WorkflowSummary {
   id: number;

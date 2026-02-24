@@ -29,8 +29,8 @@ export class JobRequestService {
     return this.http.get<RequestionResponse>(`${this.api}/${id}`);
   }
 
-  approve(id: number, comment: string): Observable<RequestionResponse> {
-    return this.http.post<RequestionResponse>(`${this.api}/${id}/approve`, { comment });
+  approve(id: number, comment: string, durationDays?: number | null): Observable<RequestionResponse> {
+    return this.http.post<RequestionResponse>(`${this.api}/${id}/approve`, { comment, durationDays });
   }
 
   reject(id: number, comment: string): Observable<RequestionResponse> {

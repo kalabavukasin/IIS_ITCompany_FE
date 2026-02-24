@@ -18,5 +18,5 @@ export interface InterviewToShowDTO {
   candidateName: string;
   duration: number;
   status: InterviewStatus;
-  scheduledAt: string; // ISO OffsetDateTime (backend OffsetDateTime → ISO string)
+  scheduledAt: string;
 }

@@ -20,11 +20,15 @@ export class CreateJobRequestComponent implements OnInit {
     name: ['', [Validators.required, Validators.minLength(2)]],
     positionInFirm: ['', [Validators.required, Validators.minLength(2)]],
     description: ['', [Validators.required, Validators.minLength(10)]],
-    programmingLanguages: ['', [Validators.required]], // unosi: "Java, Spring"
+    programmingLanguages: ['', [Validators.required]],
     seniority: ['JUNIOR' as Seniority, Validators.required],
     location: ['', [Validators.required]],
     budget: [null as number | null, [Validators.required, Validators.min(0)]],
-    pipelineWorkflowId: [null as number | null, [Validators.required]]
+    pipelineWorkflowId: [null as number | null, [Validators.required]],
+    durationDays: [null as number | null, [Validators.required, Validators.min(1)]],
+    reviewDeadline: ['', [Validators.required]],
+    minExperienceYears: [null as number | null, [Validators.required, Validators.min(0)]],
+    niceToHaveSkills: ['', [Validators.required]]
   });
 
   submitting = false;

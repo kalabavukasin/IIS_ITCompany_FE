@@ -20,7 +20,6 @@
 }
 .btn-back:hover { background: #f9fafb; border-color: #d1d5db; }
 
-/* HEADER */
 .header {
   display: grid;
   grid-template-columns: 110px 1fr;
@@ -104,7 +103,6 @@
   margin-right: 4px;
 }
 
-/* FILTER BAR */
 .filter-bar {
   display: flex;
   align-items: center;
@@ -192,7 +190,6 @@
   color: #fff;
 }
 
-/* BULK ACTION BAR */
 .bulk-bar {
   display: flex;
   align-items: center;
@@ -272,7 +269,6 @@
 
 .bulk-clear:hover { background: #f3f4f6; color: #374151; }
 
-/* TABLE */
 .table-wrapper {
   background: #fff;
   border: 1px solid #e5e7eb;
@@ -407,7 +403,6 @@ tbody tr.row-selected:hover {
   margin-bottom: 16px;
 }
 
-/* POSTING ACTIONS */
 .posting-actions {
   display: flex;
   gap: 8px;
@@ -451,7 +446,6 @@ tbody tr.row-selected:hover {
 }
 .btn-republish:not(:disabled):hover { background: #dcfce7; }
 
-/* DATE INPUT ROW */
 .date-input-row {
   display: flex;
   align-items: center;
