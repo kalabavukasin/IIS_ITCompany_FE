@@ -353,23 +353,26 @@ export class ApplicationDetailsComponent implements OnInit {
     // this.data.currentPhase = 'Intervju';
   }
   openOffer() { this.offerOpen = true; }
-  cancelOffer() { this.offerOpen = false; this.offerStartDate = ''; }
+  cancelOffer() { this.offerOpen = false; this.offerStartDate = ''; this.testScoreProceed = null; }
   confirmMakeOffer() {
     if (!this.data || !this.offerStartDate) return;
-    //console.log('MAKE OFFER:', { appId: this.data.applicationId, startDate: this.offerStartDate });
-    const dto = {
-    applicationId: this.data.applicationId,
-    startDate: this.offerStartDate
+    if (this.isFromTest() && (this.testScoreProceed === null || this.testScoreProceed === undefined)) return;
+    const dto: any = {
+      applicationId: this.data.applicationId,
+      startDate: this.offerStartDate
     };
+    if (this.isFromTest() && this.testScoreProceed !== null && this.testScoreProceed !== undefined) {
+      dto.testScore = this.testScoreProceed;
+    }
     this.svc.makeOffer(dto).subscribe({
       next: _ => {
         this.offerOpen = false;
+        this.testScoreProceed = null;
         this.flowCompleted = true;
         this.reloadDetails();
       },
       error: err => {
         console.error(err);
-        // po želji: pokaži poruku greške u UI
       }
     });
   }

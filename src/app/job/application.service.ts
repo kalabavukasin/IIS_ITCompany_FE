@@ -20,6 +20,41 @@ export interface ApplicationWithUserDTO {
   openUntil?: string;
   cvDownloadUrl?: string;
 }
+export interface PostingApplicantDTO {
+  applicationId: number;
+  status: string;
+  currentPhase?: string;
+  phases?: string[];
+
+  candidateId: number;
+  candidateName: string;
+  cvDownloadUrl?: string;
+
+  autoAiScore?: number | null;
+  autoAiScoreNote?: string | null;
+  autoAiScoredAt?: string | null;
+  bulkAiScore?: number | null;
+  bulkAiScoreNote?: string | null;
+  bulkAiScoredAt?: string | null;
+}
+
+export interface BulkTestScoreEntry {
+  applicationId: number;
+  score: number;
+}
+
+export interface BulkInterviewScheduleDTO {
+  applicationIds: number[];
+  interviewType: string;
+  location: string;
+  durationMinutes: number;
+  firstScheduledAt: string;
+  breakMinutes: number;
+  interviewerId: number;
+  observerIds?: number[];
+  testScores?: BulkTestScoreEntry[];
+}
+
 export interface ApplicationDetailsDto {
   applicationId: number;
   applicationStatus: string;
@@ -58,6 +93,7 @@ export interface InterviewScheduleDTO {
 export interface OfferCreateDTO {
   applicationId: number;
   startDate: string;
+  testScore?: number;
 }
 export interface TestRefuseDTO {
   score: number;
@@ -94,7 +130,7 @@ export class ApplicationService {
   }
 
   getCardsByPosting(postingId: number) {
-    return this.http.get<ApplicationWithUserDTO[]>(`${this.api}/cards/by-posting/${postingId}`);
+    return this.http.get<PostingApplicantDTO[]>(`${this.api}/cards/by-posting/${postingId}`);
   }
 
   getDetails(id: number) {
@@ -147,5 +183,39 @@ export class ApplicationService {
     return this.http.get<EvaluationDetailsDto | null>(
       `http://localhost:8080/api/evaluations/by-application/${applicationId}/details`
     );
+  }
+
+  bulkScore(postingId: number) {
+    return this.http.post<{ postingId: number; scoredCount: number }>(
+      `${this.api}/bulk-score/${postingId}`, null
+    );
+  }
+
+  bulkRefuse(applicationIds: number[], reason: string) {
+    return this.http.post<void>(`${this.api}/bulk-refuse`, { applicationIds, reason });
+  }
+
+  bulkRefuseAfterTest(dto: { entries: BulkTestScoreEntry[]; reason: string }) {
+    return this.http.post<void>('http://localhost:8080/api/tests/bulk-refuse-with-score', dto);
+  }
+
+  bulkSendTest(applicationIds: number[], type: string, activeUntil: string, file: File) {
+    const form = new FormData();
+    const data = { applicationIds, type, activeUntil };
+    form.append('data', new Blob([JSON.stringify(data)], { type: 'application/json' }));
+    form.append('file', file, file.name);
+    return this.http.post<void>('http://localhost:8080/api/tests/bulk-invite', form);
+  }
+
+  bulkScheduleInterview(dto: BulkInterviewScheduleDTO) {
+    return this.http.post<void>('http://localhost:8080/api/interviews/bulk-schedule', dto);
+  }
+
+  bulkMakeOffer(applicationIds: number[], startDate: string, validUntil?: string, testScores?: BulkTestScoreEntry[]) {
+    return this.http.post<void>('http://localhost:8080/api/offers/bulk-create', {
+      applicationIds, startDate,
+      validUntil: validUntil ?? null,
+      testScores: testScores ?? null
+    });
   }
 }

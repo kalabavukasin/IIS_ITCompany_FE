@@ -70,10 +70,47 @@
         {{ p }} <span class="tab-count">{{ phaseCount(p) }}</span>
       </button>
     </div>
-    <div class="status-toggle">
-      <button [class.active]="!showAll" (click)="showAll = false; clearSelection()">Active only</button>
-      <button [class.active]="showAll"  (click)="showAll = true;  clearSelection()">All</button>
+    <div class="filter-right">
+      <div class="status-toggle">
+        <button [class.active]="!showAll" (click)="showAll = false; clearSelection()">Active only</button>
+        <button [class.active]="showAll"  (click)="showAll = true;  clearSelection()">All</button>
+      </div>
+      <div class="score-toggle">
+        <button [class.active]="scoreView === 'auto'" (click)="scoreView = 'auto'">
+          <i class="fa-solid fa-user-check"></i> Auto score
+        </button>
+        <button [class.active]="scoreView === 'bulk'" (click)="scoreView = 'bulk'">
+          <i class="fa-solid fa-layer-group"></i> Bulk score
+        </button>
+      </div>
     </div>
+  </div>
+
+  <div class="scoring-bar">
+    <button
+      class="btn-bulk-score"
+      (click)="runBulkScore()"
+      [disabled]="allBulkScored || bulkScoring"
+      [title]="allBulkScored ? 'All active candidates are already bulk-scored' : 'Score all active candidates with AI'">
+      <i class="fa-solid fa-robot"></i>
+      {{ bulkScoring ? 'Scoring…' : 'Bulk score all' }}
+    </button>
+    <span *ngIf="bulkScoring" class="scoring-msg scoring-spin">
+      <i class="fa-solid fa-spinner fa-spin"></i> Running AI scoring…
+    </span>
+    <span *ngIf="bulkScoreSuccess && !bulkScoring" class="scoring-msg scoring-ok">
+      <i class="fa-solid fa-check"></i> {{ bulkScoreSuccess }}
+    </span>
+    <span *ngIf="bulkScoreError && !bulkScoring" class="scoring-msg scoring-err">
+      <i class="fa-solid fa-triangle-exclamation"></i> {{ bulkScoreError }}
+    </span>
+    <span *ngIf="allBulkScored && !bulkScoreSuccess" class="scoring-msg scoring-ok">
+      <i class="fa-solid fa-circle-check"></i> All active candidates are bulk-scored
+    </span>
+  </div>
+
+  <div class="bulk-action-feedback" *ngIf="bulkActionSuccess">
+    <i class="fa-solid fa-circle-check"></i> {{ bulkActionSuccess }}
   </div>
 
   <div class="bulk-bar" *ngIf="selectedCount > 0">
@@ -81,10 +118,14 @@
        {{ selectedCount }} selected
     </span>
     <div class="bulk-actions">
-      <button class="bulk-btn bulk-refuse" disabled title="Coming soon">
+      <button class="bulk-btn bulk-refuse"
+              (click)="openBulkRefuse()">
         <i class="fa-solid fa-xmark"></i> Refuse selected
       </button>
-      <button class="bulk-btn bulk-proceed" disabled title="Coming soon">
+      <button class="bulk-btn bulk-proceed"
+              (click)="openBulkProceed()"
+              [disabled]="!bulkProceedAction"
+              [title]="!bulkProceedAction ? 'No next phase available for selected candidates' : 'Proceed to next phase'">
         Proceed selected <i class="fa-solid fa-arrow-right"></i>
       </button>
     </div>
@@ -106,12 +147,16 @@
             <input
               type="checkbox"
               [checked]="allSelected"
+              [disabled]="isSelectAllDisabled"
+              [class.check-disabled]="isSelectAllDisabled"
+              [title]="isSelectAllDisabled ? 'Select a specific phase tab to use Select All' : ''"
               (change)="toggleSelectAll($any($event.target).checked)"
             />
           </th>
           <th>Candidate</th>
           <th>Phase</th>
           <th>Status</th>
+          <th>Score</th>
           <th>CV</th>
           <th>Actions</th>
         </tr>
@@ -122,6 +167,8 @@
             <input
               type="checkbox"
               [checked]="selectedIds.has(a.applicationId)"
+              [disabled]="isCheckboxDisabled(a)"
+              [class.check-disabled]="isCheckboxDisabled(a)"
               (change)="toggleSelect(a.applicationId, $any($event.target).checked)"
             />
           </td>
@@ -131,6 +178,28 @@
             <span class="status-badge" [ngClass]="'status-' + a.status.toLowerCase()">
               {{ a.status }}
             </span>
+          </td>
+          <td class="td-score">
+            <ng-container *ngIf="scoreView === 'auto'">
+              <span *ngIf="a.autoAiScore != null"
+                    class="score-badge"
+                    [ngClass]="scoreBadgeCss(a.autoAiScore)"
+                    [title]="a.autoAiScoreNote || ''">
+                {{ a.autoAiScore }}
+              </span>
+              <span *ngIf="a.autoAiScore == null" class="no-score">—</span>
+            </ng-container>
+            <ng-container *ngIf="scoreView === 'bulk'">
+              <span *ngIf="a.bulkAiScore != null"
+                    class="score-badge"
+                    [ngClass]="scoreBadgeCss(a.bulkAiScore)"
+                    [title]="a.bulkAiScoreNote || ''">
+                {{ a.bulkAiScore }}
+              </span>
+              <span *ngIf="a.bulkAiScore == null" class="bulk-unscored">
+                <i class="fa-solid fa-circle-exclamation"></i> Not scored
+              </span>
+            </ng-container>
           </td>
           <td class="td-cv">
             <a *ngIf="a.cvDownloadUrl" class="btn-cv" (click)="downloadCv(a.cvDownloadUrl!)">
@@ -147,6 +216,264 @@
       </tbody>
     </table>
   </div>
+
+  <!-- ===== BULK REFUSE MODAL ===== -->
+  <div class="modal-overlay" *ngIf="bulkRefuseOpen" (click)="bulkRefuseOpen = false">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-xmark"></i> Refuse {{ selectedCount }} candidate(s)</h3>
+        <button class="modal-close" (click)="bulkRefuseOpen = false">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="field-group" *ngIf="isFromTest">
+          <label class="field-label">Test score per candidate <span class="score-required">*</span></label>
+          <div class="score-entries">
+            <div class="score-entry" *ngFor="let item of selectedItems">
+              <span class="score-entry-name">{{ item.candidateName }}</span>
+              <input type="number" min="0" max="100" placeholder="0–100"
+                     class="field-input score-entry-input"
+                     [value]="bulkTestScores.get(item.applicationId)"
+                     (input)="setBulkTestScore(item.applicationId, $any($event.target).valueAsNumber)" />
+            </div>
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Reason for refusal</label>
+          <textarea
+            [(ngModel)]="bulkRefuseReason"
+            rows="3"
+            placeholder="Explain why these candidates are being refused..."
+            class="field-textarea">
+          </textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <span *ngIf="bulkActionError" class="modal-error">
+          <i class="fa-solid fa-triangle-exclamation"></i> {{ bulkActionError }}
+        </span>
+        <button class="btn-cancel" (click)="bulkRefuseOpen = false" [disabled]="bulkActionLoading">Cancel</button>
+        <button class="btn-confirm btn-danger"
+                (click)="confirmBulkRefuse()"
+                [disabled]="!bulkRefuseReason.trim() || bulkActionLoading || (isFromTest && !allBulkTestScoresFilled)">
+          <i *ngIf="bulkActionLoading" class="fa-solid fa-spinner fa-spin"></i>
+          <i *ngIf="!bulkActionLoading" class="fa-solid fa-xmark"></i>
+          Refuse all
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== BULK TEST MODAL ===== -->
+  <div class="modal-overlay" *ngIf="bulkTestOpen" (click)="bulkTestOpen = false">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-file-lines"></i> Send test to {{ selectedCount }} candidate(s)</h3>
+        <button class="modal-close" (click)="bulkTestOpen = false">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="field-group">
+          <label class="field-label">Test type</label>
+          <select [(ngModel)]="bulkTestType" class="field-select">
+            <option value="CODING">Coding</option>
+            <option value="PERSONALITY">Personality</option>
+            <option value="APTITUDE">Aptitude</option>
+            <option value="TECHNICAL">Technical</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Active until</label>
+          <input type="datetime-local"
+                 [(ngModel)]="bulkTestActiveUntil"
+                 [min]="minDateTime"
+                 class="field-input" />
+        </div>
+        <div class="field-group">
+          <label class="field-label">Test file (same file sent to all)</label>
+          <input type="file"
+                 (change)="onBulkTestFileSelected($event)"
+                 accept=".pdf,.doc,.docx,.zip"
+                 class="field-file" />
+          <span *ngIf="bulkTestFile" class="file-selected">
+            <i class="fa-solid fa-paperclip"></i> {{ bulkTestFile.name }}
+          </span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <span *ngIf="bulkActionError" class="modal-error">
+          <i class="fa-solid fa-triangle-exclamation"></i> {{ bulkActionError }}
+        </span>
+        <button class="btn-cancel" (click)="bulkTestOpen = false" [disabled]="bulkActionLoading">Cancel</button>
+        <button class="btn-confirm"
+                (click)="confirmBulkTest()"
+                [disabled]="!bulkTestFile || !bulkTestActiveUntil || bulkActionLoading">
+          <i *ngIf="bulkActionLoading" class="fa-solid fa-spinner fa-spin"></i>
+          <i *ngIf="!bulkActionLoading" class="fa-solid fa-paper-plane"></i>
+          Send test
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== BULK INTERVIEW MODAL ===== -->
+  <div class="modal-overlay" *ngIf="bulkInterviewOpen" (click)="bulkInterviewOpen = false">
+    <div class="modal-card modal-card-lg" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-calendar-days"></i> Schedule interviews for {{ selectedCount }} candidate(s)</h3>
+        <button class="modal-close" (click)="bulkInterviewOpen = false">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="field-group" *ngIf="isFromTest">
+          <label class="field-label">Test score per candidate <span class="score-required">*</span></label>
+          <div class="score-entries">
+            <div class="score-entry" *ngFor="let item of selectedItems">
+              <span class="score-entry-name">{{ item.candidateName }}</span>
+              <input type="number" min="0" max="100" placeholder="0–100"
+                     class="field-input score-entry-input"
+                     [value]="bulkTestScores.get(item.applicationId)"
+                     (input)="setBulkTestScore(item.applicationId, $any($event.target).valueAsNumber)" />
+            </div>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label">Interview type</label>
+            <select [(ngModel)]="bulkInterviewType" class="field-select">
+              <option value="HR_SCREEN">HR Screen</option>
+              <option value="TECHNICAL">Technical</option>
+              <option value="SYSTEM_DESIGN">System Design</option>
+              <option value="MANAGERIAL">Managerial</option>
+              <option value="FINAL">Final</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Location / Link</label>
+            <input type="text" [(ngModel)]="bulkInterviewLocation"
+                   placeholder="e.g. Office room 3 or Meet link"
+                   class="field-input" />
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label">First interview starts at</label>
+            <input type="datetime-local"
+                   [(ngModel)]="bulkInterviewFirstAt"
+                   [min]="minDateTime"
+                   class="field-input" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Duration (min)</label>
+            <input type="number" [(ngModel)]="bulkInterviewDuration"
+                   min="15" max="240" placeholder="e.g. 45"
+                   class="field-input field-input-sm" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Break between (min)</label>
+            <input type="number" [(ngModel)]="bulkInterviewBreak"
+                   min="0" max="120" placeholder="15"
+                   class="field-input field-input-sm" />
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label">Interviewer</label>
+            <select [(ngModel)]="bulkInterviewerId" class="field-select">
+              <option [ngValue]="null">— select —</option>
+              <option *ngFor="let s of staffInterviewers" [value]="s.id">{{ s.fullName }}</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Observers</label>
+            <div class="observer-list">
+              <label *ngFor="let s of staffObservers" class="observer-item">
+                <input type="checkbox"
+                       [checked]="isInterviewObserverSelected(s.id)"
+                       (change)="onInterviewObserverChange(s.id, $event)" />
+                {{ s.fullName }}
+              </label>
+              <span *ngIf="staffObservers.length === 0" class="no-observers">No observers available</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="slot-preview" *ngIf="interviewSlotPreview.length > 0">
+          <div class="slot-preview-title"><i class="fa-solid fa-clock"></i> Schedule preview</div>
+          <ul class="schedule-preview">
+            <li *ngFor="let s of interviewSlotPreview">
+              <span class="slot-name">{{ s.name }}</span>
+              <span class="slot-time">{{ s.time }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <span *ngIf="bulkActionError" class="modal-error">
+          <i class="fa-solid fa-triangle-exclamation"></i> {{ bulkActionError }}
+        </span>
+        <button class="btn-cancel" (click)="bulkInterviewOpen = false" [disabled]="bulkActionLoading">Cancel</button>
+        <button class="btn-confirm"
+                (click)="confirmBulkInterview()"
+                [disabled]="!bulkInterviewFirstAt || !bulkInterviewLocation || !bulkInterviewDuration || !bulkInterviewerId || bulkActionLoading || (isFromTest && !allBulkTestScoresFilled)">
+          <i *ngIf="bulkActionLoading" class="fa-solid fa-spinner fa-spin"></i>
+          <i *ngIf="!bulkActionLoading" class="fa-solid fa-calendar-check"></i>
+          Schedule all
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== BULK OFFER MODAL ===== -->
+  <div class="modal-overlay" *ngIf="bulkOfferOpen" (click)="bulkOfferOpen = false">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-envelope-open-text"></i> Send offer to {{ selectedCount }} candidate(s)</h3>
+        <button class="modal-close" (click)="bulkOfferOpen = false">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="field-group" *ngIf="isFromTest">
+          <label class="field-label">Test score per candidate <span class="score-required">*</span></label>
+          <div class="score-entries">
+            <div class="score-entry" *ngFor="let item of selectedItems">
+              <span class="score-entry-name">{{ item.candidateName }}</span>
+              <input type="number" min="0" max="100" placeholder="0–100"
+                     class="field-input score-entry-input"
+                     [value]="bulkTestScores.get(item.applicationId)"
+                     (input)="setBulkTestScore(item.applicationId, $any($event.target).valueAsNumber)" />
+            </div>
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Start date</label>
+          <input type="date" [(ngModel)]="bulkOfferStartDate" [min]="minDate" class="field-input" />
+        </div>
+        <div class="field-group">
+          <label class="field-label">Valid until <span class="field-optional">(optional — defaults to +14 days)</span></label>
+          <input type="date" [(ngModel)]="bulkOfferValidUntil" [min]="minDate" class="field-input" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <span *ngIf="bulkActionError" class="modal-error">
+          <i class="fa-solid fa-triangle-exclamation"></i> {{ bulkActionError }}
+        </span>
+        <button class="btn-cancel" (click)="bulkOfferOpen = false" [disabled]="bulkActionLoading">Cancel</button>
+        <button class="btn-confirm"
+                (click)="confirmBulkOffer()"
+                [disabled]="!bulkOfferStartDate || bulkActionLoading || (isFromTest && !allBulkTestScoresFilled)">
+          <i *ngIf="bulkActionLoading" class="fa-solid fa-spinner fa-spin"></i>
+          <i *ngIf="!bulkActionLoading" class="fa-solid fa-paper-plane"></i>
+          Send offers
+        </button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <ng-template #state>

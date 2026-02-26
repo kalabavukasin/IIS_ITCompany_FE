@@ -315,13 +315,21 @@
   </div>
 </div>
 
-<!-- ===== Modal 4: INTERVJU -> PONUDA ===== -->
+<!-- ===== Modal 4: TEST/INTERVJU -> PONUDA ===== -->
 <div class="modal-backdrop" *ngIf="offerOpen"></div>
 <div class="modal" *ngIf="offerOpen" role="dialog" aria-modal="true" aria-labelledby="offerTitle">
   <h3 id="offerTitle" class="modal-title">Starting date</h3>
+  <ng-container *ngIf="isFromTest()">
+    <label class="label">How many points did user score on the test</label>
+    <input type="number" min="0" class="input" [(ngModel)]="testScoreProceed" placeholder="Enter score" />
+  </ng-container>
+  <label class="label" style="margin-top:8px;">Start date</label>
   <input type="date" [(ngModel)]="offerStartDate" [min]="minDate"/>
   <div class="modal-actions">
-    <button class="primary" (click)="confirmMakeOffer()" [disabled]="!offerStartDate">Make an offer</button>
+    <button class="primary" (click)="confirmMakeOffer()"
+            [disabled]="!offerStartDate || (isFromTest() && (testScoreProceed === null || testScoreProceed === undefined))">
+      Make an offer
+    </button>
     <button class="secondary" (click)="cancelOffer()">Cancel</button>
   </div>
 </div>
